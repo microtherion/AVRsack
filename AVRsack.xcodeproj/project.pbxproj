@@ -7,12 +7,14 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		9501D8021A17025C0034C530 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9501D8011A17025C0034C530 /* AppDelegate.swift */; };
-		9501D8041A17025C0034C530 /* Document.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9501D8031A17025C0034C530 /* Document.swift */; };
-		9501D8071A17025C0034C530 /* Document.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9501D8051A17025C0034C530 /* Document.xib */; };
+		9501D8021A17025C0034C530 /* ASApplication.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9501D8011A17025C0034C530 /* ASApplication.swift */; };
+		9501D8041A17025C0034C530 /* ASProjDoc.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9501D8031A17025C0034C530 /* ASProjDoc.swift */; };
+		9501D8071A17025C0034C530 /* ASProjDoc.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9501D8051A17025C0034C530 /* ASProjDoc.xib */; };
 		9501D8091A17025C0034C530 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9501D8081A17025C0034C530 /* Images.xcassets */; };
 		9501D80C1A17025C0034C530 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9501D80A1A17025C0034C530 /* MainMenu.xib */; };
 		9501D8181A17025C0034C530 /* AVRsackTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9501D8171A17025C0034C530 /* AVRsackTests.swift */; };
+		95EA32621A17B90600F66EB0 /* ACEView.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 95EA325B1A17B8DA00F66EB0 /* ACEView.framework */; };
+		95EA32651A17BA8C00F66EB0 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 95EA32631A17BA8C00F66EB0 /* Cocoa.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -23,19 +25,51 @@
 			remoteGlobalIDString = 9501D7FB1A17025C0034C530;
 			remoteInfo = AVRsack;
 		};
+		95EA325A1A17B8DA00F66EB0 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 95EA32541A17B8DA00F66EB0 /* ACEView.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 7C8A728C15EA0769007E5EB8;
+			remoteInfo = ACEView;
+		};
+		95EA325C1A17B8DA00F66EB0 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 95EA32541A17B8DA00F66EB0 /* ACEView.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 7C8A72E015EA0F0E007E5EB8;
+			remoteInfo = ACEVIewExample;
+		};
+		95EA325E1A17B8DA00F66EB0 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 95EA32541A17B8DA00F66EB0 /* ACEView.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 36F169E216B9346C00E8965C;
+			remoteInfo = ACEViewTests;
+		};
+		95EA32601A17B8E900F66EB0 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 95EA32541A17B8DA00F66EB0 /* ACEView.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 7C8A728B15EA0769007E5EB8;
+			remoteInfo = ACEView;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 		9501D7FC1A17025C0034C530 /* AVRsack.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AVRsack.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9501D8001A17025C0034C530 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		9501D8011A17025C0034C530 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		9501D8031A17025C0034C530 /* Document.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Document.swift; sourceTree = "<group>"; };
-		9501D8061A17025C0034C530 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/Document.xib; sourceTree = "<group>"; };
+		9501D8011A17025C0034C530 /* ASApplication.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ASApplication.swift; sourceTree = "<group>"; };
+		9501D8031A17025C0034C530 /* ASProjDoc.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ASProjDoc.swift; sourceTree = "<group>"; };
+		9501D8061A17025C0034C530 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/ASProjDoc.xib; sourceTree = "<group>"; };
 		9501D8081A17025C0034C530 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		9501D80B1A17025C0034C530 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/MainMenu.xib; sourceTree = "<group>"; };
 		9501D8111A17025C0034C530 /* AVRsackTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AVRsackTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		9501D8161A17025C0034C530 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		9501D8171A17025C0034C530 /* AVRsackTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AVRsackTests.swift; sourceTree = "<group>"; };
+		958D76811A17DA1C00917D96 /* AVRsack-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "AVRsack-Bridging-Header.h"; sourceTree = "<group>"; };
+		95EA32541A17B8DA00F66EB0 /* ACEView.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ACEView.xcodeproj; path = ../ACEView/ACEView.xcodeproj; sourceTree = "<group>"; };
+		95EA32631A17BA8C00F66EB0 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
+		95EA32641A17BA8C00F66EB0 /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -43,6 +77,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				95EA32651A17BA8C00F66EB0 /* Cocoa.framework in Frameworks */,
+				95EA32621A17B90600F66EB0 /* ACEView.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -59,6 +95,7 @@
 		9501D7F31A17025C0034C530 = {
 			isa = PBXGroup;
 			children = (
+				95EA32541A17B8DA00F66EB0 /* ACEView.xcodeproj */,
 				9501D7FE1A17025C0034C530 /* AVRsack */,
 				9501D8141A17025C0034C530 /* AVRsackTests */,
 				9501D7FD1A17025C0034C530 /* Products */,
@@ -77,12 +114,14 @@
 		9501D7FE1A17025C0034C530 /* AVRsack */ = {
 			isa = PBXGroup;
 			children = (
-				9501D8011A17025C0034C530 /* AppDelegate.swift */,
-				9501D8031A17025C0034C530 /* Document.swift */,
-				9501D8051A17025C0034C530 /* Document.xib */,
+				958D76811A17DA1C00917D96 /* AVRsack-Bridging-Header.h */,
+				9501D8011A17025C0034C530 /* ASApplication.swift */,
+				9501D8031A17025C0034C530 /* ASProjDoc.swift */,
+				9501D8051A17025C0034C530 /* ASProjDoc.xib */,
 				9501D8081A17025C0034C530 /* Images.xcassets */,
 				9501D80A1A17025C0034C530 /* MainMenu.xib */,
 				9501D7FF1A17025C0034C530 /* Supporting Files */,
+				95EA32671A17BAA600F66EB0 /* Frameworks */,
 			);
 			path = AVRsack;
 			sourceTree = "<group>";
@@ -112,6 +151,25 @@
 			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
+		95EA32551A17B8DA00F66EB0 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				95EA325B1A17B8DA00F66EB0 /* ACEView.framework */,
+				95EA325D1A17B8DA00F66EB0 /* ACEVIewExample.app */,
+				95EA325F1A17B8DA00F66EB0 /* ACEViewTests.octest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		95EA32671A17BAA600F66EB0 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				95EA32631A17BA8C00F66EB0 /* Cocoa.framework */,
+				95EA32641A17BA8C00F66EB0 /* WebKit.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -126,6 +184,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				95EA32611A17B8E900F66EB0 /* PBXTargetDependency */,
 			);
 			name = AVRsack;
 			productName = AVRsack;
@@ -179,6 +238,12 @@
 			mainGroup = 9501D7F31A17025C0034C530;
 			productRefGroup = 9501D7FD1A17025C0034C530 /* Products */;
 			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = 95EA32551A17B8DA00F66EB0 /* Products */;
+					ProjectRef = 95EA32541A17B8DA00F66EB0 /* ACEView.xcodeproj */;
+				},
+			);
 			projectRoot = "";
 			targets = (
 				9501D7FB1A17025C0034C530 /* AVRsack */,
@@ -187,12 +252,36 @@
 		};
 /* End PBXProject section */
 
+/* Begin PBXReferenceProxy section */
+		95EA325B1A17B8DA00F66EB0 /* ACEView.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = ACEView.framework;
+			remoteRef = 95EA325A1A17B8DA00F66EB0 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		95EA325D1A17B8DA00F66EB0 /* ACEVIewExample.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = ACEVIewExample.app;
+			remoteRef = 95EA325C1A17B8DA00F66EB0 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		95EA325F1A17B8DA00F66EB0 /* ACEViewTests.octest */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = ACEViewTests.octest;
+			remoteRef = 95EA325E1A17B8DA00F66EB0 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
+
 /* Begin PBXResourcesBuildPhase section */
 		9501D7FA1A17025C0034C530 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				9501D8071A17025C0034C530 /* Document.xib in Resources */,
+				9501D8071A17025C0034C530 /* ASProjDoc.xib in Resources */,
 				9501D8091A17025C0034C530 /* Images.xcassets in Resources */,
 				9501D80C1A17025C0034C530 /* MainMenu.xib in Resources */,
 			);
@@ -212,8 +301,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				9501D8041A17025C0034C530 /* Document.swift in Sources */,
-				9501D8021A17025C0034C530 /* AppDelegate.swift in Sources */,
+				9501D8041A17025C0034C530 /* ASProjDoc.swift in Sources */,
+				9501D8021A17025C0034C530 /* ASApplication.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -233,15 +322,20 @@
 			target = 9501D7FB1A17025C0034C530 /* AVRsack */;
 			targetProxy = 9501D8121A17025C0034C530 /* PBXContainerItemProxy */;
 		};
+		95EA32611A17B8E900F66EB0 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = ACEView;
+			targetProxy = 95EA32601A17B8E900F66EB0 /* PBXContainerItemProxy */;
+		};
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
-		9501D8051A17025C0034C530 /* Document.xib */ = {
+		9501D8051A17025C0034C530 /* ASProjDoc.xib */ = {
 			isa = PBXVariantGroup;
 			children = (
 				9501D8061A17025C0034C530 /* Base */,
 			);
-			name = Document.xib;
+			name = ASProjDoc.xib;
 			sourceTree = "<group>";
 		};
 		9501D80A1A17025C0034C530 /* MainMenu.xib */ = {
@@ -336,10 +430,14 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
 				COMBINE_HIDPI_IMAGES = YES;
+				DEFINES_MODULE = YES;
 				INFOPLIST_FILE = AVRsack/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "AVRsack/AVRsack-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
 			name = Debug;
 		};
@@ -347,10 +445,13 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
 				COMBINE_HIDPI_IMAGES = YES;
+				DEFINES_MODULE = YES;
 				INFOPLIST_FILE = AVRsack/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "AVRsack/AVRsack-Bridging-Header.h";
 			};
 			name = Release;
 		};
@@ -409,6 +510,7 @@
 				9501D81D1A17025C0034C530 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		9501D81E1A17025C0034C530 /* Build configuration list for PBXNativeTarget "AVRsackTests" */ = {
 			isa = XCConfigurationList;
@@ -417,6 +519,7 @@
 				9501D8201A17025C0034C530 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
