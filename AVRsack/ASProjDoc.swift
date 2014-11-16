@@ -18,10 +18,26 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate {
         super.init()
         // Add your subclass-specific initialization here.
     }
-
+    override func finalize() {
+        saveCurEditor()
+    }
+    
+    func saveCurEditor() {
+        if let file = (mainEditor as? ASFileItem) {
+            editor.string().writeToURL(file.url, atomically: true, encoding: NSUTF8StringEncoding, error: nil)
+        }
+    }
+    
     override func windowControllerDidLoadNib(aController: NSWindowController) {
         super.windowControllerDidLoadNib(aController)
         outline.setDataSource(files)
+        files.apply() { node in
+            if let group = node as? ASFileGroup {
+                if group.expanded {
+                    self.outline.expandItem(node)
+                }
+            }
+        }
     }
 
     override class func autosavesInPlace() -> Bool {
@@ -63,6 +79,9 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate {
         } else {
             success = true
         }
+        if success {
+            files.setProjectURL(fileURL!)
+        }
         return success
     }
     
@@ -77,11 +96,13 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate {
             editor.setMode(UInt(file.type.aceMode))
         }
     }
-    
-    func saveCurEditor() {
-        if let file = (mainEditor as? ASFileItem) {
-            editor.string().writeToURL(file.url, atomically: true, encoding: NSUTF8StringEncoding, error: nil)
-        }
+    func outlineViewItemDidExpand(notification: NSNotification) {
+        let group       = notification.userInfo!["NSObject"] as ASFileGroup
+        group.expanded  = true
+    }
+    func outlineViewItemDidCollapse(notification: NSNotification) {
+        let group       = notification.userInfo!["NSObject"] as ASFileGroup
+        group.expanded  = false
     }
 }
 

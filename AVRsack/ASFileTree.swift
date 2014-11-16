@@ -52,6 +52,9 @@ class ASFileNode {
     func nodeName() -> String {
         return ""
     }
+    func apply(closure:(ASFileNode)->()) {
+        closure(self)
+    }
 }
 
 class ASFileGroup : ASFileNode {
@@ -70,6 +73,18 @@ class ASFileGroup : ASFileNode {
     override func nodeName() -> String {
         return (expanded ? "📂" : "📁")+" "+name
     }
+    override func apply(closure: (ASFileNode) -> ()) {
+        super.apply(closure)
+        for child in children {
+            child.apply(closure)
+        }
+    }
+}
+
+class ASProject : ASFileGroup {
+    override func nodeName() -> String {
+        return "📘 "+name
+    }
 }
 
 class ASFileItem : ASFileNode {
@@ -86,7 +101,7 @@ class ASFileItem : ASFileNode {
 }
 
 class ASFileTree : NSObject, NSOutlineViewDataSource {
-    let root = ASFileGroup()
+    let root = ASProject()
     
     func addFileURL(url: NSURL, omitUnknown: Bool = true) {
         let type = ASFileType.guessForURL(url)
@@ -94,22 +109,32 @@ class ASFileTree : NSObject, NSOutlineViewDataSource {
             root.children.append(ASFileItem(url: url, type: type))
         }
     }
+    func setProjectURL(url: NSURL) {
+        root.name = url.lastPathComponent.stringByDeletingPathExtension
+    }
+    func apply(closure: (ASFileNode) -> ()) {
+        root.apply(closure)
+    }
     
     func outlineView(outlineView: NSOutlineView, numberOfChildrenOfItem item: AnyObject?) -> Int {
         if item == nil {
-            return root.children.count
+            return 1
         } else {
             return (item as ASFileGroup).children.count
         }
     }
     func outlineView(outlineView: NSOutlineView, child index: Int, ofItem item: AnyObject?) -> AnyObject {
-        let group = (item == nil) ? root : (item as ASFileGroup)
-        return group.children[index]
+        if item == nil {
+            return root
+        } else {
+            let group = item as ASFileGroup
+            return group.children[index]
+        }
     }
     func outlineView(outlineView: NSOutlineView, isItemExpandable item: AnyObject) -> Bool {
         return item is ASFileGroup
     }
     func outlineView(outlineView: NSOutlineView, objectValueForTableColumn tableColumn: NSTableColumn?, byItem item: AnyObject?) -> AnyObject? {
-        return (item as ASFileItem).nodeName()
+        return (item as ASFileNode).nodeName()
     }
 }
