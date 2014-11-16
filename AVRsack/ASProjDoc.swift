@@ -8,9 +8,11 @@
 
 import Cocoa
 
-class ASProjDoc: NSDocument {
-    @IBOutlet weak var editor : ACEView!
-    @IBOutlet weak var outline: NSOutlineView!
+class ASProjDoc: NSDocument, NSOutlineViewDelegate {
+    @IBOutlet weak var editor   : ACEView!
+    @IBOutlet weak var outline  : NSOutlineView!
+    let files                   : ASFileTree = ASFileTree()
+    var mainEditor              : ASFileNode?
     
     override init() {
         super.init()
@@ -19,9 +21,7 @@ class ASProjDoc: NSDocument {
 
     override func windowControllerDidLoadNib(aController: NSWindowController) {
         super.windowControllerDidLoadNib(aController)
-        editor.setString("Here we go!")
-        editor.setMode(UInt(ACEModeASCIIDoc))
-        editor.setTheme(UInt(ACEThemeXcode))
+        outline.setDataSource(files)
     }
 
     override class func autosavesInPlace() -> Bool {
@@ -35,20 +35,53 @@ class ASProjDoc: NSDocument {
     }
 
     override func dataOfType(typeName: String, error outError: NSErrorPointer) -> NSData? {
-        // Insert code here to write your document to data of the specified type. If outError != nil, ensure that you create and set an appropriate error when returning nil.
-        // You can also choose to override fileWrapperOfType:error:, writeToURL:ofType:error:, or writeToURL:ofType:forSaveOperation:originalContentsURL:error: instead.
         outError.memory = NSError(domain: NSOSStatusErrorDomain, code: unimpErr, userInfo: nil)
         return nil
     }
 
-    override func readFromData(data: NSData, ofType typeName: String, error outError: NSErrorPointer) -> Bool {
-        // Insert code here to read your document from the given data of the specified type. If outError != nil, ensure that you create and set an appropriate error when returning false.
-        // You can also choose to override readFromFileWrapper:ofType:error: or readFromURL:ofType:error: instead.
-        // If you override either of these, you should also override -isEntireFileLoaded to return NO if the contents are lazily loaded.
-        outError.memory = NSError(domain: NSOSStatusErrorDomain, code: unimpErr, userInfo: nil)
-        return false
+    func importProject(url: NSURL, error outError: NSErrorPointer) -> Bool {
+        let existingProject = url.URLByAppendingPathComponent(url.lastPathComponent+".avrsackproj")
+        if existingProject.checkResourceIsReachableAndReturnError(nil) {
+            fileURL = existingProject
+            return readFromURL(existingProject, ofType:"Project", error:outError)
+        }
+        let filesInProject =
+            NSFileManager.defaultManager().contentsOfDirectoryAtURL(url, includingPropertiesForKeys: nil,
+                options: .SkipsHiddenFiles, error: nil)!
+        for file in filesInProject {
+            files.addFileURL(file as NSURL)
+        }
+        return true
     }
-
-
+    
+    override func readFromURL(url: NSURL, ofType typeName: String, error outError: NSErrorPointer) -> Bool {
+        var success : Bool = false
+        if typeName == "Arduino Source File" {
+            let projectURL = url.URLByDeletingPathExtension!.URLByAppendingPathExtension("avrsackproj")
+            fileURL = projectURL
+            success = importProject(url.URLByDeletingLastPathComponent!, error: outError)
+        } else {
+            success = true
+        }
+        return success
+    }
+    
+    func outlineViewSelectionDidChange(notification: NSNotification) {
+        let selection = outline.itemAtRow(outline.selectedRow) as ASFileNode?
+        if selection !== mainEditor {
+            saveCurEditor()
+        }
+        if let file = (selection as? ASFileItem) {
+            var enc : UInt = 0
+            editor.setString(NSString(contentsOfURL:file.url, usedEncoding:&enc, error:nil))
+            editor.setMode(UInt(file.type.aceMode))
+        }
+    }
+    
+    func saveCurEditor() {
+        if let file = (mainEditor as? ASFileItem) {
+            editor.string().writeToURL(file.url, atomically: true, encoding: NSUTF8StringEncoding, error: nil)
+        }
+    }
 }
 

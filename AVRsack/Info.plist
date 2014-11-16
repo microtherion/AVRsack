@@ -24,6 +24,22 @@
 			<key>NSDocumentClass</key>
 			<string>AVRsack.ASProjDoc</string>
 		</dict>
+		<dict>
+			<key>CFBundleTypeExtensions</key>
+			<array>
+				<string>ino</string>
+			</array>
+			<key>CFBundleTypeMIMETypes</key>
+			<array>
+				<string>text/plain</string>
+			</array>
+			<key>CFBundleTypeName</key>
+			<string>Arduino Source File</string>
+			<key>CFBundleTypeRole</key>
+			<string>Viewer</string>
+			<key>NSDocumentClass</key>
+			<string>AVRsack.ASProjDoc</string>
+		</dict>
 	</array>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>

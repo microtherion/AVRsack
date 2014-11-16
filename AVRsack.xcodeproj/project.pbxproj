@@ -13,6 +13,7 @@
 		9501D8091A17025C0034C530 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9501D8081A17025C0034C530 /* Images.xcassets */; };
 		9501D80C1A17025C0034C530 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9501D80A1A17025C0034C530 /* MainMenu.xib */; };
 		9501D8181A17025C0034C530 /* AVRsackTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9501D8171A17025C0034C530 /* AVRsackTests.swift */; };
+		95BF80EB1A185C9E0004A693 /* ASFileTree.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95BF80EA1A185C9E0004A693 /* ASFileTree.swift */; };
 		95EA32621A17B90600F66EB0 /* ACEView.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 95EA325B1A17B8DA00F66EB0 /* ACEView.framework */; };
 		95EA32651A17BA8C00F66EB0 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 95EA32631A17BA8C00F66EB0 /* Cocoa.framework */; };
 /* End PBXBuildFile section */
@@ -67,6 +68,7 @@
 		9501D8161A17025C0034C530 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		9501D8171A17025C0034C530 /* AVRsackTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AVRsackTests.swift; sourceTree = "<group>"; };
 		958D76811A17DA1C00917D96 /* AVRsack-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "AVRsack-Bridging-Header.h"; sourceTree = "<group>"; };
+		95BF80EA1A185C9E0004A693 /* ASFileTree.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ASFileTree.swift; sourceTree = "<group>"; };
 		95EA32541A17B8DA00F66EB0 /* ACEView.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ACEView.xcodeproj; path = ../ACEView/ACEView.xcodeproj; sourceTree = "<group>"; };
 		95EA32631A17BA8C00F66EB0 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		95EA32641A17BA8C00F66EB0 /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
@@ -117,9 +119,8 @@
 				958D76811A17DA1C00917D96 /* AVRsack-Bridging-Header.h */,
 				9501D8011A17025C0034C530 /* ASApplication.swift */,
 				9501D8031A17025C0034C530 /* ASProjDoc.swift */,
-				9501D8051A17025C0034C530 /* ASProjDoc.xib */,
-				9501D8081A17025C0034C530 /* Images.xcassets */,
-				9501D80A1A17025C0034C530 /* MainMenu.xib */,
+				95BF80EA1A185C9E0004A693 /* ASFileTree.swift */,
+				95BF80EC1A185CD90004A693 /* Resources */,
 				9501D7FF1A17025C0034C530 /* Supporting Files */,
 				95EA32671A17BAA600F66EB0 /* Frameworks */,
 			);
@@ -149,6 +150,16 @@
 				9501D8161A17025C0034C530 /* Info.plist */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		95BF80EC1A185CD90004A693 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				9501D8081A17025C0034C530 /* Images.xcassets */,
+				9501D80A1A17025C0034C530 /* MainMenu.xib */,
+				9501D8051A17025C0034C530 /* ASProjDoc.xib */,
+			);
+			name = Resources;
 			sourceTree = "<group>";
 		};
 		95EA32551A17B8DA00F66EB0 /* Products */ = {
@@ -303,6 +314,7 @@
 			files = (
 				9501D8041A17025C0034C530 /* ASProjDoc.swift in Sources */,
 				9501D8021A17025C0034C530 /* ASApplication.swift in Sources */,
+				95BF80EB1A185C9E0004A693 /* ASFileTree.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
