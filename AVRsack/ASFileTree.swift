@@ -48,6 +48,12 @@ enum ASFileType : String {
     }
 }
 
+private let kTypeKey            = "Type"
+private let kNodeTypeProject    = "Project"
+private let kNodeTypeGroup      = "Group"
+private let kNodeTypeFile       = "File"
+private let kNameKey            = "Name"
+
 class ASFileNode {
     func nodeName() -> String {
         return ""
@@ -55,20 +61,44 @@ class ASFileNode {
     func apply(closure:(ASFileNode)->()) {
         closure(self)
     }
+    func propertyList(rootPath: NSString) -> AnyObject {
+        return ""
+    }
+    class func readPropertyList(prop: NSDictionary, rootURL: NSURL) -> ASFileNode {
+        switch prop[kTypeKey] as String {
+        case kNodeTypeProject:
+            return ASProject(prop, withRootURL:rootURL)
+        case kNodeTypeGroup:
+            return ASFileGroup(prop, withRootURL:rootURL)
+        case kNodeTypeFile:
+            return ASFileItem(prop, withRootURL:rootURL)
+        default:
+            assertionFailure("Undefined item type in file hierarchy")
+        }
+    }
 }
 
 class ASFileGroup : ASFileNode {
     var name        : String
     var children    : [ASFileNode]
     var expanded    : Bool
-    
-    init(name: String) {
+
+    private let kChildrenKey = "Children"
+    private let kExpandedKey = "Expanded"
+    private var kNodeType : String { return kNodeTypeGroup }
+
+    init(name: String = "") {
         self.name       = name
         self.children   = []
         self.expanded   = true
     }
-    convenience override init() {
-        self.init(name: "")
+    init(_ prop: NSDictionary, withRootURL rootURL: NSURL) {
+        name        = prop[kNameKey] as String
+        expanded    = prop[kExpandedKey] as Bool
+        children    = []
+        for child in (prop[kChildrenKey] as NSArray) {
+            children.append(ASFileNode.readPropertyList(child as NSDictionary, rootURL: rootURL))
+        }
     }
     override func nodeName() -> String {
         return (expanded ? "📂" : "📁")+" "+name
@@ -79,9 +109,19 @@ class ASFileGroup : ASFileNode {
             child.apply(closure)
         }
     }
+    
+    func childrenPropertyList(rootPath: NSString) -> [AnyObject] {
+        return children.map() { (node) in node.propertyList(rootPath) }
+    }
+    override func propertyList(rootPath: NSString) -> AnyObject {
+        return [kTypeKey: kNodeType, kNameKey: name, kExpandedKey: expanded,
+            kChildrenKey: childrenPropertyList(rootPath)]
+    }
 }
 
 class ASProject : ASFileGroup {
+    override private var kNodeType : String { return kNodeTypeProject }
+    
     override func nodeName() -> String {
         return "📘 "+name
     }
@@ -90,32 +130,75 @@ class ASProject : ASFileGroup {
 class ASFileItem : ASFileNode {
     var url     : NSURL
     var type    : ASFileType
-    
+
+    private let kPathKey = "Path"
+    private let kKindKey = "Kind"
+
     init(url: NSURL, type: ASFileType) {
         self.url    = url
         self.type   = type
     }
+    init(_ prop: NSDictionary, withRootURL rootURL: NSURL) {
+        type = ASFileType(rawValue: prop[kKindKey] as String)!
+        url  = NSURL(string: prop[kPathKey] as NSString, relativeToURL: rootURL)!.standardizedURL!
+    }
     override func nodeName() -> String {
         return "📄 "+url.lastPathComponent
+    }
+    
+    func relativePath(relativeTo: String) -> String {
+        let path        = url.path!
+        let relComp     = relativeTo.componentsSeparatedByString("/") as [String]
+        let pathComp    = path.componentsSeparatedByString("/") as [String]
+        let relCount    = relComp.count
+        let pathCount   = pathComp.count
+        
+        var matchComp = 0
+        while (matchComp < relCount && matchComp < pathCount) {
+            if pathComp[matchComp] == relComp[matchComp] {
+                ++matchComp
+            } else {
+                break
+            }
+        }
+        if matchComp==1 {
+            return path
+        }
+        
+        let resComp = Array(count: relCount-matchComp, repeatedValue: "..")+pathComp[matchComp..<pathCount]
+        return "/".join(resComp)
+    }
+
+    override func propertyList(rootPath: NSString) -> AnyObject {
+        return [kTypeKey: kNodeTypeFile, kKindKey: type.rawValue, kPathKey: relativePath(rootPath)]
     }
 }
 
 class ASFileTree : NSObject, NSOutlineViewDataSource {
-    let root = ASProject()
+    var root = ASProject()
+    var dir  = NSURL()
     
     func addFileURL(url: NSURL, omitUnknown: Bool = true) {
         let type = ASFileType.guessForURL(url)
         if !omitUnknown || type != .Unknown {
-            root.children.append(ASFileItem(url: url, type: type))
+            root.children.append(ASFileItem(url: url.standardizedURL!, type: type))
         }
     }
     func setProjectURL(url: NSURL) {
         root.name = url.lastPathComponent.stringByDeletingPathExtension
+        dir       = url.URLByDeletingLastPathComponent!.standardizedURL!
     }
     func apply(closure: (ASFileNode) -> ()) {
         root.apply(closure)
     }
+    func propertyList() -> AnyObject {
+        return root.propertyList(dir.path!)
+    }
+    func readPropertyList(prop: NSDictionary) {
+        root = ASFileNode.readPropertyList(prop, rootURL:dir) as ASProject
+    }
     
+    // MARK: Outline Data Source
     func outlineView(outlineView: NSOutlineView, numberOfChildrenOfItem item: AnyObject?) -> Int {
         if item == nil {
             return 1

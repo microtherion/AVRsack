@@ -14,18 +14,14 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate {
     let files                   : ASFileTree = ASFileTree()
     var mainEditor              : ASFileNode?
     
+    // MARK: Initialization / Finalization
+    
     override init() {
         super.init()
         // Add your subclass-specific initialization here.
     }
     override func finalize() {
         saveCurEditor()
-    }
-    
-    func saveCurEditor() {
-        if let file = (mainEditor as? ASFileItem) {
-            editor.string().writeToURL(file.url, atomically: true, encoding: NSUTF8StringEncoding, error: nil)
-        }
     }
     
     override func windowControllerDidLoadNib(aController: NSWindowController) {
@@ -50,9 +46,21 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate {
         return "ASProjDoc"
     }
 
+    // MARK: Load / Save
+    
+    func saveCurEditor() {
+        if let file = (mainEditor as? ASFileItem) {
+            editor.string().writeToURL(file.url, atomically: true, encoding: NSUTF8StringEncoding, error: nil)
+        }
+    }
+    
+    let kVersionKey = "Version"
+    let kCurVersion = 1.0
+    let kFilesKey   = "Files"
+    
     override func dataOfType(typeName: String, error outError: NSErrorPointer) -> NSData? {
-        outError.memory = NSError(domain: NSOSStatusErrorDomain, code: unimpErr, userInfo: nil)
-        return nil
+        let data = [kVersionKey: kCurVersion, kFilesKey: files.propertyList()]
+        return NSPropertyListSerialization.dataFromPropertyList(data, format: .XMLFormat_v1_0, errorDescription: nil)
     }
 
     func importProject(url: NSURL, error outError: NSErrorPointer) -> Bool {
@@ -74,16 +82,31 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate {
         var success : Bool = false
         if typeName == "Arduino Source File" {
             let projectURL = url.URLByDeletingPathExtension!.URLByAppendingPathExtension("avrsackproj")
-            fileURL = projectURL
             success = importProject(url.URLByDeletingLastPathComponent!, error: outError)
+            if success {
+                files.setProjectURL(fileURL!)
+                fileURL = projectURL
+                success = writeToURL(projectURL, ofType: "Project", forSaveOperation: .SaveAsOperation, originalContentsURL: nil, error: outError)
+            }
         } else {
-            success = true
-        }
-        if success {
-            files.setProjectURL(fileURL!)
+            success = super.readFromURL(url, ofType: typeName, error: outError)
         }
         return success
     }
+    override func readFromData(data: NSData, ofType typeName: String, error outError: NSErrorPointer) -> Bool {
+        if typeName != "Project" {
+            return false
+        }
+        files.setProjectURL(fileURL!)
+        let projectData : NSDictionary = NSPropertyListSerialization.propertyListFromData(data, mutabilityOption: .Immutable, format: nil, errorDescription: nil) as NSDictionary
+        let projectVersion = projectData[kVersionKey] as Double
+        assert(projectVersion <= floor(kCurVersion+1.0), "Project version too new for this app")
+        files.readPropertyList(projectData[kFilesKey] as NSDictionary)
+        
+        return true
+    }
+ 
+    // MARK: Outline View Delegate
     
     func outlineViewSelectionDidChange(notification: NSNotification) {
         let selection = outline.itemAtRow(outline.selectedRow) as ASFileNode?
