@@ -10,8 +10,20 @@ import Cocoa
 
 @NSApplicationMain
 class ASApplication: NSObject, NSApplicationDelegate {
+    @IBOutlet weak var themeMenu    : NSMenu!
+    @IBOutlet weak var keyboardMenu : NSMenu!
+    
     func applicationDidFinishLaunching(aNotification: NSNotification) {
-        // Insert code here to initialize your application
+        themeMenu.removeAllItems()
+        for (index, theme) in enumerate(ACEThemeNames.humanThemeNames() as [NSString]) {
+            let menuItem = themeMenu.addItemWithTitle(theme, action: "setTheme:", keyEquivalent: "")
+            menuItem!.tag = index
+        }
+        keyboardMenu.removeAllItems()
+        for (index, theme) in enumerate(ACEKeyboardHandlerNames.humanKeyboardHandlerNames() as [NSString]) {
+            let menuItem = keyboardMenu.addItemWithTitle(theme, action: "changeKeyboardHandler:", keyEquivalent: "")
+            menuItem!.tag = index
+        }
     }
 
     func applicationWillTerminate(aNotification: NSNotification) {
