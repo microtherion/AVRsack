@@ -186,7 +186,7 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate {
     
     // MARK: Editor configuration
     
-    @IBAction func setTheme(item: NSMenuItem) {
+    @IBAction func changeTheme(item: NSMenuItem) {
         currentTheme = UInt(item.tag)
         editor.setTheme(currentTheme)
         NSUserDefaults.standardUserDefaults().setObject(
@@ -202,7 +202,7 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate {
     
     override func validateUserInterfaceItem(anItem: NSValidatedUserInterfaceItem) -> Bool {
         if let menuItem = anItem as? NSMenuItem {
-            if menuItem.action == "setTheme:" {
+            if menuItem.action == "changeTheme:" {
                 menuItem.state = (menuItem.tag == Int(currentTheme) ? NSOnState : NSOffState)
                 return true
             } else if menuItem.action == "changeKeyboardHandler:" {

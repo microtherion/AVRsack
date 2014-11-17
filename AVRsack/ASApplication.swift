@@ -16,7 +16,7 @@ class ASApplication: NSObject, NSApplicationDelegate {
     func applicationDidFinishLaunching(aNotification: NSNotification) {
         themeMenu.removeAllItems()
         for (index, theme) in enumerate(ACEThemeNames.humanThemeNames() as [NSString]) {
-            let menuItem = themeMenu.addItemWithTitle(theme, action: "setTheme:", keyEquivalent: "")
+            let menuItem = themeMenu.addItemWithTitle(theme, action: "changeTheme:", keyEquivalent: "")
             menuItem!.tag = index
         }
         keyboardMenu.removeAllItems()
