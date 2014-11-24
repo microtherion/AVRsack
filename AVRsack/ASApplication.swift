@@ -13,6 +13,30 @@ class ASApplication: NSObject, NSApplicationDelegate {
     @IBOutlet weak var themeMenu    : NSMenu!
     @IBOutlet weak var keyboardMenu : NSMenu!
     
+    func applicationWillFinishLaunching(notification: NSNotification) {
+        //
+        // Retrieve static app defaults
+        //
+        let fileManager     = NSFileManager.defaultManager()
+        let workSpace       = NSWorkspace.sharedWorkspace()
+        let userDefaults    = NSUserDefaults.standardUserDefaults()
+        let appDefaultsURL  = NSBundle.mainBundle().URLForResource("Defaults", withExtension: "plist")!
+        let appDefaults     = NSMutableDictionary(contentsOfURL: appDefaultsURL)!
+        //
+        // Add dynamic app defaults
+        //
+        if let arduinoPath = workSpace.URLForApplicationWithBundleIdentifier("cc.arduino.Arduino")?.path {
+            appDefaults["Arduino"]      = arduinoPath
+        }
+        var sketchbooks             = [NSString]()
+        for doc in fileManager.URLsForDirectory(.DocumentDirectory, inDomains: .UserDomainMask) {
+            sketchbooks.append(doc.URLByAppendingPathComponent("Arduino").path!)
+            sketchbooks.append(doc.URLByAppendingPathComponent("AVRSack").path!)
+        }
+        appDefaults["Sketchbooks"]  = sketchbooks
+        
+        userDefaults.registerDefaults(appDefaults)
+    }
     func applicationDidFinishLaunching(aNotification: NSNotification) {
         themeMenu.removeAllItems()
         for (index, theme) in enumerate(ACEThemeNames.humanThemeNames() as [NSString]) {

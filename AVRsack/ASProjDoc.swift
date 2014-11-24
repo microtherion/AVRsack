@@ -31,7 +31,6 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate {
     override init() {
         super.init()
         let userDefaults = NSUserDefaults.standardUserDefaults()
-        userDefaults.registerDefaults([kThemeKey: "xcode", kFontSizeKey: 12, kBindingsKey: "Ace"])
         if let themeName = userDefaults.stringForKey(kThemeKey) {
             for (themeIdx, theme) in enumerate(ACEThemeNames.themeNames() as [NSString]) {
                 if themeName == theme {
