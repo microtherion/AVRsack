@@ -224,5 +224,10 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate {
             updateChangeCount(.ChangeDone)
         }
     }
+    
+    // MARK: Build / Upload
+    
+    @IBAction func buildProject(AnyObject) {
+    }
 }
 

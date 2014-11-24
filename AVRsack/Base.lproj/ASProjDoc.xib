@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="7073.4" systemVersion="14A389" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="7096" systemVersion="14B25" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="7073.4"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="7096"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="ASProjDoc" customModule="AVRsack">
@@ -97,8 +97,14 @@
                 <allowedToolbarItems>
                     <toolbarItem implicitItemIdentifier="NSToolbarPrintItem" id="ln2-Ky-MBg"/>
                     <toolbarItem implicitItemIdentifier="NSToolbarFlexibleSpaceItem" id="2D6-o4-n09"/>
+                    <toolbarItem implicitItemIdentifier="2EA4AC26-099B-4756-8779-ABB6208840D1" label="Build" paletteLabel="Build" tag="-1" image="BuildIcon" id="69r-aN-6vG">
+                        <connections>
+                            <action selector="buildProject:" target="-2" id="Les-fd-6cC"/>
+                        </connections>
+                    </toolbarItem>
                 </allowedToolbarItems>
                 <defaultToolbarItems>
+                    <toolbarItem reference="69r-aN-6vG"/>
                     <toolbarItem reference="2D6-o4-n09"/>
                     <toolbarItem reference="ln2-Ky-MBg"/>
                 </defaultToolbarItems>
@@ -109,4 +115,7 @@
             <point key="canvasLocation" x="406" y="428.5"/>
         </window>
     </objects>
+    <resources>
+        <image name="BuildIcon" width="32" height="32"/>
+    </resources>
 </document>
