@@ -8,7 +8,22 @@
 
 import Foundation
 
-typealias ASPropertyEntry   = [String: String]
+class ASPropertyEntry {
+    private var storage = [String: String]()
+    subscript(key: String) -> String {
+        get {
+            if let value = storage[key] {
+                return value
+            } else {
+                return ""
+            }
+        }
+        set (newValue) {
+            storage[key] = newValue
+        }
+    }
+}
+
 typealias ASProperties      = [String: ASPropertyEntry]
 
 private func subdirectories(path: NSString) -> [NSString] {
@@ -26,7 +41,7 @@ private func subdirectories(path: NSString) -> [NSString] {
     return subDirs
 }
 
-let hardwareInstance = ASHardware()
+private let hardwareInstance = ASHardware()
 class ASHardware {
     class func instance() -> ASHardware { return hardwareInstance }
     let directories = [NSString]()
@@ -86,6 +101,36 @@ class ASHardware {
                         programmers[programmer]![property] = value
                     }
                 }
+            }
+        }
+    }
+}
+
+private let librariesInstance = ASLibraries()
+class ASLibraries {
+    class func instance() -> ASLibraries { return librariesInstance }
+    let directories = [NSString]()
+    let libraries   = [NSString]()
+    init() {
+        //
+        // Gather hardware directories
+        //
+        let userDefaults    = NSUserDefaults.standardUserDefaults()
+        let fileManager     = NSFileManager.defaultManager()
+        if let arduinoPath = userDefaults.stringForKey("Arduino") {
+            let arduinoLibrariesPath = arduinoPath + "/Contents/Resources/Java/libraries"
+            let dirs                 = subdirectories(arduinoLibrariesPath)
+            if dirs.count > 0 {
+                directories.append(arduinoLibrariesPath)
+                libraries   += dirs
+            }
+        }
+        for sketchDir in userDefaults.objectForKey("Sketchbooks") as [NSString] {
+            let librariesPath = sketchDir + "/libraries"
+            let dirs                 = subdirectories(librariesPath)
+            if dirs.count > 0 {
+                directories.append(librariesPath)
+                libraries   += dirs
             }
         }
     }

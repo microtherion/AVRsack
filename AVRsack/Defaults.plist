@@ -2,6 +2,12 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>Port</key>
+	<string></string>
+	<key>Programmer</key>
+	<string>arduino</string>
+	<key>Board</key>
+	<string>uno</string>
 	<key>Bindings</key>
 	<string>Ace</string>
 	<key>FontSize</key>

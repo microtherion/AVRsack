@@ -76,6 +76,9 @@ class ASFileNode {
             assertionFailure("Undefined item type in file hierarchy")
         }
     }
+    func paths(rootPath: NSString) -> [NSString] {
+        return [NSString]()
+    }
 }
 
 class ASFileGroup : ASFileNode {
@@ -109,13 +112,19 @@ class ASFileGroup : ASFileNode {
             child.apply(closure)
         }
     }
-    
     func childrenPropertyList(rootPath: NSString) -> [AnyObject] {
         return children.map() { (node) in node.propertyList(rootPath) }
     }
     override func propertyList(rootPath: NSString) -> AnyObject {
         return [kTypeKey: kNodeType, kNameKey: name, kExpandedKey: expanded,
             kChildrenKey: childrenPropertyList(rootPath)]
+    }
+    override func paths(rootPath: NSString) -> [NSString] {
+        var allPaths = [NSString]()
+        for child in children {
+            allPaths += child.paths(rootPath)
+        }
+        return allPaths
     }
 }
 
@@ -168,9 +177,11 @@ class ASFileItem : ASFileNode {
         let resComp = Array(count: relCount-matchComp, repeatedValue: "..")+pathComp[matchComp..<pathCount]
         return "/".join(resComp)
     }
-
     override func propertyList(rootPath: NSString) -> AnyObject {
         return [kTypeKey: kNodeTypeFile, kKindKey: type.rawValue, kPathKey: relativePath(rootPath)]
+    }
+    override func paths(rootPath: NSString) -> [NSString] {
+        return [relativePath(rootPath)]
     }
 }
 
@@ -196,6 +207,9 @@ class ASFileTree : NSObject, NSOutlineViewDataSource {
     }
     func readPropertyList(prop: NSDictionary) {
         root = ASFileNode.readPropertyList(prop, rootURL:dir) as ASProject
+    }
+    var paths : [NSString] {
+        return root.paths(dir.path!)
     }
     
     // MARK: Outline Data Source

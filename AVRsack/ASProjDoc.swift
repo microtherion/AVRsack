@@ -13,11 +13,15 @@ private var keyboardHandler   : ACEKeyboardHandler = .Ace
 class ASProjDoc: NSDocument, NSOutlineViewDelegate {
     @IBOutlet weak var editor   : ACEView!
     @IBOutlet weak var outline  : NSOutlineView!
-    let files                   : ASFileTree = ASFileTree()
+    let files                   = ASFileTree()
+    let builder                 = ASBuilder()
     var mainEditor              : ASFileNode?
     var currentTheme            : UInt = 0
     var fontSize                : UInt = 12
     var themeObserver           : AnyObject?
+    var board                   : String = "uno"
+    var programmer              : String = ""
+    var port                    : String = ""
     
     let kVersionKey     = "Version"
     let kCurVersion     = 1.0
@@ -25,6 +29,9 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate {
     let kThemeKey       = "Theme"
     let kFontSizeKey    = "FontSize"
     let kBindingsKey    = "Bindings"
+    let kBoardKey       = "Board"
+    let kProgrammerKey  = "Programmer"
+    let kPortKey        = "Port"
 
     // MARK: Initialization / Finalization
     
@@ -51,6 +58,9 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate {
         themeObserver = NSNotificationCenter.defaultCenter().addObserverForName(kBindingsKey, object: nil, queue: nil, usingBlock: { (NSNotification) in
                 self.editor.setKeyboardHandler(keyboardHandler)
         })
+        board       = userDefaults.stringForKey(kBoardKey)!
+        programmer  = userDefaults.stringForKey(kProgrammerKey)!
+        port        = userDefaults.stringForKey(kPortKey)!
     }
     override func finalize() {
         saveCurEditor()
@@ -123,6 +133,7 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate {
             success = importProject(url.URLByDeletingLastPathComponent!, error: outError)
             if success {
                 files.setProjectURL(fileURL!)
+                builder.setProjectURL(fileURL!)
                 fileURL = projectURL
                 success = writeToURL(projectURL, ofType: "Project", forSaveOperation: .SaveAsOperation, originalContentsURL: nil, error: outError)
             }
@@ -136,6 +147,7 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate {
             return false
         }
         files.setProjectURL(fileURL!)
+        builder.setProjectURL(fileURL!)
         let projectData : NSDictionary = NSPropertyListSerialization.propertyListFromData(data, mutabilityOption: .Immutable, format: nil, errorDescription: nil) as NSDictionary
         let projectVersion = projectData[kVersionKey] as Double
         assert(projectVersion <= floor(kCurVersion+1.0), "Project version too new for this app")
@@ -228,6 +240,7 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate {
     // MARK: Build / Upload
     
     @IBAction func buildProject(AnyObject) {
+        builder.buildProject(board, files: files)
     }
 }
 

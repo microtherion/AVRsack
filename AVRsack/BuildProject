@@ -1,0 +1,100 @@
+#!/usr/bin/ruby
+#
+#  BuildProject board=... mcu=... -- FILE1 FILE2 FILE3
+#
+#  AVRsack
+#
+#  Created by Matthias Neeracher on 11/26/14.
+#  Copyright © 2014 Aere Perennius. All rights reserved.
+#
+
+require 'fileutils.rb'
+
+BUILD = {
+    'board'   => 'uno',
+    'mcu'     => 'atmega328p',
+    'f_cpu'   => 16000000,
+    'core'    => 'arduino',
+    'variant' => 'standard',
+}
+
+def parseArguments
+    while ARGV.length > 0 do
+        param = ARGV.shift
+        break if param == '--'
+        param =~ /(\S+?)=(\S*)/
+        BUILD[$1] = $2
+    end
+end
+
+def createBuildDirectory
+    $BUILD_DIR   = "build/#{BUILD['board']}"
+    $SKETCH_DIR  = "#{$BUILD_DIR}/sketch"
+    FileUtils::mkdir_p "#{$SKETCH_DIR}", :verbose => true
+end
+
+def parseInoFiles
+    $LIBPATH   = BUILD['libs'].split(':').reverse
+    $LIBRARIES = []
+    ARGV.each_index do |arg|
+        if ARGV[arg] =~ /\.ino$/
+            outName     = "#{$SKETCH_DIR}/"+File.basename(ARGV[arg], '.ino')+".cpp"
+            outFile     = File.open(outName, 'w')
+            File.open(ARGV[arg], 'r') do |ino|
+                contents = ino.read
+                # Find protypes:
+                prototypes = contents.dup
+                # - Strip comments, quoted strings, and preprocessor directives
+                prototypes.gsub!(%r{'(?:[^']|\\')+'|"(?:[^"]|\\")*"|//.*?$|/\*.*?\*/|^\s*?#.*?$}m, ' ')
+                # Collapse braces
+                while prototypes.sub!(/(\{)(?:[^{}]+|\{[^{}]*\})/m, '\1') do
+                end
+                existingProto = {}
+                prototypes.scan(/[\w\[\]\*]+\s+[&\[\]\*\w\s]+\([&,\[\]\*\w\s]*\)(?=\s*;)/) {|p|
+                    existingProto[smashSpaces(p)] = true
+                }
+                proto = []
+                prototypes.scan(/[\w\[\]\*]+\s+[&\[\]\*\w\s]+\([&,\[\]\*\w\s]*\)(?=\s*{)/) {|p|
+                    p = smashSpaces(p)
+                    proto << p unless existingProto[p]
+                }
+                contents.each_line do |line|
+                    if line =~ /^\s*#include\s+[<"](.*)[">]\s*(#.*)?$/
+                        addLibrary($1)
+                    end
+                end
+            end
+            outFile.close
+            ARGV[arg]   = outName
+        end
+    end
+end
+
+def smashSpaces(s)
+    return s.gsub(/(\W)\s+(\W)/, '\1\2').gsub(/\s+/, ' ')
+end
+                                 
+def addLibrary(header)
+    $LIBPATH.each do |path|
+        Dir.glob("#{path}/*").each do |lib|
+            if File.exists?("#{lib}/#{header}")
+                $LIBRARIES << lib
+            end
+        end
+    end
+end
+
+parseArguments
+createBuildDirectory
+parseInoFiles
+
+File.open("#{$BUILD_DIR}/Rakefile", 'w') do |rakeFile|
+    rakeFile.print <<END_RAKE
+LIBRARIES=#{$LIBRARIES.join(':')}
+FILES    = [
+    #{ARGV.join('\n')}
+]
+END_RAKE
+
+end
+
