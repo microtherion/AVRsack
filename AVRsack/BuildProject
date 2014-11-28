@@ -56,13 +56,19 @@ def parseInoFiles
                 proto = []
                 prototypes.scan(/[\w\[\]\*]+\s+[&\[\]\*\w\s]+\([&,\[\]\*\w\s]*\)(?=\s*{)/) {|p|
                     p = smashSpaces(p)
-                    proto << p unless existingProto[p]
+                    proto << p+";\n" unless existingProto[p]
                 }
                 contents.each_line do |line|
                     if line =~ /^\s*#include\s+[<"](.*)[">]\s*(#.*)?$/
                         addLibrary($1)
                     end
                 end
+                %r{(?<preamble>(?:\s+|//.*$|/\*.*?\*/)*)(?<rest>.*)}m =~ contents
+                outFile.print preamble
+                outFile.puts '#include "Arduino.h"'
+                outFile.print proto.join('')
+                outFile.puts "#line #{1+preamble.count("\n")}"
+                outFile.print rest
             end
             outFile.close
             ARGV[arg]   = outName
