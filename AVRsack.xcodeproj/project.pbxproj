@@ -13,6 +13,7 @@
 		9501D8091A17025C0034C530 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9501D8081A17025C0034C530 /* Images.xcassets */; };
 		9501D80C1A17025C0034C530 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9501D80A1A17025C0034C530 /* MainMenu.xib */; };
 		9501D8181A17025C0034C530 /* AVRsackTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9501D8171A17025C0034C530 /* AVRsackTests.swift */; };
+		950AB9271A296A160033A9DA /* ProjIcon.icns in Resources */ = {isa = PBXBuildFile; fileRef = 950AB9261A296A160033A9DA /* ProjIcon.icns */; };
 		951CD1741A23C9FC0066C1A1 /* ASBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 951CD1731A23C9FC0066C1A1 /* ASBuilder.swift */; };
 		951CD1771A2615000066C1A1 /* BuildProject in Resources */ = {isa = PBXBuildFile; fileRef = 951CD1761A2615000066C1A1 /* BuildProject */; };
 		95468DDF1A228BE600668EE2 /* ASHardware.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95468DDE1A228BE600668EE2 /* ASHardware.swift */; };
@@ -71,6 +72,7 @@
 		9501D8111A17025C0034C530 /* AVRsackTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AVRsackTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		9501D8161A17025C0034C530 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		9501D8171A17025C0034C530 /* AVRsackTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AVRsackTests.swift; sourceTree = "<group>"; };
+		950AB9261A296A160033A9DA /* ProjIcon.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = ProjIcon.icns; path = IconResources/ProjIcon.icns; sourceTree = "<group>"; };
 		951CD1731A23C9FC0066C1A1 /* ASBuilder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ASBuilder.swift; sourceTree = "<group>"; };
 		951CD1761A2615000066C1A1 /* BuildProject */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; fileEncoding = 4; path = BuildProject; sourceTree = "<group>"; };
 		95468DDE1A228BE600668EE2 /* ASHardware.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ASHardware.swift; sourceTree = "<group>"; };
@@ -174,6 +176,7 @@
 		95BF80EC1A185CD90004A693 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				950AB9261A296A160033A9DA /* ProjIcon.icns */,
 				9501D8081A17025C0034C530 /* Images.xcassets */,
 				9501D80A1A17025C0034C530 /* MainMenu.xib */,
 				9501D8051A17025C0034C530 /* ASProjDoc.xib */,
@@ -314,6 +317,7 @@
 			files = (
 				95468DE31A228E1300668EE2 /* Defaults.plist in Resources */,
 				9501D8071A17025C0034C530 /* ASProjDoc.xib in Resources */,
+				950AB9271A296A160033A9DA /* ProjIcon.icns in Resources */,
 				9501D8091A17025C0034C530 /* Images.xcassets in Resources */,
 				9501D80C1A17025C0034C530 /* MainMenu.xib in Resources */,
 				951CD1771A2615000066C1A1 /* BuildProject in Resources */,
