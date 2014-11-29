@@ -102,9 +102,15 @@
                             <action selector="buildProject:" target="-2" id="Les-fd-6cC"/>
                         </connections>
                     </toolbarItem>
+                    <toolbarItem implicitItemIdentifier="EF9FF3B4-6921-497E-B17C-8B0B3D58DA24" label="Upload" paletteLabel="Upload" tag="-1" image="UploadIcon" id="2cP-cC-Cr8">
+                        <connections>
+                            <action selector="buildProject:" target="-2" id="i2T-Xo-7Xz"/>
+                        </connections>
+                    </toolbarItem>
                 </allowedToolbarItems>
                 <defaultToolbarItems>
                     <toolbarItem reference="69r-aN-6vG"/>
+                    <toolbarItem reference="2cP-cC-Cr8"/>
                     <toolbarItem reference="2D6-o4-n09"/>
                     <toolbarItem reference="ln2-Ky-MBg"/>
                 </defaultToolbarItems>
@@ -117,5 +123,6 @@
     </objects>
     <resources>
         <image name="BuildIcon" width="32" height="32"/>
+        <image name="UploadIcon" width="32" height="32"/>
     </resources>
 </document>
