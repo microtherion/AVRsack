@@ -176,8 +176,8 @@
 		95BF80EC1A185CD90004A693 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				950AB9261A296A160033A9DA /* ProjIcon.icns */,
 				9501D8081A17025C0034C530 /* Images.xcassets */,
+				950AB9261A296A160033A9DA /* ProjIcon.icns */,
 				9501D80A1A17025C0034C530 /* MainMenu.xib */,
 				9501D8051A17025C0034C530 /* ASProjDoc.xib */,
 				95468DE21A228E1300668EE2 /* Defaults.plist */,
