@@ -22,6 +22,8 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate {
     var board                   : String = "uno"
     var programmer              : String = ""
     var port                    : String = ""
+    var logModified             = NSDate.distantPast() as NSDate
+    var updateLogTimer          : NSTimer?
     
     let kVersionKey     = "Version"
     let kCurVersion     = 1.0
@@ -61,6 +63,9 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate {
         board       = userDefaults.stringForKey(kBoardKey)!
         programmer  = userDefaults.stringForKey(kProgrammerKey)!
         port        = userDefaults.stringForKey(kPortKey)!
+        
+        updateLogTimer  =
+            NSTimer.scheduledTimerWithTimeInterval(1.0, target: self, selector: "updateLog:", userInfo: nil, repeats: true)
     }
     override func finalize() {
         saveCurEditor()
@@ -168,10 +173,23 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate {
         return true
     }
  
-    // MARK: Outline View Delegate
-    
-    func outlineViewSelectionDidChange(notification: NSNotification) {
-        let selection = outline.itemAtRow(outline.selectedRow) as ASFileNode?
+    func updateLog(AnyObject?) {
+        if let logNode = mainEditor as? ASLogNode {
+            let url = fileURL!.URLByDeletingLastPathComponent?.URLByAppendingPathComponent(logNode.path)
+            if url == nil {
+                return
+            }
+            var modified : AnyObject?
+            if (url!.getResourceValue(&modified, forKey:NSURLAttributeModificationDateKey, error:nil)) {
+                if (modified as NSDate).compare(logModified) == .OrderedDescending {
+                    var enc : UInt = 0
+                    editor.setString(NSString(contentsOfURL:url!, usedEncoding:&enc, error:nil))
+                    logModified = modified as NSDate
+                }
+            }
+        }
+    }
+    func selectNode(selection: ASFileNode?) {
         if selection !== mainEditor {
             saveCurEditor()
         }
@@ -180,9 +198,23 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate {
             editor.setString(NSString(contentsOfURL:file.url, usedEncoding:&enc, error:nil))
             editor.setMode(UInt(file.type.aceMode))
             editor.alphaValue = 1.0
+            mainEditor = selection
+        } else if let log = (selection as? ASLogNode) {
+            editor.setString("")
+            editor.setMode(UInt(ACEModeASCIIDoc))
+            editor.alphaValue = 0.8
+            logModified = NSDate.distantPast() as NSDate
+            mainEditor  = selection
+            updateLog(nil)
         } else {
             editor.alphaValue = 0.0
         }
+    }
+
+    // MARK: Outline View Delegate
+
+    func outlineViewSelectionDidChange(notification: NSNotification) {
+        selectNode(outline.itemAtRow(outline.selectedRow) as ASFileNode?)
     }
     func outlineViewItemDidExpand(notification: NSNotification) {
         let group       = notification.userInfo!["NSObject"] as ASFileGroup
@@ -193,6 +225,13 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate {
         let group       = notification.userInfo!["NSObject"] as ASFileGroup
         group.expanded  = false
         updateChangeCount(.ChangeDone)
+    }
+    func outlineView(outlineView: NSOutlineView, willDisplayCell cell: AnyObject, forTableColumn tableColumn: NSTableColumn?, item: AnyObject) {
+        if item === files.root || item === files.buildLog || item === files.uploadLog {
+            (cell as NSCell).font = NSFont.boldSystemFontOfSize(13.0)
+        } else {
+            (cell as NSCell).font = NSFont.systemFontOfSize(13.0)
+        }
     }
     
     // MARK: Editor configuration
@@ -240,6 +279,7 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate {
     // MARK: Build / Upload
     
     @IBAction func buildProject(AnyObject) {
+        selectNode(files.buildLog)
         builder.buildProject(board, files: files)
     }
 }

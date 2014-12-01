@@ -81,6 +81,19 @@ class ASFileNode {
     }
 }
 
+class ASLogNode : ASFileNode {
+    var name        : String
+    var path        : String
+    
+    init(name: String, path: String) {
+        self.name = name
+        self.path = path
+    }
+    override func nodeName() -> String {
+        return "📜 "+name
+    }
+}
+
 class ASFileGroup : ASFileNode {
     var name        : String
     var children    : [ASFileNode]
@@ -186,8 +199,10 @@ class ASFileItem : ASFileNode {
 }
 
 class ASFileTree : NSObject, NSOutlineViewDataSource {
-    var root = ASProject()
-    var dir  = NSURL()
+    var root        = ASProject()
+    var dir         = NSURL()
+    var buildLog    = ASLogNode(name: "Build Log", path: "build/build.log")
+    var uploadLog   = ASLogNode(name: "Upload Log", path: "build/upload.log")
     
     func addFileURL(url: NSURL, omitUnknown: Bool = true) {
         let type = ASFileType.guessForURL(url)
@@ -215,14 +230,21 @@ class ASFileTree : NSObject, NSOutlineViewDataSource {
     // MARK: Outline Data Source
     func outlineView(outlineView: NSOutlineView, numberOfChildrenOfItem item: AnyObject?) -> Int {
         if item == nil {
-            return 1
+            return 3
         } else {
             return (item as ASFileGroup).children.count
         }
     }
     func outlineView(outlineView: NSOutlineView, child index: Int, ofItem item: AnyObject?) -> AnyObject {
         if item == nil {
-            return root
+            switch index {
+            case 1:
+                return buildLog
+            case 2:
+                return uploadLog
+            default:
+                return root
+            }
         } else {
             let group = item as ASFileGroup
             return group.children[index]

@@ -179,6 +179,5 @@ task :default => ['#{BUILD['project']}.eep', '#{BUILD['project']}.hex']
 END_RAKE
 end
                                  
-sh 'rake'
-
+sh 'rake >& ../build.log'
 

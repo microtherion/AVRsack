@@ -9,19 +9,24 @@
 import Foundation
 
 class ASBuilder {
-    var dir     = NSURL()
-    var task    : NSTask?
+    var dir         = NSURL()
+    var task        : NSTask?
     
     func setProjectURL(url: NSURL) {
         dir       = url.URLByDeletingLastPathComponent!.standardizedURL!
     }
 
+    func stop() {
+        task?.terminate()
+        task?.waitUntilExit()
+    }
+    
     func buildProject(board: String, files: ASFileTree) {
         task = NSTask()
         task!.currentDirectoryPath  = dir.path!
         task!.launchPath            = NSBundle.mainBundle().pathForResource("BuildProject", ofType: "")!
         
-        let fileManager         = NSFileManager.defaultManager()
+        let fileManager = NSFileManager.defaultManager()
         let libPath     = (ASLibraries.instance().directories as NSArray).componentsJoinedByString(":")
         var args        = [NSString]()
         let boardProp   = ASHardware.instance().boards[board]!
@@ -57,10 +62,8 @@ class ASBuilder {
             args.append("variant_path="+variantPath!)
         }
         args.append("--")
-        args            += files.paths
-        task!.arguments =   args;
+        args                   += files.paths
+        task!.arguments         =   args;
         task!.launch()
-        
-        files.paths
     }
 }
