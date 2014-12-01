@@ -280,9 +280,17 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate {
     
     // MARK: Build / Upload
     
+    @IBAction func uploadProject(AnyObject) {
+    }
+    
     @IBAction func buildProject(AnyObject) {
         selectNode(files.buildLog)
         builder.buildProject(board, files: files)
+    }
+    
+    @IBAction func cleanProject(AnyObject) {
+        builder.cleanProject()
+        selectNode(files.buildLog)
     }
 }
 

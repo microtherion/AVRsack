@@ -99,18 +99,26 @@
                     <toolbarItem implicitItemIdentifier="NSToolbarFlexibleSpaceItem" id="2D6-o4-n09"/>
                     <toolbarItem implicitItemIdentifier="2EA4AC26-099B-4756-8779-ABB6208840D1" label="Build" paletteLabel="Build" tag="-1" image="BuildIcon" id="69r-aN-6vG">
                         <connections>
-                            <action selector="buildProject:" target="-2" id="Les-fd-6cC"/>
+                            <action selector="buildProject:" target="-1" id="Rkc-yl-Vwi"/>
                         </connections>
                     </toolbarItem>
                     <toolbarItem implicitItemIdentifier="EF9FF3B4-6921-497E-B17C-8B0B3D58DA24" label="Upload" paletteLabel="Upload" tag="-1" image="UploadIcon" id="2cP-cC-Cr8">
                         <connections>
-                            <action selector="buildProject:" target="-2" id="i2T-Xo-7Xz"/>
+                            <action selector="uploadProject:" target="-1" id="p1l-Vg-i2P"/>
                         </connections>
                     </toolbarItem>
+                    <toolbarItem implicitItemIdentifier="2E9BF3BA-BCC5-4DB8-B563-8648FC3862AD" label="Clean" paletteLabel="Clean" tag="-1" image="CleanIcon" id="lGv-lT-Eh9">
+                        <connections>
+                            <action selector="cleanProject:" target="-1" id="LzL-6C-IDi"/>
+                        </connections>
+                    </toolbarItem>
+                    <toolbarItem implicitItemIdentifier="NSToolbarSpaceItem" id="FYt-ZW-Epr"/>
                 </allowedToolbarItems>
                 <defaultToolbarItems>
-                    <toolbarItem reference="69r-aN-6vG"/>
                     <toolbarItem reference="2cP-cC-Cr8"/>
+                    <toolbarItem reference="69r-aN-6vG"/>
+                    <toolbarItem reference="FYt-ZW-Epr"/>
+                    <toolbarItem reference="lGv-lT-Eh9"/>
                     <toolbarItem reference="2D6-o4-n09"/>
                     <toolbarItem reference="ln2-Ky-MBg"/>
                 </defaultToolbarItems>
@@ -123,6 +131,7 @@
     </objects>
     <resources>
         <image name="BuildIcon" width="32" height="32"/>
+        <image name="CleanIcon" width="32" height="32"/>
         <image name="UploadIcon" width="32" height="32"/>
     </resources>
 </document>

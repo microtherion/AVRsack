@@ -21,6 +21,10 @@ class ASBuilder {
         task?.waitUntilExit()
     }
     
+    func cleanProject() {
+        NSFileManager.defaultManager().removeItemAtURL(dir.URLByAppendingPathComponent("build"), error: nil)
+    }
+    
     func buildProject(board: String, files: ASFileTree) {
         task = NSTask()
         task!.currentDirectoryPath  = dir.path!
