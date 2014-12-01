@@ -29,9 +29,10 @@ def parseArguments
 end
 
 def createBuildDirectory
-    $BUILD_DIR   = "build/#{BUILD['board']}"
-    $SKETCH_DIR  = "#{$BUILD_DIR}/sketch"
-    FileUtils::mkdir_p "#{$SKETCH_DIR}", :verbose => true
+    buildDir     = "build/#{BUILD['board']}"
+    sketchDir    = "#{buildDir}/sketch"
+    FileUtils::mkdir_p "#{sketchDir}", :verbose => true
+    Dir.chdir(buildDir)
 end
 
 HEADERMAP  = {}
@@ -61,10 +62,12 @@ def parseInoFiles
         CORES.add(BUILD['variant_path'])
     end
     ARGV.each_index do |arg|
-        if ARGV[arg] =~ /\.ino$/
-            outName     = "#{$SKETCH_DIR}/"+File.basename(ARGV[arg], '.ino')+".cpp"
+        inName = ARGV[arg]
+        inName = inName.pathmap("../../%p") unless inName =~ %r|^/|
+        if inName =~ /\.ino$/
+            outName     = inName.pathmap("sketch/%n.cpp")
             outFile     = File.open(outName, 'w')
-            File.open(ARGV[arg], 'r') do |ino|
+            File.open(inName, 'r') do |ino|
                 contents = ino.read
                 # Find protypes:
                 prototypes = contents.dup
@@ -95,8 +98,10 @@ def parseInoFiles
                 outFile.print rest
             end
             outFile.close
-            FileUtils.touch outName, :mtime => File.mtime(ARGV[arg])
+            FileUtils.touch outName, :mtime => File.mtime(inName)
             ARGV[arg]   = outName
+        else
+            ARGV[arg]   = inName
         end
     end
 end
@@ -117,7 +122,7 @@ createBuildDirectory
 buildHeaderMap
 parseInoFiles
 
-File.open("#{$BUILD_DIR}/Rakefile", 'w') do |rakeFile|
+File.open("Rakefile", 'w') do |rakeFile|
     SOURCES = Rake::FileList.new(ARGV).select {|f| f =~ /\.(c|cpp|cp|cxx|S)$/}
     INCLUDES= (CORES+LIBRARIES).map {|l| " +\n   \" -I'#{l}'\""}.join('')
     rakeFile.print <<END_RAKE
@@ -157,7 +162,7 @@ def compile_core(core,variant)
     compile('core', nil, list)
 end
 
-compile('sketch', nil, #{SOURCES.map{|f| "'../../"+f+"'"}.join(', ')})
+compile('sketch', nil, #{SOURCES.map{|f| "'"+f+"'"}.join(', ')})
 compile_core(#{CORES.map {|c| "'"+c+"'"}.join(", ")})
 #{LIBRARIES.pathmap("compile_library('%p')\n").join('')}
 file '#{BUILD['project']}.elf' => %w[sketch.a #{LIBRARIES.pathmap("lib/%f.a").join(" ")} core.a] do |task|
@@ -172,6 +177,8 @@ end
 task :default => ['#{BUILD['project']}.eep', '#{BUILD['project']}.hex']
                                  
 END_RAKE
-
 end
+                                 
+sh 'rake'
+
 
