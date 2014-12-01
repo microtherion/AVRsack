@@ -17,6 +17,7 @@ BUILD = {
     'f_cpu'   => 16000000,
     'core'    => 'arduino',
     'variant' => 'standard',
+    'max_size'=> 32256
 }
 
 def parseArguments
@@ -128,9 +129,10 @@ File.open("Rakefile", 'w') do |rakeFile|
     rakeFile.print <<END_RAKE
 CC          = '/usr/local/CrossPack-AVR/bin/avr-g++ -c -g -Os -Wall -fno-exceptions -ffunction-sections -fdata-sections -mmcu=#{BUILD['mcu']} -DF_CPU=#{BUILD['f_cpu']} -MMD -DUSB_VID=null -DUSB_PID=null -DARDUINO=105 -I ../..'#{INCLUDES}
 LD          = '/usr/local/CrossPack-AVR/bin/avr-g++ -Os -Wl,--gc-sections -mmcu=#{BUILD['mcu']}'
-AR          = '/usr/local/CrossPack-AVR/bin/avr-ar crsv'
+AR          = '/usr/local/CrossPack-AVR/bin/avr-ar crs'
 EEP         = '/usr/local/CrossPack-AVR/bin/avr-objcopy -O ihex -j .eeprom --set-section-flags=.eeprom=alloc,load --no-change-warnings --change-section-lma .eeprom=0'
 HEX         = '/usr/local/CrossPack-AVR/bin/avr-objcopy -O ihex -R .eeprom'
+SIZE        = '/usr/local/CrossPack-AVR/bin/avr-size'
 
 def compile(dest, extrainc, *src)
     directory dest
@@ -174,7 +176,11 @@ end
 file '#{BUILD['project']}.hex' => '#{BUILD['project']}.elf' do |task|
     sh "%s '%s' '%s'" % [HEX, task.prerequisites[0], task.name]
 end
-task :default => ['#{BUILD['project']}.eep', '#{BUILD['project']}.hex']
+task :default => ['#{BUILD['project']}.eep', '#{BUILD['project']}.hex'] do
+    szCmd = "%s '%s' | tail -1 | awk '{print $4}'" % [SIZE, '#{BUILD['project']}.hex']
+    sz = %x{#{'#'}{szCmd}}.chomp
+    puts "Binary sketch size: "+sz+" bytes (of a #{BUILD['max_size']} byte maximum)"
+end
                                  
 END_RAKE
 end
