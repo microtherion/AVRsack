@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="7073.4" systemVersion="14A389" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="7096" systemVersion="14B25" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="7073.4"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="7096"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="NSApplication">
@@ -291,9 +291,9 @@
                         </items>
                     </menu>
                 </menuItem>
-                <menuItem title="Format" id="Bv5-uE-FIR">
+                <menuItem title="View" id="H8h-7b-M4v">
                     <modifierMask key="keyEquivalentModifierMask"/>
-                    <menu key="submenu" title="Format" id="Pa9-zn-ibg">
+                    <menu key="submenu" title="View" id="HyV-fh-RgO">
                         <items>
                             <menuItem title="Theme" id="eWR-VP-3MH" userLabel="Theme">
                                 <modifierMask key="keyEquivalentModifierMask"/>
@@ -326,13 +326,7 @@
                                     <action selector="makeTextSmaller:" target="-1" id="Oua-iK-Cld"/>
                                 </connections>
                             </menuItem>
-                        </items>
-                    </menu>
-                </menuItem>
-                <menuItem title="View" id="H8h-7b-M4v">
-                    <modifierMask key="keyEquivalentModifierMask"/>
-                    <menu key="submenu" title="View" id="HyV-fh-RgO">
-                        <items>
+                            <menuItem isSeparatorItem="YES" id="qYd-6T-XvV"/>
                             <menuItem title="Show Toolbar" keyEquivalent="t" id="snW-S8-Cw5">
                                 <modifierMask key="keyEquivalentModifierMask" option="YES" command="YES"/>
                                 <connections>
@@ -343,6 +337,28 @@
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
                                     <action selector="runToolbarCustomizationPalette:" target="-1" id="pQI-g3-MTW"/>
+                                </connections>
+                            </menuItem>
+                        </items>
+                    </menu>
+                </menuItem>
+                <menuItem title="Sketch" id="iAn-66-dvR">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                    <menu key="submenu" title="Sketch" id="T3D-kl-bhN">
+                        <items>
+                            <menuItem title="Verify / Build" keyEquivalent="r" id="gbX-sy-5L6">
+                                <connections>
+                                    <action selector="buildProject:" target="-1" id="d3i-8e-6sp"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Upload" keyEquivalent="u" id="rRD-Cm-5An">
+                                <connections>
+                                    <action selector="uploadProject:" target="-1" id="Un4-q1-nWg"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Clean" keyEquivalent="K" id="bin-2x-Ysd">
+                                <connections>
+                                    <action selector="cleanProject:" target="-1" id="4hi-zQ-Zoi"/>
                                 </connections>
                             </menuItem>
                         </items>
