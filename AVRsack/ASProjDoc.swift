@@ -182,8 +182,10 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate {
             var modified : AnyObject?
             if (url!.getResourceValue(&modified, forKey:NSURLAttributeModificationDateKey, error:nil)) {
                 if (modified as NSDate).compare(logModified) == .OrderedDescending {
-                    var enc : UInt = 0
-                    editor.setString(NSString(contentsOfURL:url!, usedEncoding:&enc, error:nil))
+                    var enc : UInt  = 0
+                    let newText     = NSString(contentsOfURL:url!, usedEncoding:&enc, error:nil)
+                    editor.setString(newText)
+                    editor.gotoLine(1000000000, column: 0, animated: true)
                     logModified = modified as NSDate
                 }
             }
