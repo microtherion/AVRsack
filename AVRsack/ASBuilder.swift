@@ -45,6 +45,7 @@ class ASBuilder {
             NSLog("Unable to find core %s\n", boardProp["build.core"])
             return
         }
+        args.append("project="+dir.lastPathComponent)
         args.append("board="+board)
         args.append("mcu="+boardProp["build.mcu"])
         args.append("f_cpu="+boardProp["build.f_cpu"])

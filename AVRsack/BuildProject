@@ -52,11 +52,13 @@ def buildHeaderMap
     end
 end
 
+LIBRARIES = Rake::FileList[]
+CORES     = Rake::FileList[]
+
 def parseInoFiles
-    $LIBRARIES = []
-    $CORES     = [BUILD['core_path']]
+    CORES.add(BUILD['core_path'])
     if BUILD['variant_path']
-        $CORES << BUILD['variant_path']
+        CORES.add(BUILD['variant_path'])
     end
     ARGV.each_index do |arg|
         if ARGV[arg] =~ /\.ino$/
@@ -93,6 +95,7 @@ def parseInoFiles
                 outFile.print rest
             end
             outFile.close
+            FileUtils.touch outName, :mtime => File.mtime(ARGV[arg])
             ARGV[arg]   = outName
         end
     end
@@ -104,8 +107,8 @@ end
                                  
 def addLibrary(header)
     lib = HEADERMAP[header]
-    if lib && !$LIBRARIES.include?(lib)
-        $LIBRARIES << lib
+    if lib && !LIBRARIES.include?(lib)
+        LIBRARIES.add(lib)
     end
 end
 
@@ -116,11 +119,13 @@ parseInoFiles
 
 File.open("#{$BUILD_DIR}/Rakefile", 'w') do |rakeFile|
     SOURCES = Rake::FileList.new(ARGV).select {|f| f =~ /\.(c|cpp|cp|cxx|S)$/}
-    INCLUDES= ($CORES+$LIBRARIES).map {|l| " +\n   \" -I'#{l}'\""}.join('')
+    INCLUDES= (CORES+LIBRARIES).map {|l| " +\n   \" -I'#{l}'\""}.join('')
     rakeFile.print <<END_RAKE
 CC          = '/usr/local/CrossPack-AVR/bin/avr-g++ -c -g -Os -Wall -fno-exceptions -ffunction-sections -fdata-sections -mmcu=#{BUILD['mcu']} -DF_CPU=#{BUILD['f_cpu']} -MMD -DUSB_VID=null -DUSB_PID=null -DARDUINO=105 -I ../..'#{INCLUDES}
+LD          = '/usr/local/CrossPack-AVR/bin/avr-g++ -Os -Wl,--gc-sections -mmcu=#{BUILD['mcu']}'
 AR          = '/usr/local/CrossPack-AVR/bin/avr-ar crsv'
-LIBRARIES   = [#{$LIBRARIES.map{|l| "'"+l+"'"}.join(' ')}]
+EEP         = '/usr/local/CrossPack-AVR/bin/avr-objcopy -O ihex -j .eeprom --set-section-flags=.eeprom=alloc,load --no-change-warnings --change-section-lma .eeprom=0'
+HEX         = '/usr/local/CrossPack-AVR/bin/avr-objcopy -O ihex -R .eeprom'
 
 def compile(dest, extrainc, *src)
     directory dest
@@ -153,12 +158,20 @@ def compile_core(core,variant)
 end
 
 compile('sketch', nil, #{SOURCES.map{|f| "'../../"+f+"'"}.join(', ')})
-compile_core(#{$CORES.map {|c| "'"+c+"'"}.join(", ")})
+compile_core(#{CORES.map {|c| "'"+c+"'"}.join(", ")})
+#{LIBRARIES.pathmap("compile_library('%p')\n").join('')}
+file '#{BUILD['project']}.elf' => %w[sketch.a #{LIBRARIES.pathmap("lib/%f.a").join(" ")} core.a] do |task|
+    sh ("%s -o %s -Wl,'-(' " % [LD, task.name])+task.prerequisites.map {|a| "'"+a+"'"}.join(" ")+" -Wl,'-)' -lm"
+end
+file '#{BUILD['project']}.eep' => '#{BUILD['project']}.elf' do |task|
+    sh "%s '%s' '%s'" % [EEP, task.prerequisites[0], task.name]
+end
+file '#{BUILD['project']}.hex' => '#{BUILD['project']}.elf' do |task|
+    sh "%s '%s' '%s'" % [HEX, task.prerequisites[0], task.name]
+end
+task :default => ['#{BUILD['project']}.eep', '#{BUILD['project']}.hex']
+                                 
 END_RAKE
 
-    $LIBRARIES.each do |lib|
-        rakeFile.puts "compile_library('#{lib}')"
-    end
-                                 
 end
 
