@@ -292,5 +292,18 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate {
         builder.cleanProject()
         selectNode(files.buildLog)
     }
+    
+    func serialPorts() -> [String] {
+        return ASSerial.ports()
+    }
+
+    func boards() -> [String] {
+        return [String](ASHardware.instance().boards.keys)
+    }
+    
+    func programmers() -> [String] {
+        return [String](ASHardware.instance().programmers.keys)
+    }
+    
 }
 
