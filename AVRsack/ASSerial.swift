@@ -13,7 +13,7 @@ class ASSerial {
         let devices = NSFileManager.defaultManager().contentsOfDirectoryAtPath("/dev", error: nil)!
         var cuDevs  = [String]()
         for dev in devices as [String] {
-            if dev.substringToIndex(dev.startIndex.successor().successor()) == "cu" {
+            if dev.hasPrefix("cu") {
                 cuDevs.append("/dev/"+dev)
             }
         }
