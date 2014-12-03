@@ -298,11 +298,19 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate {
     }
 
     func boards() -> [String] {
-        return [String](ASHardware.instance().boards.keys)
+        var result = [String]()
+        for (ident, prop) in ASHardware.instance().boards {
+            result.append(prop["name"])
+        }
+        return result
     }
     
     func programmers() -> [String] {
-        return [String](ASHardware.instance().programmers.keys)
+        var result = [String]()
+        for (ident, prop) in ASHardware.instance().programmers {
+            result.append(prop["name"])
+        }
+        return result
     }
     
 }
