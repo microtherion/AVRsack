@@ -2,6 +2,23 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>RecentProgrammers</key>
+	<array>
+		<string>usbasp</string>
+		<string>usbtinyisp</string>
+		<string>avrispmkii</string>
+		<string>avrisp</string>
+		<string>scratchmonkey</string>
+		<string>arduinoisp</string>
+		<string>arduino</string>
+	</array>
+	<key>RecentBoards</key>
+	<array>
+		<string>micro</string>
+		<string>leonardo</string>
+		<string>mega2560</string>
+		<string>uno</string>
+	</array>
 	<key>Port</key>
 	<string></string>
 	<key>Programmer</key>

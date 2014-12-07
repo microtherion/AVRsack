@@ -26,6 +26,15 @@ class ASPropertyEntry {
 
 typealias ASProperties      = [String: ASPropertyEntry]
 
+extension NSMenu {
+    func addSortedChoices(choices:[ASPropertyEntry], target: AnyObject, selector: Selector) {
+        for choice in choices.sorted({ $0["name"] < $1["name"] })  {
+            let item        = self.addItemWithTitle(choice["name"], action: selector, keyEquivalent: "")
+            item?.target    = target
+        }
+    }
+}
+
 private func subdirectories(path: NSString) -> [NSString] {
     let fileManager         = NSFileManager.defaultManager()
     var subDirs             = [NSString]()
@@ -66,7 +75,8 @@ class ASHardware {
         // Gather board declarations
         //
         for dir in directories {
-            let boardsPath = dir+"/boards.txt"
+            let boardsPath  = dir+"/boards.txt"
+            let provenience = dir.lastPathComponent
             if let boardsFile = NSString(contentsOfFile: boardsPath, usedEncoding: nil, error: nil) {
                 var seen = [String: Bool]()
                 for line in boardsFile.componentsSeparatedByString("\n") as [NSString] {
@@ -75,18 +85,21 @@ class ASHardware {
                         let property        = line.substringWithRange(match.rangeAtIndex(2))
                         let value           = line.substringWithRange(match.rangeAtIndex(3))
                         if seen.updateValue(true, forKey: board) == nil {
-                            boards[board]   = ASPropertyEntry()
+                            boards[board]                   = ASPropertyEntry()
+                            boards[board]!["provenience"]   = provenience
                         }
                         boards[board]![property]  = value
                     }
                 }
             }
         }
+        
         //
         // Gather programmer declarations
         //
         for dir in directories {
             let programmersPath = dir+"/programmers.txt"
+            let provenience = dir.lastPathComponent
             if let programmersFile = NSString(contentsOfFile: programmersPath, usedEncoding: nil, error: nil) {
                 var seen = [String: Bool]()
                 for line in programmersFile.componentsSeparatedByString("\n") as [NSString] {
@@ -96,13 +109,50 @@ class ASHardware {
                         let value           = line.substringWithRange(match.rangeAtIndex(3))
                         if seen.updateValue(true, forKey: programmer) == nil {
                             programmers[programmer] = ASPropertyEntry()
-                            seen[programmer]        = true
+                            programmers[programmer]!["provenience"]   = provenience
                         }
                         programmers[programmer]![property] = value
                     }
                 }
             }
         }
+    }
+    
+    func buildMenu(menu:NSMenu, choices:ASProperties, recentChoices:[String], target: AnyObject, selector: Selector) {
+        menu.removeAllItems()
+        if choices.count <= 10 {
+            menu.addSortedChoices([ASPropertyEntry](choices.values), target: target, selector: selector)
+        } else {
+            menu.addSortedChoices(recentChoices.map({ (recent: String) in choices[recent]! }), target: target, selector: selector)
+            menu.addItem(NSMenuItem.separatorItem())
+            var seen = [String: Bool]()
+            for prop in choices.values {
+                seen[prop["provenience"]] = true
+            }
+            var sortedKeys = [String](seen.keys)
+            sortedKeys.sort { $0 < $1 }
+            for provenience in sortedKeys {
+                var subset = [ASPropertyEntry]()
+                for prop in choices.values {
+                    if prop["provenience"] == provenience {
+                        subset.append(prop)
+                    }
+                }
+                let item                    = menu.addItemWithTitle(provenience, action: nil, keyEquivalent: "")!
+                let submenu                 = NSMenu()
+                submenu.autoenablesItems    = false
+                submenu.addSortedChoices(subset, target: target, selector: selector)
+                menu.setSubmenu(submenu, forItem: item)
+            }
+        }
+    }
+    
+    func buildBoardsMenu(menu:NSMenu, recentBoards:[String], target: AnyObject, selector: Selector) {
+        buildMenu(menu, choices:boards, recentChoices:recentBoards, target: target, selector: selector)
+    }
+    
+    func buildProgrammersMenu(menu:NSMenu, recentProgrammers:[String], target: AnyObject, selector: Selector) {
+        buildMenu(menu, choices:programmers, recentChoices:recentProgrammers, target: target, selector: selector)
     }
 }
 

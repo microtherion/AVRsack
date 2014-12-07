@@ -6,8 +6,11 @@
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="ASProjDoc" customModule="AVRsack">
             <connections>
+                <outlet property="boardTool" destination="xO5-xB-HHj" id="xzX-eY-Ofe"/>
                 <outlet property="editor" destination="Nhg-qn-6A8" id="eUR-Gk-IBw"/>
                 <outlet property="outline" destination="nij-C2-Fna" id="sVi-eL-hqZ"/>
+                <outlet property="portTool" destination="4rZ-U5-AH6" id="8Nb-iI-pJH"/>
+                <outlet property="progTool" destination="08n-xg-fNl" id="959-as-OtP"/>
                 <outlet property="window" destination="xOd-HO-29H" id="JIz-fz-R2o"/>
             </connections>
         </customObject>
@@ -112,70 +115,70 @@
                     </toolbarItem>
                     <toolbarItem implicitItemIdentifier="A3F4B25E-669B-4AEB-877C-CA0AF13A9E49" label="Board" paletteLabel="Board" id="vAE-60-8kd">
                         <nil key="toolTip"/>
-                        <size key="minSize" width="100" height="28"/>
-                        <size key="maxSize" width="100" height="28"/>
-                        <popUpButton key="view" verticalHuggingPriority="750" id="xO5-xB-HHj">
-                            <rect key="frame" x="0.0" y="0.0" width="100" height="28"/>
+                        <size key="minSize" width="75" height="28"/>
+                        <size key="maxSize" width="400" height="28"/>
+                        <popUpButton key="view" verticalHuggingPriority="750" allowsExpansionToolTips="YES" id="xO5-xB-HHj">
+                            <rect key="frame" x="0.0" y="14" width="75" height="28"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                            <popUpButtonCell key="cell" type="roundTextured" title="Item 1" bezelStyle="texturedRounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" selectedItem="EIo-LP-BL2" id="70v-IV-ury">
+                            <popUpButtonCell key="cell" type="roundTextured" title="Item 1" bezelStyle="texturedRounded" alignment="left" lineBreakMode="truncatingTail" borderStyle="border" imageScaling="proportionallyDown" inset="2" pullsDown="YES" selectedItem="BI3-Mj-Hjl" id="70v-IV-ury">
                                 <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                 <font key="font" metaFont="menu"/>
-                                <menu key="menu" id="0W3-Jd-NvF">
+                                <menu key="menu" title="Boards" id="0W3-Jd-NvF">
                                     <items>
-                                        <menuItem title="Item 1" state="on" id="EIo-LP-BL2"/>
-                                        <menuItem title="Item 2" id="BI3-Mj-Hjl"/>
+                                        <menuItem title="Item 1" hidden="YES" id="EIo-LP-BL2"/>
+                                        <menuItem title="Item 2" state="on" id="BI3-Mj-Hjl"/>
                                         <menuItem title="Item 3" id="JVV-uK-XFS"/>
                                     </items>
+                                    <connections>
+                                        <outlet property="delegate" destination="-2" id="9Wl-yy-I09"/>
+                                    </connections>
                                 </menu>
                             </popUpButtonCell>
-                            <connections>
-                                <binding destination="-2" name="contentValues" keyPath="boards" id="I0F-IB-VDu"/>
-                            </connections>
                         </popUpButton>
                     </toolbarItem>
                     <toolbarItem implicitItemIdentifier="BD8B4827-8CD2-4E50-B435-165CD744B39D" label="Programmer" paletteLabel="Programmer" id="Lt2-Z7-7Pg">
                         <nil key="toolTip"/>
-                        <size key="minSize" width="100" height="28"/>
-                        <size key="maxSize" width="100" height="28"/>
-                        <popUpButton key="view" verticalHuggingPriority="750" id="08n-xg-fNl">
-                            <rect key="frame" x="0.0" y="0.0" width="100" height="28"/>
+                        <size key="minSize" width="75" height="28"/>
+                        <size key="maxSize" width="200" height="28"/>
+                        <popUpButton key="view" verticalHuggingPriority="750" allowsExpansionToolTips="YES" id="08n-xg-fNl">
+                            <rect key="frame" x="0.0" y="14" width="75" height="28"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                            <popUpButtonCell key="cell" type="roundTextured" title="Item 1" bezelStyle="texturedRounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" selectedItem="DL9-Dk-EGd" id="drB-K8-prb">
+                            <popUpButtonCell key="cell" type="roundTextured" title="Item 1" bezelStyle="texturedRounded" alignment="left" lineBreakMode="truncatingTail" borderStyle="border" imageScaling="proportionallyDown" inset="2" pullsDown="YES" id="drB-K8-prb">
                                 <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                 <font key="font" metaFont="menu"/>
-                                <menu key="menu" id="I2g-9Y-t88">
+                                <menu key="menu" title="Programmers" id="I2g-9Y-t88">
                                     <items>
-                                        <menuItem title="Item 1" state="on" id="DL9-Dk-EGd"/>
+                                        <menuItem title="Item 1" hidden="YES" id="DL9-Dk-EGd"/>
                                         <menuItem title="Item 2" id="cbL-7g-Dbs"/>
                                         <menuItem title="Item 3" id="VZO-b8-lTE"/>
                                     </items>
+                                    <connections>
+                                        <outlet property="delegate" destination="-2" id="C5g-FS-Zb7"/>
+                                    </connections>
                                 </menu>
                             </popUpButtonCell>
-                            <connections>
-                                <binding destination="-2" name="contentValues" keyPath="programmers" id="6XS-xq-UIC"/>
-                            </connections>
                         </popUpButton>
                     </toolbarItem>
                     <toolbarItem implicitItemIdentifier="1E69CE88-D7A1-4231-B56C-89C813E75589" label="Serial Port" paletteLabel="Serial Port" id="r8E-ar-tLo">
                         <nil key="toolTip"/>
-                        <size key="minSize" width="100" height="28"/>
-                        <size key="maxSize" width="100" height="28"/>
-                        <popUpButton key="view" verticalHuggingPriority="750" id="4rZ-U5-AH6">
-                            <rect key="frame" x="0.0" y="0.0" width="100" height="28"/>
+                        <size key="minSize" width="75" height="28"/>
+                        <size key="maxSize" width="400" height="28"/>
+                        <popUpButton key="view" verticalHuggingPriority="750" allowsExpansionToolTips="YES" id="4rZ-U5-AH6">
+                            <rect key="frame" x="0.0" y="14" width="75" height="28"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                            <popUpButtonCell key="cell" type="roundTextured" title="Item 1" bezelStyle="texturedRounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" selectedItem="7U0-rg-90a" id="XSm-NS-ZtW">
+                            <popUpButtonCell key="cell" type="roundTextured" title="Item 1" bezelStyle="texturedRounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" pullsDown="YES" selectedItem="7U0-rg-90a" id="XSm-NS-ZtW">
                                 <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                 <font key="font" metaFont="menu"/>
                                 <menu key="menu" id="VO0-bS-zYz">
                                     <items>
-                                        <menuItem title="Item 1" state="on" id="7U0-rg-90a"/>
+                                        <menuItem title="Item 1" state="on" hidden="YES" id="7U0-rg-90a"/>
                                         <menuItem title="Item 2" id="rck-gJ-Wwo"/>
                                         <menuItem title="Item 3" id="PoP-ir-bnB"/>
                                     </items>
                                 </menu>
                             </popUpButtonCell>
                             <connections>
-                                <binding destination="-2" name="contentValues" keyPath="serialPorts" id="d9a-Yy-DeA"/>
+                                <action selector="selectPort:" target="-2" id="tRd-x3-Oig"/>
                             </connections>
                         </popUpButton>
                     </toolbarItem>
@@ -188,11 +191,11 @@
                     <toolbarItem reference="69r-aN-6vG"/>
                     <toolbarItem reference="FYt-ZW-Epr"/>
                     <toolbarItem reference="lGv-lT-Eh9"/>
-                    <toolbarItem reference="2D6-o4-n09"/>
+                    <toolbarItem reference="FYt-ZW-Epr"/>
                     <toolbarItem reference="vAE-60-8kd"/>
                     <toolbarItem reference="Lt2-Z7-7Pg"/>
                     <toolbarItem reference="r8E-ar-tLo"/>
-                    <toolbarItem reference="2D6-o4-n09"/>
+                    <toolbarItem reference="FYt-ZW-Epr"/>
                     <toolbarItem reference="ln2-Ky-MBg"/>
                 </defaultToolbarItems>
             </toolbar>

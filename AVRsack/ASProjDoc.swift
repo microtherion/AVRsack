@@ -6,34 +6,58 @@
 //  Copyright (c) 2014 Aere Perennius. All rights reserved.
 //
 
+import Swift
 import Cocoa
 
 private var keyboardHandler   : ACEKeyboardHandler = .Ace
 
-class ASProjDoc: NSDocument, NSOutlineViewDelegate {
+func pushToFront(inout list: [String], front: String) {
+    let kMaxRecents = 8
+    
+    if let existing = find(list, front) {
+        if existing == 0 {
+            return
+        } else {
+            list.removeAtIndex(existing)
+        }
+    } else if list.count >= kMaxRecents {
+        list.removeLast()
+    }
+    list.insert(front, atIndex: 0)
+}
+
+class ASProjDoc: NSDocument, NSOutlineViewDelegate, NSMenuDelegate {
     @IBOutlet weak var editor   : ACEView!
     @IBOutlet weak var outline  : NSOutlineView!
+    @IBOutlet weak var boardTool: NSPopUpButton!
+    @IBOutlet weak var progTool : NSPopUpButton!
+    @IBOutlet weak var portTool : NSPopUpButton!
+    
     let files                   = ASFileTree()
     let builder                 = ASBuilder()
     var mainEditor              : ASFileNode?
     var currentTheme            : UInt = 0
     var fontSize                : UInt = 12
     var themeObserver           : AnyObject?
-    var board                   : String = "uno"
-    var programmer              : String = ""
-    var port                    : String = ""
+    var board                   = "uno"
+    var programmer              = "arduino"
+    var port                    = ""
+    var recentBoards            = [String]()
+    var recentProgrammers       = [String]()
     var logModified             = NSDate.distantPast() as NSDate
     var updateLogTimer          : NSTimer?
     
-    let kVersionKey     = "Version"
-    let kCurVersion     = 1.0
-    let kFilesKey       = "Files"
-    let kThemeKey       = "Theme"
-    let kFontSizeKey    = "FontSize"
-    let kBindingsKey    = "Bindings"
-    let kBoardKey       = "Board"
-    let kProgrammerKey  = "Programmer"
-    let kPortKey        = "Port"
+    let kVersionKey             = "Version"
+    let kCurVersion             = 1.0
+    let kFilesKey               = "Files"
+    let kThemeKey               = "Theme"
+    let kFontSizeKey            = "FontSize"
+    let kBindingsKey            = "Bindings"
+    let kBoardKey               = "Board"
+    let kProgrammerKey          = "Programmer"
+    let kPortKey                = "Port"
+    let kRecentBoardsKey        = "RecentBoards"
+    let kRecentProgrammersKey   = "RecentProgrammers"
 
     // MARK: Initialization / Finalization
     
@@ -60,9 +84,11 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate {
         themeObserver = NSNotificationCenter.defaultCenter().addObserverForName(kBindingsKey, object: nil, queue: nil, usingBlock: { (NSNotification) in
                 self.editor.setKeyboardHandler(keyboardHandler)
         })
-        board       = userDefaults.stringForKey(kBoardKey)!
-        programmer  = userDefaults.stringForKey(kProgrammerKey)!
-        port        = userDefaults.stringForKey(kPortKey)!
+        board               = userDefaults.stringForKey(kBoardKey)!
+        programmer          = userDefaults.stringForKey(kProgrammerKey)!
+        port                = userDefaults.stringForKey(kPortKey)!
+        recentBoards        = userDefaults.objectForKey(kRecentBoardsKey) as [String]
+        recentProgrammers   = userDefaults.objectForKey(kRecentProgrammersKey) as [String]
         
         updateLogTimer  =
             NSTimer.scheduledTimerWithTimeInterval(1.0, target: self, selector: "updateLog:", userInfo: nil, repeats: true)
@@ -88,6 +114,12 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate {
         }
         updateChangeCount(.ChangeCleared)
         outlineViewSelectionDidChange(NSNotification(name: "", object: nil))
+        menuNeedsUpdate(boardTool.menu!)
+        menuNeedsUpdate(progTool.menu!)
+        portTool.removeAllItems()
+        portTool.addItemWithTitle("Title")
+        portTool.addItemsWithTitles(ASSerial.ports())
+        portTool.setTitle(port)
     }
 
     override class func autosavesInPlace() -> Bool {
@@ -112,7 +144,11 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate {
         let data = [kVersionKey: kCurVersion,
             kThemeKey: ACEThemeNames.nameForTheme(currentTheme),
             kFontSizeKey: fontSize,
-            kFilesKey: files.propertyList()]
+            kFilesKey: files.propertyList(),
+            kBoardKey: board,
+            kProgrammerKey: programmer,
+            kPortKey: port
+        ]
         return NSPropertyListSerialization.dataFromPropertyList(data, format: .XMLFormat_v1_0, errorDescription: nil)
     }
 
@@ -168,6 +204,11 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate {
             fontSize = UInt(fontSz)
         }
         files.readPropertyList(projectData[kFilesKey] as NSDictionary)
+        board               = (projectData[kBoardKey] as? String) ?? board
+        programmer          = (projectData[kProgrammerKey] as? String) ?? programmer
+        port                = (projectData[kPortKey] as? String) ?? port
+        recentBoards        = (projectData[kRecentBoardsKey] as? [String]) ?? recentBoards
+        recentProgrammers   = (projectData[kRecentProgrammersKey] as? [String]) ?? recentProgrammers
         updateChangeCount(.ChangeCleared)
         
         return true
@@ -292,26 +333,86 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate {
         builder.cleanProject()
         selectNode(files.buildLog)
     }
+
+    func menuNeedsUpdate(menu: NSMenu) {
+        switch menu.title {
+        case "Boards":
+            ASHardware.instance().buildBoardsMenu(menu, recentBoards: recentBoards,
+                target: self, selector: "selectBoard:")
+            boardTool.setTitle(selectedBoard)
+        case "Programmers":
+            ASHardware.instance().buildProgrammersMenu(menu, recentProgrammers: recentProgrammers,
+                target: self, selector: "selectProgrammer:")
+            progTool.setTitle(selectedProgrammer)
+        default:
+            break
+        }
+    }
     
-    func serialPorts() -> [String] {
-        return ASSerial.ports()
+    var selectedBoard : String {
+        get {
+            let boardProps = ASHardware.instance().boards[board]
+            return boardProps?["name"] ?? ""
+        }
+        set (newBoard) {
+            for (ident, prop) in ASHardware.instance().boards {
+                if prop["name"] == newBoard {
+                    board = ident
+
+                    pushToFront(&recentBoards, board)
+                    
+                    let userDefaults = NSUserDefaults.standardUserDefaults()
+                    var globalBoards = userDefaults.objectForKey(kRecentBoardsKey) as [String]
+                    pushToFront(&globalBoards, board)
+                    userDefaults.setObject(globalBoards, forKey: kRecentBoardsKey)
+
+                    updateChangeCount(.ChangeDone)
+                    menuNeedsUpdate(boardTool.menu!)
+                    
+                    break
+                }
+            }
+        }
+    }
+    
+    @IBAction func selectBoard(item: AnyObject) {
+        selectedBoard = (item as NSMenuItem).title
     }
 
-    func boards() -> [String] {
-        var result = [String]()
-        for (ident, prop) in ASHardware.instance().boards {
-            result.append(prop["name"])
+    var selectedProgrammer : String {
+        get {
+            let progProps = ASHardware.instance().programmers[programmer]
+            return progProps?["name"] ?? ""
         }
-        return result
+        set (newProg) {
+            for (ident, prop) in ASHardware.instance().programmers {
+                if prop["name"] == newProg {
+                    programmer = ident
+                    
+                    pushToFront(&recentProgrammers, programmer)
+                    
+                    let userDefaults = NSUserDefaults.standardUserDefaults()
+                    var globalProgs = userDefaults.objectForKey(kRecentProgrammersKey) as [String]
+                    pushToFront(&globalProgs, programmer)
+                    userDefaults.setObject(globalProgs, forKey: kRecentProgrammersKey)
+                    
+                    updateChangeCount(.ChangeDone)
+                    progTool.setTitle(newProg)
+                    menuNeedsUpdate(progTool.menu!)
+                    
+                    break
+                }
+            }
+        }
     }
     
-    func programmers() -> [String] {
-        var result = [String]()
-        for (ident, prop) in ASHardware.instance().programmers {
-            result.append(prop["name"])
-        }
-        return result
+    @IBAction func selectProgrammer(item: AnyObject) {
+        selectedProgrammer = (item as NSMenuItem).title
     }
     
+    @IBAction func selectPort(item: AnyObject) {
+        port    = (item as NSPopUpButton).titleOfSelectedItem!
+        portTool.setTitle(port)
+    }
 }
 
