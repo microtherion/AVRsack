@@ -71,4 +71,29 @@ class ASBuilder {
         task!.arguments         =   args;
         task!.launch()
     }
+    
+    func uploadProject(board: String, programmer: String, port: String) {
+        task = NSTask()
+        task!.currentDirectoryPath  = dir.path!
+        task!.launchPath            = "/usr/local/CrossPack-AVR/bin/avrdude"
+        
+        let fileManager = NSFileManager.defaultManager()
+        let logURL              = dir.URLByAppendingPathComponent("build/upload.log")
+        fileManager.createFileAtPath(logURL.path!, contents: NSData(), attributes: nil)
+        let logOut              = NSFileHandle(forWritingAtPath: logURL.path!)!
+        task!.standardOutput    = logOut
+        task!.standardError     = logOut
+        
+        let libPath     = (ASLibraries.instance().directories as NSArray).componentsJoinedByString(":")
+        let boardProp   = ASHardware.instance().boards[board]!
+        let progProp    = ASHardware.instance().programmers[programmer]
+        let proto       = boardProp["upload.protocol"] ?? progProp?["protocol"]
+        let speed       = boardProp["upload.speed"]    ?? progProp?["speed"]
+        var args        = ["-v", "-v", "-v", "-v", "-D",
+            "-C", "/usr/local/CrossPack-AVR/etc/avrdude.conf",
+            "-p", boardProp["build.mcu"], "-c", proto!, "-P", port, "-b", speed!,
+            "-U", "flash:w:build/"+board+"/"+dir.lastPathComponent+".hex:i"]
+        task!.arguments         =   args;
+        task!.launch()
+    }
 }

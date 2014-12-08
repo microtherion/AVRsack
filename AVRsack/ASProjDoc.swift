@@ -330,9 +330,6 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate, NSMenuDelegate {
     
     // MARK: Build / Upload
     
-    @IBAction func uploadProject(AnyObject) {
-    }
-    
     @IBAction func buildProject(AnyObject) {
         selectNode(files.buildLog)
         builder.buildProject(board, files: files)
@@ -428,6 +425,11 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate, NSMenuDelegate {
         get {
             return ASHardware.instance().boards[board]?["upload.protocol"] != nil
         }
+    }
+
+    @IBAction func uploadProject(AnyObject) {
+        selectNode(files.uploadLog)
+        builder.uploadProject(board, programmer:programmer, port:port)
     }
 }
 
