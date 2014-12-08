@@ -116,6 +116,8 @@ class ASBuilder {
             args.append("-b")
             args.append(speed!)
         }
+        let cmdLine = task!.launchPath+" "+(args as NSArray).componentsJoinedByString(" ")+"\n"
+        logOut.writeData(cmdLine.dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: true)!)
         task!.arguments         =   args;
         task!.launch()
     }
