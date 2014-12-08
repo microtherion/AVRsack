@@ -11,6 +11,24 @@ import Foundation
 class ASBuilder {
     var dir         = NSURL()
     var task        : NSTask?
+    var continuation: (()->())?
+    var termination : AnyObject?
+    
+    init() {
+        termination = NSNotificationCenter.defaultCenter().addObserverForName(NSTaskDidTerminateNotification,
+            object: nil, queue: nil, usingBlock:
+        { (notification: NSNotification!) in
+            if notification.object as? NSTask == self.task && self.task!.terminationStatus == 0 {
+                if let cont = self.continuation {
+                    self.continuation = nil
+                    cont()
+                }
+            }
+        })
+    }
+    func finalize() {
+        NSNotificationCenter.defaultCenter().removeObserver(termination!)
+    }
     
     func setProjectURL(url: NSURL) {
         dir       = url.URLByDeletingLastPathComponent!.standardizedURL!
@@ -92,8 +110,12 @@ class ASBuilder {
         let speed       = boardProp["upload.speed"]    ?? progProp?["speed"]
         var args        = ["-v", "-v", "-v", "-v", "-D",
             "-C", "/usr/local/CrossPack-AVR/etc/avrdude.conf",
-            "-p", boardProp["build.mcu"], "-c", proto!, "-P", port, "-b", speed!,
+            "-p", boardProp["build.mcu"]!, "-c", proto!, "-P", port,
             "-U", "flash:w:build/"+board+"/"+dir.lastPathComponent+".hex:i"]
+        if speed != nil {
+            args.append("-b")
+            args.append(speed!)
+        }
         task!.arguments         =   args;
         task!.launch()
     }

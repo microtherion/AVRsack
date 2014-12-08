@@ -8,28 +8,13 @@
 
 import Foundation
 
-class ASPropertyEntry {
-    private var storage = [String: String]()
-    subscript(key: String) -> String {
-        get {
-            if let value = storage[key] {
-                return value
-            } else {
-                return ""
-            }
-        }
-        set (newValue) {
-            storage[key] = newValue
-        }
-    }
-}
-
+typealias ASPropertyEntry = [String: String]
 typealias ASProperties      = [String: ASPropertyEntry]
 
 extension NSMenu {
     func addSortedChoices(choices:[ASPropertyEntry], target: AnyObject, selector: Selector) {
         for choice in choices.sorted({ $0["name"] < $1["name"] })  {
-            let item        = self.addItemWithTitle(choice["name"], action: selector, keyEquivalent: "")
+            let item        = self.addItemWithTitle(choice["name"]!, action: selector, keyEquivalent: "")
             item?.target    = target
         }
     }
@@ -127,7 +112,7 @@ class ASHardware {
             menu.addItem(NSMenuItem.separatorItem())
             var seen = [String: Bool]()
             for prop in choices.values {
-                seen[prop["provenience"]] = true
+                seen[prop["provenience"]!] = true
             }
             var sortedKeys = [String](seen.keys)
             sortedKeys.sort { $0 < $1 }

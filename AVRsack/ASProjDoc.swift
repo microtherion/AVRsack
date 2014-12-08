@@ -447,9 +447,12 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate, NSMenuDelegate {
         return NSSet(objects: "port", "board", "programmer")
     }
     
-    @IBAction func uploadProject(AnyObject) {
-        selectNode(files.uploadLog)
-        builder.uploadProject(board, programmer:programmer, port:port)
+    @IBAction func uploadProject(sender: AnyObject) {
+        builder.continuation = {
+            self.selectNode(self.files.uploadLog)
+            self.builder.uploadProject(self.board, programmer:self.programmer, port:self.port)
+        }
+        buildProject(sender)
     }
 }
 
