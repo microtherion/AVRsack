@@ -45,6 +45,7 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate, NSMenuDelegate {
     var recentBoards            = [String]()
     var recentProgrammers       = [String]()
     var logModified             = NSDate.distantPast() as NSDate
+    var logSize                 = 0
     var updateLogTimer          : NSTimer?
     
     let kVersionKey             = "Version"
@@ -221,14 +222,21 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate, NSMenuDelegate {
                 return
             }
             var modified : AnyObject?
-            if (url!.getResourceValue(&modified, forKey:NSURLAttributeModificationDateKey, error:nil)) {
-                if (modified as NSDate).compare(logModified) == .OrderedDescending {
-                    var enc : UInt  = 0
-                    let newText     = NSString(contentsOfURL:url!, usedEncoding:&enc, error:nil)
-                    editor.setString(newText)
-                    editor.gotoLine(1000000000, column: 0, animated: true)
-                    logModified = modified as NSDate
-                }
+            var size     : AnyObject?
+            if (!url!.getResourceValue(&modified, forKey:NSURLAttributeModificationDateKey, error:nil)) {
+                return
+            }
+            if (!url!.getResourceValue(&size, forKey:NSURLFileSizeKey, error:nil)) {
+                return
+            }
+            
+            if (modified as NSDate).compare(logModified) == .OrderedDescending || (size as Int) != logSize {
+                var enc : UInt  = 0
+                let newText     = NSString(contentsOfURL:url!, usedEncoding:&enc, error:nil)
+                editor.setString(newText)
+                editor.gotoLine(1000000000, column: 0, animated: true)
+                logModified = modified as NSDate
+                logSize     = size as Int
             }
         }
     }
@@ -247,6 +255,7 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate, NSMenuDelegate {
             editor.setMode(UInt(ACEModeASCIIDoc))
             editor.alphaValue = 0.8
             logModified = NSDate.distantPast() as NSDate
+            logSize     = -1
             mainEditor  = selection
             updateLog(nil)
         } else {
