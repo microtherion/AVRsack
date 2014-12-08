@@ -127,7 +127,8 @@ File.open("Rakefile", 'w') do |rakeFile|
     SOURCES = Rake::FileList.new(ARGV).select {|f| f =~ /\.(c|cpp|cp|cxx|S)$/}
     INCLUDES= (CORES+LIBRARIES).map {|l| " +\n   \" -I'#{l}'\""}.join('')
     rakeFile.print <<END_RAKE
-CC          = '/usr/local/CrossPack-AVR/bin/avr-g++ -c -g -Os -Wall -fno-exceptions -ffunction-sections -fdata-sections -mmcu=#{BUILD['mcu']} -DF_CPU=#{BUILD['f_cpu']} -MMD -DUSB_VID=null -DUSB_PID=null -DARDUINO=105 -I ../..'#{INCLUDES}
+CC          = '/usr/local/CrossPack-AVR/bin/avr-gcc -c -g -Os -Wall -fno-exceptions -ffunction-sections -fdata-sections -mmcu=#{BUILD['mcu']} -DF_CPU=#{BUILD['f_cpu']} -MMD -DUSB_VID=null -DUSB_PID=null -DARDUINO=105 -I ../..'#{INCLUDES}
+CCP         = '/usr/local/CrossPack-AVR/bin/avr-g++ -c -g -Os -Wall -fno-exceptions -ffunction-sections -fdata-sections -mmcu=#{BUILD['mcu']} -DF_CPU=#{BUILD['f_cpu']} -MMD -DUSB_VID=null -DUSB_PID=null -DARDUINO=105 -I ../..'#{INCLUDES}
 LD          = '/usr/local/CrossPack-AVR/bin/avr-g++ -Os -Wl,--gc-sections -mmcu=#{BUILD['mcu']}'
 AR          = '/usr/local/CrossPack-AVR/bin/avr-ar crs'
 EEP         = '/usr/local/CrossPack-AVR/bin/avr-objcopy -O ihex -j .eeprom --set-section-flags=.eeprom=alloc,load --no-change-warnings --change-section-lma .eeprom=0'
@@ -141,7 +142,8 @@ def compile(dest, extrainc, *src)
     objects = sources.pathmap(dest+"/%n.o")
     objects.each_index do |i|
         file objects[i] => [sources[i],dest] do
-           sh "%s %s '%s' -o '%s'" % [CC, extrainc ? "-I '"+extrainc+"'" : '', sources[i], objects[i]]
+             sh "%s %s '%s' -o '%s'" % [sources[i] =~ /.c$/ ? CC : CCP,
+                extrainc ? "-I '"+extrainc+"'" : '', sources[i], objects[i]]
         end
     end
     file archive => objects do
