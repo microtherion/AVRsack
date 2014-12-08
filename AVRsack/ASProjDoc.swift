@@ -41,7 +41,11 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate, NSMenuDelegate {
     var themeObserver           : AnyObject?
     var board                   = "uno"
     var programmer              = "arduino"
-    var port                    = ""
+    dynamic var port            : String = "" {
+        didSet {
+            
+        }
+    }
     var recentBoards            = [String]()
     var recentProgrammers       = [String]()
     var logModified             = NSDate.distantPast() as NSDate
@@ -113,7 +117,6 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate, NSMenuDelegate {
                 }
             }
         }
-        updateChangeCount(.ChangeCleared)
         outlineViewSelectionDidChange(NSNotification(name: "", object: nil))
         menuNeedsUpdate(boardTool.menu!)
         menuNeedsUpdate(progTool.menu!)
@@ -121,6 +124,7 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate, NSMenuDelegate {
         portTool.addItemWithTitle("Title")
         portTool.addItemsWithTitles(ASSerial.ports())
         portTool.setTitle(port)
+        updateChangeCount(.ChangeCleared)
     }
 
     override class func autosavesInPlace() -> Bool {
@@ -363,7 +367,7 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate, NSMenuDelegate {
         set (newBoard) {
             for (ident, prop) in ASHardware.instance().boards {
                 if prop["name"] == newBoard {
-                    board = ident
+                    setValue(ident, forKey: "board")
 
                     pushToFront(&recentBoards, board)
                     
@@ -393,7 +397,7 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate, NSMenuDelegate {
         set (newProg) {
             for (ident, prop) in ASHardware.instance().programmers {
                 if prop["name"] == newProg {
-                    programmer = ident
+                    setValue(ident, forKey:"programmer")
                     
                     pushToFront(&recentProgrammers, programmer)
                     
@@ -423,10 +427,26 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate, NSMenuDelegate {
     
     var hasUploadProtocol : Bool {
         get {
-            return ASHardware.instance().boards[board]?["upload.protocol"] != nil
+            if let proto = ASHardware.instance().boards[board]?["upload.protocol"] {
+                return proto != ""
+            } else {
+                return false
+            }
         }
     }
-
+    class func keyPathsForValuesAffectingHasUploadProtocol() -> NSSet {
+        return NSSet(object: "board")
+    }
+    
+    var canUpload : Bool {
+        get {
+            return port != "" && (hasUploadProtocol || programmer != "")
+        }
+    }
+    class func keyPathsForValuesAffectingCanUpload() -> NSSet {
+        return NSSet(objects: "port", "board", "programmer")
+    }
+    
     @IBAction func uploadProject(AnyObject) {
         selectNode(files.uploadLog)
         builder.uploadProject(board, programmer:programmer, port:port)

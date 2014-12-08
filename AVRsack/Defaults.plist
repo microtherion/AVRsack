@@ -22,7 +22,7 @@
 	<key>Port</key>
 	<string></string>
 	<key>Programmer</key>
-	<string>arduino</string>
+	<string></string>
 	<key>Board</key>
 	<string>uno</string>
 	<key>Bindings</key>

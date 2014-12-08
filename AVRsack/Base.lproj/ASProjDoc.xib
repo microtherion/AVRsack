@@ -98,9 +98,10 @@
             </view>
             <toolbar key="toolbar" implicitIdentifier="625EA1E8-488D-4F0C-8EE0-5F627F033421" autosavesConfiguration="NO" displayMode="iconAndLabel" sizeMode="regular" id="FLS-YK-Gpe">
                 <allowedToolbarItems>
-                    <toolbarItem implicitItemIdentifier="9276EE94-B438-4F93-AC26-93EC83DAA78E" label="Upload" paletteLabel="Upload" tag="-1" image="UploadIcon" id="2cP-cC-Cr8">
+                    <toolbarItem implicitItemIdentifier="9276EE94-B438-4F93-AC26-93EC83DAA78E" label="Upload" paletteLabel="Upload" tag="-1" image="UploadIcon" autovalidates="NO" id="2cP-cC-Cr8">
                         <connections>
                             <action selector="uploadProject:" target="-1" id="p1l-Vg-i2P"/>
+                            <binding destination="-2" name="enabled" keyPath="canUpload" id="j3y-Yd-bma"/>
                         </connections>
                     </toolbarItem>
                     <toolbarItem implicitItemIdentifier="69F004B0-A5C2-4130-9306-CBDA9B75A34E" label="Build" paletteLabel="Build" tag="-1" image="BuildIcon" id="69r-aN-6vG">
