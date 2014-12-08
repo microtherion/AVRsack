@@ -37,11 +37,13 @@ class ASBuilder {
         var corePath    = ""
         var variantPath : NSString?
         for hw in ASHardware.instance().directories {
-            corePath = hw+"/cores/"+boardProp["build.core"]
+            corePath = hw+"/cores/"+boardProp["build.core"]!
             if fileManager.fileExistsAtPath(corePath) {
-                if boardProp["build.variant"] != "" {
-                    variantPath = hw+"/variants/"+boardProp["build.variant"]
-                    if !fileManager.fileExistsAtPath(corePath) {
+                if let variantName = boardProp["build.variant"] {
+                    variantPath = hw+"/variants/"+variantName
+                    if fileManager.fileExistsAtPath(variantPath!) {
+                        args.append("variant="+variantName)
+                   } else {
                         variantPath = nil
                     }
                 }
@@ -51,16 +53,15 @@ class ASBuilder {
             }
         }
         if corePath == "" {
-            NSLog("Unable to find core %s\n", boardProp["build.core"])
+            NSLog("Unable to find core %s\n", boardProp["build.core"]!)
             return
         }
         args.append("project="+dir.lastPathComponent)
         args.append("board="+board)
-        args.append("mcu="+boardProp["build.mcu"])
-        args.append("f_cpu="+boardProp["build.f_cpu"])
-        args.append("max_size"+boardProp["upload.maximum_size"])
-        args.append("core="+boardProp["build.core"])
-        args.append("variant="+boardProp["build.variant"])
+        args.append("mcu="+boardProp["build.mcu"]!)
+        args.append("f_cpu="+boardProp["build.f_cpu"]!)
+        args.append("max_size"+boardProp["upload.maximum_size"]!)
+        args.append("core="+boardProp["build.core"]!)
         args.append("libs="+libPath)
         args.append("core_path="+corePath)
         if variantPath != nil {

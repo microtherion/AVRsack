@@ -160,7 +160,7 @@ def compile_library(lib)
     compile(lib.pathmap('lib/%f'), extrainc, *Rake::FileList[lib+"/*.{c,cpp,cp,cxx,S}", lib+"/utility/*.{c,cpp,cp,cxx,S}"])
 end
                             
-def compile_core(core,variant)
+def compile_core(core,variant=nil)
     list = Rake::FileList[core+"/*.{c,cpp,cp,cxx,S}"]
     list.add(variant+"/*.{c,cpp,cp,cxx,S}") if variant
     compile('core', nil, list)
