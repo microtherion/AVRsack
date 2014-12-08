@@ -414,5 +414,11 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate, NSMenuDelegate {
         port    = (item as NSPopUpButton).titleOfSelectedItem!
         portTool.setTitle(port)
     }
+    
+    var hasUploadProtocol : Bool {
+        get {
+            return ASHardware.instance().boards[board]?["upload.protocol"] != nil
+        }
+    }
 }
 

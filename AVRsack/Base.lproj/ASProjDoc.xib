@@ -139,7 +139,7 @@
                     <toolbarItem implicitItemIdentifier="BD8B4827-8CD2-4E50-B435-165CD744B39D" label="Programmer" paletteLabel="Programmer" id="Lt2-Z7-7Pg">
                         <nil key="toolTip"/>
                         <size key="minSize" width="75" height="28"/>
-                        <size key="maxSize" width="200" height="28"/>
+                        <size key="maxSize" width="300" height="28"/>
                         <popUpButton key="view" verticalHuggingPriority="750" allowsExpansionToolTips="YES" id="08n-xg-fNl">
                             <rect key="frame" x="0.0" y="14" width="75" height="28"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
@@ -157,12 +157,15 @@
                                     </connections>
                                 </menu>
                             </popUpButtonCell>
+                            <connections>
+                                <binding destination="-2" name="fontItalic" keyPath="hasUploadProtocol" id="Xha-20-GDI"/>
+                            </connections>
                         </popUpButton>
                     </toolbarItem>
                     <toolbarItem implicitItemIdentifier="1E69CE88-D7A1-4231-B56C-89C813E75589" label="Serial Port" paletteLabel="Serial Port" id="r8E-ar-tLo">
                         <nil key="toolTip"/>
                         <size key="minSize" width="75" height="28"/>
-                        <size key="maxSize" width="400" height="28"/>
+                        <size key="maxSize" width="200" height="28"/>
                         <popUpButton key="view" verticalHuggingPriority="750" allowsExpansionToolTips="YES" id="4rZ-U5-AH6">
                             <rect key="frame" x="0.0" y="14" width="75" height="28"/>
                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
