@@ -183,6 +183,11 @@
                             </popUpButtonCell>
                             <connections>
                                 <action selector="selectPort:" target="-2" id="tRd-x3-Oig"/>
+                                <binding destination="-2" name="fontItalic" keyPath="hasValidPort" id="M4d-Nc-aZd">
+                                    <dictionary key="options">
+                                        <string key="NSValueTransformerName">NSNegateBoolean</string>
+                                    </dictionary>
+                                </binding>
                             </connections>
                         </popUpButton>
                     </toolbarItem>

@@ -39,6 +39,7 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate, NSMenuDelegate {
     var currentTheme            : UInt = 0
     var fontSize                : UInt = 12
     var themeObserver           : AnyObject?
+    var serialObserver          : AnyObject?
     var board                   = "uno"
     var programmer              = "arduino"
     dynamic var port            : String = "" {
@@ -85,22 +86,28 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate, NSMenuDelegate {
                 }
             }
         }
+        
         fontSize = UInt(userDefaults.integerForKey(kFontSizeKey))
-        themeObserver = NSNotificationCenter.defaultCenter().addObserverForName(kBindingsKey, object: nil, queue: nil, usingBlock: { (NSNotification) in
-                self.editor.setKeyboardHandler(keyboardHandler)
-        })
         board               = userDefaults.stringForKey(kBoardKey)!
         programmer          = userDefaults.stringForKey(kProgrammerKey)!
         port                = userDefaults.stringForKey(kPortKey)!
         recentBoards        = userDefaults.objectForKey(kRecentBoardsKey) as [String]
         recentProgrammers   = userDefaults.objectForKey(kRecentProgrammersKey) as [String]
         
+        var nc          = NSNotificationCenter.defaultCenter()
+        themeObserver   = nc.addObserverForName(kBindingsKey, object: nil, queue: nil, usingBlock: { (NSNotification) in
+            self.editor.setKeyboardHandler(keyboardHandler)
+        })
+        serialObserver  = nc.addObserverForName(kASSerialPortsChanged, object: nil, queue: nil, usingBlock: { (NSNotification) in
+            self.rebuildPortMenu()
+        })
         updateLogTimer  =
             NSTimer.scheduledTimerWithTimeInterval(1.0, target: self, selector: "updateLog:", userInfo: nil, repeats: true)
     }
     override func finalize() {
         saveCurEditor()
         NSNotificationCenter.defaultCenter().removeObserver(themeObserver!)
+        NSNotificationCenter.defaultCenter().removeObserver(serialObserver!)
     }
     
     override func windowControllerDidLoadNib(aController: NSWindowController) {
@@ -120,10 +127,7 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate, NSMenuDelegate {
         outlineViewSelectionDidChange(NSNotification(name: "", object: nil))
         menuNeedsUpdate(boardTool.menu!)
         menuNeedsUpdate(progTool.menu!)
-        portTool.removeAllItems()
-        portTool.addItemWithTitle("Title")
-        portTool.addItemsWithTitles(ASSerial.ports())
-        portTool.setTitle(port)
+        rebuildPortMenu()
         updateChangeCount(.ChangeCleared)
     }
 
@@ -348,6 +352,15 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate, NSMenuDelegate {
         selectNodeInOutline(files.buildLog)
     }
 
+    func rebuildPortMenu() {
+        willChangeValueForKey("hasValidPort")
+        portTool.removeAllItems()
+        portTool.addItemWithTitle("Title")
+        portTool.addItemsWithTitles(ASSerial.instance().ports())
+        portTool.setTitle(port)
+        didChangeValueForKey("hasValidPort")
+    }
+    
     func menuNeedsUpdate(menu: NSMenu) {
         switch menu.title {
         case "Boards":
@@ -442,13 +455,19 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate, NSMenuDelegate {
         return NSSet(object: "board")
     }
     
+    var hasValidPort : Bool {
+        get {
+            return (ASSerial.instance().ports() as NSArray).containsObject(port)
+        }
+    }
+    
     var canUpload : Bool {
         get {
-            return port != "" && (hasUploadProtocol || programmer != "")
+            return hasValidPort && (hasUploadProtocol || programmer != "")
         }
     }
     class func keyPathsForValuesAffectingCanUpload() -> NSSet {
-        return NSSet(objects: "port", "board", "programmer")
+        return NSSet(objects: "hasValidPort", "hasUploadProtocol", "programmer")
     }
     
     @IBAction func uploadProject(sender: AnyObject) {
