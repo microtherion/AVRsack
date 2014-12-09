@@ -266,6 +266,10 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate, NSMenuDelegate {
             editor.alphaValue = 0.0
         }
     }
+    func selectNodeInOutline(selection: ASFileNode) {
+        let selectedIndexes = NSIndexSet(index: outline.rowForItem(selection))
+        outline.selectRowIndexes(selectedIndexes, byExtendingSelection: false)
+    }
 
     // MARK: Outline View Delegate
 
@@ -335,13 +339,13 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate, NSMenuDelegate {
     // MARK: Build / Upload
     
     @IBAction func buildProject(AnyObject) {
-        selectNode(files.buildLog)
+        selectNodeInOutline(files.buildLog)
         builder.buildProject(board, files: files)
     }
     
     @IBAction func cleanProject(AnyObject) {
         builder.cleanProject()
-        selectNode(files.buildLog)
+        selectNodeInOutline(files.buildLog)
     }
 
     func menuNeedsUpdate(menu: NSMenu) {
@@ -449,7 +453,7 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate, NSMenuDelegate {
     
     @IBAction func uploadProject(sender: AnyObject) {
         builder.continuation = {
-            self.selectNode(self.files.uploadLog)
+            self.selectNodeInOutline(self.files.uploadLog)
             self.builder.uploadProject(self.board, programmer:self.programmer, port:self.port)
         }
         buildProject(sender)
