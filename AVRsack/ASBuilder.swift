@@ -18,10 +18,14 @@ class ASBuilder {
         termination = NSNotificationCenter.defaultCenter().addObserverForName(NSTaskDidTerminateNotification,
             object: nil, queue: nil, usingBlock:
         { (notification: NSNotification!) in
-            if notification.object as? NSTask == self.task && self.task!.terminationStatus == 0 {
-                if let cont = self.continuation {
+            if notification.object as? NSTask == self.task {
+                if self.task!.terminationStatus == 0 {
+                    if let cont = self.continuation {
+                        self.continuation = nil
+                        cont()
+                    }
+                } else {
                     self.continuation = nil
-                    cont()
                 }
             }
         })
@@ -116,6 +120,25 @@ class ASBuilder {
             args.append("-b")
             args.append(speed!)
         }
+        let cmdLine = task!.launchPath+" "+(args as NSArray).componentsJoinedByString(" ")+"\n"
+        logOut.writeData(cmdLine.dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: true)!)
+        task!.arguments         =   args;
+        task!.launch()
+    }
+    
+    func disassembleProject(board: String) {
+        task = NSTask()
+        task!.currentDirectoryPath  = dir.path!
+        task!.launchPath            = "/usr/local/CrossPack-AVR/bin/avr-objdump"
+        
+        let fileManager = NSFileManager.defaultManager()
+        let logURL              = dir.URLByAppendingPathComponent("build/disasm.log")
+        fileManager.createFileAtPath(logURL.path!, contents: NSData(), attributes: nil)
+        let logOut              = NSFileHandle(forWritingAtPath: logURL.path!)!
+        task!.standardOutput    = logOut
+        task!.standardError     = logOut
+        
+        var args        = ["-d", "-S", "build/"+board+"/"+dir.lastPathComponent+".elf"]
         let cmdLine = task!.launchPath+" "+(args as NSArray).componentsJoinedByString(" ")+"\n"
         logOut.writeData(cmdLine.dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: true)!)
         task!.arguments         =   args;

@@ -203,6 +203,7 @@ class ASFileTree : NSObject, NSOutlineViewDataSource {
     var dir         = NSURL()
     var buildLog    = ASLogNode(name: "Build Log", path: "build/build.log")
     var uploadLog   = ASLogNode(name: "Upload Log", path: "build/upload.log")
+    var disassembly = ASLogNode(name: "Disassembly", path: "build/disasm.log")
     
     func addFileURL(url: NSURL, omitUnknown: Bool = true) {
         let type = ASFileType.guessForURL(url)
@@ -230,7 +231,7 @@ class ASFileTree : NSObject, NSOutlineViewDataSource {
     // MARK: Outline Data Source
     func outlineView(outlineView: NSOutlineView, numberOfChildrenOfItem item: AnyObject?) -> Int {
         if item == nil {
-            return 3
+            return 4
         } else {
             return (item as ASFileGroup).children.count
         }
@@ -242,6 +243,8 @@ class ASFileTree : NSObject, NSOutlineViewDataSource {
                 return buildLog
             case 2:
                 return uploadLog
+            case 3:
+                return disassembly
             default:
                 return root
             }

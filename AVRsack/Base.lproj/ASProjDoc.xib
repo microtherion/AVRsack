@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="7096" systemVersion="14B25" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="7096" systemVersion="14C82" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="7096"/>
     </dependencies>
@@ -109,6 +109,11 @@
                             <action selector="buildProject:" target="-1" id="Rkc-yl-Vwi"/>
                         </connections>
                     </toolbarItem>
+                    <toolbarItem implicitItemIdentifier="8F4A4234-688B-4341-96E1-BEE9BB98AF4B" label="Disasm" paletteLabel="Disassemble" tag="-1" image="DisassIcon" id="MP9-gL-Y3I">
+                        <connections>
+                            <action selector="disassembleProject:" target="-2" id="idL-cS-KK9"/>
+                        </connections>
+                    </toolbarItem>
                     <toolbarItem implicitItemIdentifier="2B98B0B2-C192-4A20-9C17-8CDBD6A9002F" label="Clean" paletteLabel="Clean" tag="-1" image="CleanIcon" id="lGv-lT-Eh9">
                         <connections>
                             <action selector="cleanProject:" target="-1" id="LzL-6C-IDi"/>
@@ -198,6 +203,7 @@
                 <defaultToolbarItems>
                     <toolbarItem reference="2cP-cC-Cr8"/>
                     <toolbarItem reference="69r-aN-6vG"/>
+                    <toolbarItem reference="MP9-gL-Y3I"/>
                     <toolbarItem reference="FYt-ZW-Epr"/>
                     <toolbarItem reference="lGv-lT-Eh9"/>
                     <toolbarItem reference="FYt-ZW-Epr"/>
@@ -218,6 +224,7 @@
     <resources>
         <image name="BuildIcon" width="32" height="32"/>
         <image name="CleanIcon" width="32" height="32"/>
+        <image name="DisassIcon" width="32" height="32"/>
         <image name="UploadIcon" width="32" height="32"/>
     </resources>
 </document>

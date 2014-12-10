@@ -287,7 +287,7 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate, NSMenuDelegate {
         updateChangeCount(.ChangeDone)
     }
     func outlineView(outlineView: NSOutlineView, willDisplayCell cell: AnyObject, forTableColumn tableColumn: NSTableColumn?, item: AnyObject) {
-        if item === files.root || item === files.buildLog || item === files.uploadLog {
+        if item === files.root || item === files.buildLog || item === files.uploadLog || item === files.disassembly {
             (cell as NSCell).font = NSFont.boldSystemFontOfSize(13.0)
         } else {
             (cell as NSCell).font = NSFont.systemFontOfSize(13.0)
@@ -473,6 +473,14 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate, NSMenuDelegate {
         builder.continuation = {
             self.selectNodeInOutline(self.files.uploadLog)
             self.builder.uploadProject(self.board, programmer:self.programmer, port:self.port)
+        }
+        buildProject(sender)
+    }
+    
+    @IBAction func disassembleProject(sender: AnyObject) {
+        builder.continuation = {
+            self.selectNodeInOutline(self.files.disassembly)
+            self.builder.disassembleProject(self.board)
         }
         buildProject(sender)
     }
