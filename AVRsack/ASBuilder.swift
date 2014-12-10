@@ -108,7 +108,7 @@ class ASBuilder {
         let progProp    = ASHardware.instance().programmers[programmer]
         let proto       = boardProp["upload.protocol"] ?? progProp?["protocol"]
         let speed       = boardProp["upload.speed"]    ?? progProp?["speed"]
-        var args        = ["-v", "-v", "-v", "-v", "-D",
+        var args        = ["-v", "-v", "-v", 
             "-C", "/usr/local/CrossPack-AVR/etc/avrdude.conf",
             "-p", boardProp["build.mcu"]!, "-c", proto!, "-P", port,
             "-U", "flash:w:build/"+board+"/"+dir.lastPathComponent+".hex:i"]

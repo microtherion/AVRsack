@@ -40,13 +40,9 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate, NSMenuDelegate {
     var fontSize                : UInt = 12
     var themeObserver           : AnyObject?
     var serialObserver          : AnyObject?
-    var board                   = "uno"
-    var programmer              = "arduino"
-    dynamic var port            : String = "" {
-        didSet {
-            
-        }
-    }
+    dynamic var board           = "uno"
+    dynamic var programmer      = "arduino"
+    dynamic var port            : String = ""
     var recentBoards            = [String]()
     var recentProgrammers       = [String]()
     var logModified             = NSDate.distantPast() as NSDate
@@ -384,7 +380,7 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate, NSMenuDelegate {
         set (newBoard) {
             for (ident, prop) in ASHardware.instance().boards {
                 if prop["name"] == newBoard {
-                    setValue(ident, forKey: "board")
+                    board = ident
 
                     pushToFront(&recentBoards, board)
                     
@@ -414,7 +410,7 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate, NSMenuDelegate {
         set (newProg) {
             for (ident, prop) in ASHardware.instance().programmers {
                 if prop["name"] == newProg {
-                    setValue(ident, forKey:"programmer")
+                    programmer = ident
                     
                     pushToFront(&recentProgrammers, programmer)
                     
@@ -459,6 +455,9 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate, NSMenuDelegate {
         get {
             return (ASSerial.instance().ports() as NSArray).containsObject(port)
         }
+    }
+    class func keyPathsForValuesAffectingHasValidPort() -> NSSet {
+        return NSSet(object: "port")
     }
     
     var canUpload : Bool {
