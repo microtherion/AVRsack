@@ -19,6 +19,8 @@
 		951CD1771A2615000066C1A1 /* BuildProject in Resources */ = {isa = PBXBuildFile; fileRef = 951CD1761A2615000066C1A1 /* BuildProject */; };
 		95468DDF1A228BE600668EE2 /* ASHardware.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95468DDE1A228BE600668EE2 /* ASHardware.swift */; };
 		95468DE31A228E1300668EE2 /* Defaults.plist in Resources */ = {isa = PBXBuildFile; fileRef = 95468DE21A228E1300668EE2 /* Defaults.plist */; };
+		95A7C6401A38914300EF1963 /* ASPreferences.xib in Resources */ = {isa = PBXBuildFile; fileRef = 95A7C63E1A38914300EF1963 /* ASPreferences.xib */; };
+		95A7C6461A3894C900EF1963 /* ASPreferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95A7C6451A3894C900EF1963 /* ASPreferences.swift */; };
 		95BF80EB1A185C9E0004A693 /* ASFileTree.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95BF80EA1A185C9E0004A693 /* ASFileTree.swift */; };
 		95EA32621A17B90600F66EB0 /* ACEView.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 95EA325B1A17B8DA00F66EB0 /* ACEView.framework */; };
 		95EA32651A17BA8C00F66EB0 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 95EA32631A17BA8C00F66EB0 /* Cocoa.framework */; };
@@ -80,6 +82,8 @@
 		95468DDE1A228BE600668EE2 /* ASHardware.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ASHardware.swift; sourceTree = "<group>"; };
 		95468DE21A228E1300668EE2 /* Defaults.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Defaults.plist; sourceTree = "<group>"; };
 		958D76811A17DA1C00917D96 /* AVRsack-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "AVRsack-Bridging-Header.h"; sourceTree = "<group>"; };
+		95A7C63F1A38914300EF1963 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/ASPreferences.xib; sourceTree = "<group>"; };
+		95A7C6451A3894C900EF1963 /* ASPreferences.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ASPreferences.swift; sourceTree = "<group>"; };
 		95BF80EA1A185C9E0004A693 /* ASFileTree.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ASFileTree.swift; sourceTree = "<group>"; };
 		95EA32541A17B8DA00F66EB0 /* ACEView.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ACEView.xcodeproj; path = ../ACEView/ACEView.xcodeproj; sourceTree = "<group>"; };
 		95EA32631A17BA8C00F66EB0 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
@@ -171,6 +175,7 @@
 				95468DDE1A228BE600668EE2 /* ASHardware.swift */,
 				950AB9281A2D4F9B0033A9DA /* ASSerial.swift */,
 				951CD1731A23C9FC0066C1A1 /* ASBuilder.swift */,
+				95A7C6451A3894C900EF1963 /* ASPreferences.swift */,
 				951CD1761A2615000066C1A1 /* BuildProject */,
 			);
 			name = Source;
@@ -183,6 +188,7 @@
 				950AB9261A296A160033A9DA /* ProjIcon.icns */,
 				9501D80A1A17025C0034C530 /* MainMenu.xib */,
 				9501D8051A17025C0034C530 /* ASProjDoc.xib */,
+				95A7C63E1A38914300EF1963 /* ASPreferences.xib */,
 				95468DE21A228E1300668EE2 /* Defaults.plist */,
 			);
 			name = Resources;
@@ -318,6 +324,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				95A7C6401A38914300EF1963 /* ASPreferences.xib in Resources */,
 				95468DE31A228E1300668EE2 /* Defaults.plist in Resources */,
 				9501D8071A17025C0034C530 /* ASProjDoc.xib in Resources */,
 				950AB9271A296A160033A9DA /* ProjIcon.icns in Resources */,
@@ -347,6 +354,7 @@
 				950AB9291A2D4F9B0033A9DA /* ASSerial.swift in Sources */,
 				9501D8021A17025C0034C530 /* ASApplication.swift in Sources */,
 				95BF80EB1A185C9E0004A693 /* ASFileTree.swift in Sources */,
+				95A7C6461A3894C900EF1963 /* ASPreferences.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -388,6 +396,14 @@
 				9501D80B1A17025C0034C530 /* Base */,
 			);
 			name = MainMenu.xib;
+			sourceTree = "<group>";
+		};
+		95A7C63E1A38914300EF1963 /* ASPreferences.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				95A7C63F1A38914300EF1963 /* Base */,
+			);
+			name = ASPreferences.xib;
 			sourceTree = "<group>";
 		};
 /* End PBXVariantGroup section */

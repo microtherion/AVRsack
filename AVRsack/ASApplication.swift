@@ -34,6 +34,11 @@ class ASApplication: NSObject, NSApplicationDelegate {
             sketchbooks.append(doc.URLByAppendingPathComponent("AVRSack").path!)
         }
         appDefaults["Sketchbooks"]  = sketchbooks
+        if fileManager.fileExistsAtPath("/usr/local/CrossPack-AVR") {
+            appDefaults["Toolchain"] = "/usr/local/CrossPack-AVR"
+        } else {
+            appDefaults["Toolchain"] = ""
+        }
         
         userDefaults.registerDefaults(appDefaults)
     }
