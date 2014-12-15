@@ -12,6 +12,7 @@ import Cocoa
 class ASApplication: NSObject, NSApplicationDelegate {
     @IBOutlet weak var themeMenu    : NSMenu!
     @IBOutlet weak var keyboardMenu : NSMenu!
+    @IBOutlet weak var preferences  : ASPreferences!
     
     func applicationWillFinishLaunching(notification: NSNotification) {
         //

@@ -48,6 +48,7 @@ class ASBuilder {
     }
     
     func buildProject(board: String, files: ASFileTree) {
+        let toolChain               = (NSApplication.sharedApplication().delegate as ASApplication).preferences.toolchainPath
         task = NSTask()
         task!.currentDirectoryPath  = dir.path!
         task!.launchPath            = NSBundle.mainBundle().pathForResource("BuildProject", ofType: "")!
@@ -78,6 +79,7 @@ class ASBuilder {
             NSLog("Unable to find core %s\n", boardProp["build.core"]!)
             return
         }
+        args.append("toolchain="+toolChain)
         args.append("project="+dir.lastPathComponent)
         args.append("board="+board)
         args.append("mcu="+boardProp["build.mcu"]!)
@@ -96,9 +98,10 @@ class ASBuilder {
     }
     
     func uploadProject(board: String, programmer: String, port: String) {
+        let toolChain               = (NSApplication.sharedApplication().delegate as ASApplication).preferences.toolchainPath
         task = NSTask()
         task!.currentDirectoryPath  = dir.path!
-        task!.launchPath            = "/usr/local/CrossPack-AVR/bin/avrdude"
+        task!.launchPath            = toolChain+"/bin/avrdude"
         
         let fileManager = NSFileManager.defaultManager()
         let logURL              = dir.URLByAppendingPathComponent("build/upload.log")
@@ -112,8 +115,10 @@ class ASBuilder {
         let progProp    = ASHardware.instance().programmers[programmer]
         let proto       = boardProp["upload.protocol"] ?? progProp?["protocol"]
         let speed       = boardProp["upload.speed"]    ?? progProp?["speed"]
-        var args        = ["-v", "-v", "-v", 
-            "-C", "/usr/local/CrossPack-AVR/etc/avrdude.conf",
+        let verbosity   = NSUserDefaults.standardUserDefaults().integerForKey("UploadVerbosity")
+        var args        = Array<String>(count: verbosity, repeatedValue: "-v")
+        args           += [
+            "-C", toolChain+"/etc/avrdude.conf",
             "-p", boardProp["build.mcu"]!, "-c", proto!, "-P", port,
             "-U", "flash:w:build/"+board+"/"+dir.lastPathComponent+".hex:i"]
         if speed != nil {
@@ -127,9 +132,10 @@ class ASBuilder {
     }
     
     func disassembleProject(board: String) {
+        let toolChain               = (NSApplication.sharedApplication().delegate as ASApplication).preferences.toolchainPath
         task = NSTask()
         task!.currentDirectoryPath  = dir.path!
-        task!.launchPath            = "/usr/local/CrossPack-AVR/bin/avr-objdump"
+        task!.launchPath            = toolChain+"/bin/avr-objdump"
         
         let fileManager = NSFileManager.defaultManager()
         let logURL              = dir.URLByAppendingPathComponent("build/disasm.log")
@@ -138,8 +144,10 @@ class ASBuilder {
         task!.standardOutput    = logOut
         task!.standardError     = logOut
         
-        var args        = ["-d", "-S", "build/"+board+"/"+dir.lastPathComponent+".elf"]
-        let cmdLine = task!.launchPath+" "+(args as NSArray).componentsJoinedByString(" ")+"\n"
+        let showSource  = NSUserDefaults.standardUserDefaults().boolForKey("ShowSourceInDisassembly")
+        var args        = showSource ? ["-S"] : []
+        args           += ["-d", "build/"+board+"/"+dir.lastPathComponent+".elf"]
+        let cmdLine     = task!.launchPath+" "+(args as NSArray).componentsJoinedByString(" ")+"\n"
         logOut.writeData(cmdLine.dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: true)!)
         task!.arguments         =   args;
         task!.launch()
