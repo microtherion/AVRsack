@@ -14,11 +14,11 @@
 		9501D80C1A17025C0034C530 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9501D80A1A17025C0034C530 /* MainMenu.xib */; };
 		9501D8181A17025C0034C530 /* AVRsackTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9501D8171A17025C0034C530 /* AVRsackTests.swift */; };
 		950AB9271A296A160033A9DA /* ProjIcon.icns in Resources */ = {isa = PBXBuildFile; fileRef = 950AB9261A296A160033A9DA /* ProjIcon.icns */; };
-		950AB9291A2D4F9B0033A9DA /* ASSerial.swift in Sources */ = {isa = PBXBuildFile; fileRef = 950AB9281A2D4F9B0033A9DA /* ASSerial.swift */; };
 		951CD1741A23C9FC0066C1A1 /* ASBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 951CD1731A23C9FC0066C1A1 /* ASBuilder.swift */; };
 		951CD1771A2615000066C1A1 /* BuildProject in Resources */ = {isa = PBXBuildFile; fileRef = 951CD1761A2615000066C1A1 /* BuildProject */; };
 		95468DDF1A228BE600668EE2 /* ASHardware.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95468DDE1A228BE600668EE2 /* ASHardware.swift */; };
 		95468DE31A228E1300668EE2 /* Defaults.plist in Resources */ = {isa = PBXBuildFile; fileRef = 95468DE21A228E1300668EE2 /* Defaults.plist */; };
+		95539B681A3E7EAF00D8595C /* ASSerial.mm in Sources */ = {isa = PBXBuildFile; fileRef = 95539B671A3E7EAF00D8595C /* ASSerial.mm */; };
 		95A7C6401A38914300EF1963 /* ASPreferences.xib in Resources */ = {isa = PBXBuildFile; fileRef = 95A7C63E1A38914300EF1963 /* ASPreferences.xib */; };
 		95A7C6461A3894C900EF1963 /* ASPreferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95A7C6451A3894C900EF1963 /* ASPreferences.swift */; };
 		95BF80EB1A185C9E0004A693 /* ASFileTree.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95BF80EA1A185C9E0004A693 /* ASFileTree.swift */; };
@@ -76,11 +76,12 @@
 		9501D8161A17025C0034C530 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		9501D8171A17025C0034C530 /* AVRsackTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AVRsackTests.swift; sourceTree = "<group>"; };
 		950AB9261A296A160033A9DA /* ProjIcon.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = ProjIcon.icns; path = IconResources/ProjIcon.icns; sourceTree = "<group>"; };
-		950AB9281A2D4F9B0033A9DA /* ASSerial.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ASSerial.swift; sourceTree = "<group>"; };
 		951CD1731A23C9FC0066C1A1 /* ASBuilder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ASBuilder.swift; sourceTree = "<group>"; };
 		951CD1761A2615000066C1A1 /* BuildProject */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; fileEncoding = 4; path = BuildProject; sourceTree = "<group>"; };
 		95468DDE1A228BE600668EE2 /* ASHardware.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ASHardware.swift; sourceTree = "<group>"; };
 		95468DE21A228E1300668EE2 /* Defaults.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Defaults.plist; sourceTree = "<group>"; };
+		95539B661A3E7EAF00D8595C /* ASSerial.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ASSerial.h; sourceTree = "<group>"; };
+		95539B671A3E7EAF00D8595C /* ASSerial.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = ASSerial.mm; sourceTree = "<group>"; };
 		958D76811A17DA1C00917D96 /* AVRsack-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "AVRsack-Bridging-Header.h"; sourceTree = "<group>"; };
 		95A7C63F1A38914300EF1963 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/ASPreferences.xib; sourceTree = "<group>"; };
 		95A7C6451A3894C900EF1963 /* ASPreferences.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ASPreferences.swift; sourceTree = "<group>"; };
@@ -173,10 +174,11 @@
 				9501D8031A17025C0034C530 /* ASProjDoc.swift */,
 				95BF80EA1A185C9E0004A693 /* ASFileTree.swift */,
 				95468DDE1A228BE600668EE2 /* ASHardware.swift */,
-				950AB9281A2D4F9B0033A9DA /* ASSerial.swift */,
 				951CD1731A23C9FC0066C1A1 /* ASBuilder.swift */,
 				95A7C6451A3894C900EF1963 /* ASPreferences.swift */,
 				951CD1761A2615000066C1A1 /* BuildProject */,
+				95539B661A3E7EAF00D8595C /* ASSerial.h */,
+				95539B671A3E7EAF00D8595C /* ASSerial.mm */,
 			);
 			name = Source;
 			sourceTree = "<group>";
@@ -349,9 +351,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				9501D8041A17025C0034C530 /* ASProjDoc.swift in Sources */,
+				95539B681A3E7EAF00D8595C /* ASSerial.mm in Sources */,
 				95468DDF1A228BE600668EE2 /* ASHardware.swift in Sources */,
 				951CD1741A23C9FC0066C1A1 /* ASBuilder.swift in Sources */,
-				950AB9291A2D4F9B0033A9DA /* ASSerial.swift in Sources */,
 				9501D8021A17025C0034C530 /* ASApplication.swift in Sources */,
 				95BF80EB1A185C9E0004A693 /* ASFileTree.swift in Sources */,
 				95A7C6461A3894C900EF1963 /* ASPreferences.swift in Sources */,

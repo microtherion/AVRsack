@@ -352,7 +352,7 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate, NSMenuDelegate {
         willChangeValueForKey("hasValidPort")
         portTool.removeAllItems()
         portTool.addItemWithTitle("Title")
-        portTool.addItemsWithTitles(ASSerial.instance().ports())
+        portTool.addItemsWithTitles(ASSerial.ports())
         portTool.setTitle(port)
         didChangeValueForKey("hasValidPort")
     }
@@ -453,7 +453,7 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate, NSMenuDelegate {
     
     var hasValidPort : Bool {
         get {
-            return (ASSerial.instance().ports() as NSArray).containsObject(port)
+            return (ASSerial.ports() as NSArray).containsObject(port)
         }
     }
     class func keyPathsForValuesAffectingHasValidPort() -> NSSet {
