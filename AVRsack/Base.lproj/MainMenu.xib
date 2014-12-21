@@ -98,6 +98,33 @@
                                 </menu>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="m54-Is-iLE"/>
+                            <menuItem title="Sketchbook" id="4xr-TB-O2o">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <menu key="submenu" title="Sketchbook" autoenablesItems="NO" id="HXa-Bi-EMh">
+                                    <items>
+                                        <menuItem title="Item" id="9ed-eu-m7e">
+                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                        </menuItem>
+                                    </items>
+                                    <connections>
+                                        <outlet property="delegate" destination="Voe-Tx-rLC" id="DkU-Mu-gQh"/>
+                                    </connections>
+                                </menu>
+                            </menuItem>
+                            <menuItem title="Examples" id="BzW-Yi-WXB">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <menu key="submenu" title="Examples" autoenablesItems="NO" id="v0D-oY-a4X">
+                                    <items>
+                                        <menuItem title="Item" id="Ry3-aa-Q0v">
+                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                        </menuItem>
+                                    </items>
+                                    <connections>
+                                        <outlet property="delegate" destination="Voe-Tx-rLC" id="isJ-WG-rC6"/>
+                                    </connections>
+                                </menu>
+                            </menuItem>
+                            <menuItem isSeparatorItem="YES" id="zCK-BU-1ZK"/>
                             <menuItem title="Close" keyEquivalent="w" id="DVo-aG-piG">
                                 <connections>
                                     <action selector="performClose:" target="-1" id="HmO-Ls-i7Q"/>
