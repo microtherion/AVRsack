@@ -166,6 +166,7 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate, NSMenuDelegate {
         let filesInProject =
             NSFileManager.defaultManager().contentsOfDirectoryAtURL(url, includingPropertiesForKeys: nil,
                 options: .SkipsHiddenFiles, error: nil)!
+        files.setProjectURL(fileURL!)
         for file in filesInProject {
             files.addFileURL(file as NSURL)
         }
@@ -178,8 +179,8 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate, NSMenuDelegate {
             let projectURL = url.URLByDeletingPathExtension!.URLByAppendingPathExtension("avrsackproj")
             success = importProject(url.URLByDeletingLastPathComponent!, error: outError)
             if success {
-                files.setProjectURL(fileURL!)
-                builder.setProjectURL(fileURL!)
+                files.setProjectURL(projectURL)
+                builder.setProjectURL(projectURL)
                 fileURL = projectURL
                 success = writeToURL(projectURL, ofType: "Project", forSaveOperation: .SaveAsOperation, originalContentsURL: nil, error: outError)
             }

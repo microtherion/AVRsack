@@ -162,7 +162,11 @@ class ASFileItem : ASFileNode {
     }
     init(_ prop: NSDictionary, withRootURL rootURL: NSURL) {
         type = ASFileType(rawValue: prop[kKindKey] as String)!
-        url  = NSURL(string: prop[kPathKey] as NSString, relativeToURL: rootURL)!.standardizedURL!
+        if let relativeURL = NSURL(string: prop[kPathKey] as NSString, relativeToURL: rootURL) {
+            url  = relativeURL.standardizedURL!
+        } else {
+            url = NSURL(fileURLWithPath: prop[kPathKey] as NSString)!.standardizedURL!
+        }
     }
     override func nodeName() -> String {
         return "📄 "+url.lastPathComponent
