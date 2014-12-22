@@ -91,7 +91,7 @@ def parseInoFiles
                         addLibrary($1)
                     end
                 end
-                %r{(?<preamble>(?:\s+|//.*$|/\*.*?\*/)*)(?<rest>.*)}m =~ contents
+                %r{(?<preamble>(?:\s+|//.*?$|/\*.*?\*/)*)(?<rest>.*)}m =~ contents
                 outFile.print preamble
                 outFile.puts '#include "Arduino.h"'
                 outFile.print proto.join('')
@@ -129,8 +129,9 @@ File.open("Rakefile", 'w') do |rakeFile|
     rakeFile.print <<END_RAKE
 TOOLCHAIN   = "#{BUILD['toolchain']}"
 BIN         = TOOLCHAIN+"/bin/"
-CC          = BIN+'avr-gcc -c -g -Os -Wall -fno-exceptions -ffunction-sections -fdata-sections -mmcu=#{BUILD['mcu']} -DF_CPU=#{BUILD['f_cpu']} -MMD -DUSB_VID=null -DUSB_PID=null -DARDUINO=105 -I ../..'#{INCLUDES}
-CCP         = BIN+'avr-g++ -c -g -Os -Wall -fno-exceptions -ffunction-sections -fdata-sections -mmcu=#{BUILD['mcu']} -DF_CPU=#{BUILD['f_cpu']} -MMD -DUSB_VID=null -DUSB_PID=null -DARDUINO=105 -I ../..'#{INCLUDES}
+USB         = '-DUSB_VID=#{BUILD['usb_vid']} -DUSB_PID=#{BUILD['usb_pid']}'
+CC          = BIN+'avr-gcc -c -g -Os -Wall -fno-exceptions -ffunction-sections -fdata-sections -mmcu=#{BUILD['mcu']} -DF_CPU=#{BUILD['f_cpu']} -MMD '+USB+' -DARDUINO=105 -I ../..'#{INCLUDES}
+CCP         = BIN+'avr-g++ -c -g -Os -Wall -fno-exceptions -ffunction-sections -fdata-sections -mmcu=#{BUILD['mcu']} -DF_CPU=#{BUILD['f_cpu']} -MMD '+USB+' -DARDUINO=105 -I ../..'#{INCLUDES}
 LD          = BIN+'avr-g++ -Os -Wl,--gc-sections -mmcu=#{BUILD['mcu']}'
 AR          = BIN+'avr-ar crs'
 EEP         = BIN+'avr-objcopy -O ihex -j .eeprom --set-section-flags=.eeprom=alloc,load --no-change-warnings --change-section-lma .eeprom=0'
