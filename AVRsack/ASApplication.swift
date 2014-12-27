@@ -57,9 +57,10 @@ class ASApplication: NSObject, NSApplicationDelegate, NSMenuDelegate {
             menuItem!.tag = index
         }
     }
-
+    func applicationShouldOpenUntitledFile(sender: NSApplication) -> Bool {
+        return false
+    }
     func applicationWillTerminate(aNotification: NSNotification) {
-        // Insert code here to tear down your application
     }
 
     func menuNeedsUpdate(menu: NSMenu) {
@@ -85,6 +86,42 @@ class ASApplication: NSObject, NSApplicationDelegate, NSMenuDelegate {
         }
     }
     
+    func openTemplate(template: NSURL) {
+        ASApplication.newProjectLocation(nil,
+            message: "Save editable copy of project \(template.lastPathComponent)")
+        { (saveTo) -> Void in
+            let oldName     = template.lastPathComponent
+            let newName     = saveTo.lastPathComponent
+            let fileManager = NSFileManager.defaultManager()
+            fileManager.copyItemAtURL(template, toURL: saveTo, error: nil)
+            let contents = fileManager.enumeratorAtURL(saveTo,
+                includingPropertiesForKeys: [NSURLNameKey, NSURLPathKey],
+                options: .SkipsHiddenFiles, errorHandler: nil)
+            while let item = contents?.nextObject() as? NSURL {
+                var renameItem = false
+                var itemName   = item.lastPathComponent
+                if itemName.stringByDeletingPathExtension == oldName {
+                    renameItem = true
+                    itemName   = newName.stringByAppendingPathExtension(itemName.pathExtension)!
+                }
+                if renameItem {
+                    fileManager.moveItemAtURL(item,
+                        toURL: item.URLByDeletingLastPathComponent!.URLByAppendingPathComponent(itemName),
+                        error: nil)
+                }
+            }
+            let sketch = ASSketchBook.findSketch(saveTo.path!)
+            switch sketch {
+            case .Sketch(_, let path):
+                let doc = NSDocumentController.sharedDocumentController() as NSDocumentController
+                doc.openDocumentWithContentsOfURL(NSURL(fileURLWithPath: path)!, display: true) { (doc, alreadyOpen, error) -> Void in
+                }
+            default:
+                break
+            }
+        }
+    }
+    
     @IBAction func openSketch(item: NSMenuItem) {
         let url = NSURL(fileURLWithPath: sketches[item.tag])!
         let doc = NSDocumentController.sharedDocumentController() as NSDocumentController
@@ -94,8 +131,25 @@ class ASApplication: NSObject, NSApplicationDelegate, NSMenuDelegate {
     
     @IBAction func openExample(item: NSMenuItem) {
         let url = NSURL(fileURLWithPath: examples[item.tag])!
-        let doc = NSDocumentController.sharedDocumentController() as NSDocumentController
-        doc.openDocumentWithContentsOfURL(url, display: true) { (doc, alreadyOpen, error) -> Void in
+        openTemplate(url.URLByDeletingLastPathComponent!)
+    }
+    
+    class func newProjectLocation(documentWindow: NSWindow?, message: String, completion: (NSURL) -> ()) {
+        let savePanel                       = NSSavePanel()
+        savePanel.allowedFileTypes          = [kUTTypeFolder]
+        savePanel.message                   = message
+        if let window = documentWindow {
+            savePanel.beginSheetModalForWindow(window, completionHandler: { (returnCode) -> Void in
+                if returnCode == NSFileHandlingPanelOKButton {
+                    completion(savePanel.URL!)
+                }
+            })
+        } else {
+            savePanel.beginWithCompletionHandler({ (returnCode) -> Void in
+                if returnCode == NSFileHandlingPanelOKButton {
+                    completion(savePanel.URL!)
+                }
+            })
         }
     }
 }

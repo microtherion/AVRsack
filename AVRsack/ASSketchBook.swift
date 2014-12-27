@@ -15,16 +15,32 @@ class ASSketchBook {
     case SketchDir(String, [SketchBookItem])
     }
     
-    private class func enumerateSketches(path: NSString) -> SketchBookItem {
+    class func findSketch(path: NSString) -> SketchBookItem {
         let fileManager = NSFileManager.defaultManager()
+        var inoSketch   = SketchBookItem.Nothing
         let contents    = fileManager.contentsOfDirectoryAtPath(path, error: nil) as [String]
         for item in contents {
             switch item.pathExtension {
-            case "ino", "avrsackproj":
+            case "avrsackproj":
                 return .Sketch(path.lastPathComponent, path.stringByAppendingPathComponent(item))
+            case "ino":
+                inoSketch = .Sketch(path.lastPathComponent, path.stringByAppendingPathComponent(item))
             default:
                 break
             }
+        }
+        return inoSketch
+    }
+    
+    private class func enumerateSketches(path: NSString) -> SketchBookItem {
+        let fileManager = NSFileManager.defaultManager()
+        let contents    = fileManager.contentsOfDirectoryAtPath(path, error: nil) as [String]
+        let sketch = findSketch(path)
+        switch sketch {
+        case .Sketch:
+            return sketch
+        default:
+            break
         }
         var sketches = [SketchBookItem]()
         for item in contents {
