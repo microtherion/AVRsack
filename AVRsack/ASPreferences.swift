@@ -13,9 +13,12 @@ private let kASToolchainArduino     = 1
 private let kASToolchainOther       = 2
 
 class ASPreferences: NSWindowController, NSOpenSavePanelDelegate {
-     dynamic var toolchainPref : String = "" {
-        didSet(oldPref) {
-            NSUserDefaults.standardUserDefaults().setObject(toolchainPref, forKey: "Toolchain")
+    var toolchainPref : String {
+        get {
+            return NSUserDefaults.standardUserDefaults().objectForKey("Toolchain") as String
+        }
+        set(newToolchain) {
+            NSUserDefaults.standardUserDefaults().setObject(newToolchain, forKey: "Toolchain")
         }
     }
     var toolchainType : Int {
@@ -61,11 +64,6 @@ class ASPreferences: NSWindowController, NSOpenSavePanelDelegate {
 
     override convenience init() {
         self.init(windowNibName:"ASPreferences")
-    }
-    
-    override func awakeFromNib() {
-        super.awakeFromNib()
-        toolchainPref = NSUserDefaults.standardUserDefaults().objectForKey("Toolchain") as String
     }
     
     var hasCrossPackAVR : Bool {
