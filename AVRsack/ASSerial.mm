@@ -33,12 +33,14 @@ NSString * kASSerialPortsChanged = @"PortsChanged";
     NSMutableArray * cuPorts = [NSMutableArray array];
     for (NSString * port in [[NSFileManager defaultManager] contentsOfDirectoryAtPath:@"/dev" error: nil]) {
         if ([[port substringToIndex:2] isEqualToString:@"cu"])
-            [cuPorts addObject:[@"/dev/" stringByAppendingString:port]];
+            [cuPorts addObject:[port substringFromIndex:3]];
     }
     return cuPorts;
 }
 
 + (NSFileHandle *)openPort:(NSString *)port withSpeed:(int)speed {
+    if (![port containsString:@"/"])
+        port = [NSString stringWithFormat:@"/dev/cu.%@", port];
     int fd = open([port UTF8String], O_RDWR | O_NOCTTY | O_NONBLOCK);
     if (fd < 0)
         return nil;
