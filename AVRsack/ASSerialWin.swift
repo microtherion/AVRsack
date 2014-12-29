@@ -75,6 +75,9 @@ class ASSerialWin: NSWindowController {
     }
 
     @IBAction func sendInput(AnyObject) {
+        let line = inputLine.stringValue + (sendCR ? "\r" : "") + (sendLF ? "\n" : "")
+        let data = line.dataUsingEncoding(NSASCIIStringEncoding, allowLossyConversion: true)!
+        portHandle?.writeData(data)
     }
     
     @IBAction func connect(AnyObject) {
