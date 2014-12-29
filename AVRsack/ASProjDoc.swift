@@ -38,8 +38,8 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate, NSMenuDelegate {
     var mainEditor              : ASFileNode?
     var currentTheme            : UInt = 0
     var fontSize                : UInt = 12
-    var themeObserver           : AnyObject?
-    var serialObserver          : AnyObject?
+    var themeObserver           : AnyObject!
+    var serialObserver          : AnyObject!
     dynamic var board           = "uno"
     dynamic var programmer      = "arduino"
     dynamic var port            : String = ""
@@ -102,8 +102,8 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate, NSMenuDelegate {
     }
     override func finalize() {
         saveCurEditor()
-        NSNotificationCenter.defaultCenter().removeObserver(themeObserver!)
-        NSNotificationCenter.defaultCenter().removeObserver(serialObserver!)
+        NSNotificationCenter.defaultCenter().removeObserver(themeObserver)
+        NSNotificationCenter.defaultCenter().removeObserver(serialObserver)
     }
     
     override func windowControllerDidLoadNib(aController: NSWindowController) {
@@ -484,6 +484,10 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate, NSMenuDelegate {
             self.builder.disassembleProject(self.board)
         }
         buildProject(sender)
+    }
+    
+    @IBAction func serialConnect(sender: AnyObject) {
+        ASSerialWin.showWindowWithPort(port)
     }
 }
 

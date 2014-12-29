@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="6250" systemVersion="14C79" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="6250"/>
+    </dependencies>
+    <objects>
+        <customObject id="-2" userLabel="File's Owner" customClass="ASSerialWin" customModule="AVRsack" customModuleProvider="target">
+            <connections>
+                <outlet property="inputLine" destination="rIR-2b-lAh" id="85R-3S-YGk"/>
+                <outlet property="logView" destination="ta6-x2-NZt" id="0cN-zX-5mJ"/>
+                <outlet property="portPopUp" destination="P3j-nY-jrB" id="6Gi-rp-uM4"/>
+                <outlet property="window" destination="F0z-JX-Cv5" id="gIp-Ho-8D9"/>
+            </connections>
+        </customObject>
+        <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
+        <customObject id="-3" userLabel="Application" customClass="NSObject"/>
+        <window title="Window" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" oneShot="NO" releasedWhenClosed="NO" animationBehavior="default" id="F0z-JX-Cv5">
+            <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES"/>
+            <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
+            <rect key="contentRect" x="196" y="240" width="751" height="403"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="1440" height="877"/>
+            <view key="contentView" id="se5-gp-TjO">
+                <rect key="frame" x="0.0" y="0.0" width="751" height="403"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="rIR-2b-lAh">
+                        <rect key="frame" x="0.0" y="0.0" width="651" height="22"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="22" id="Y1V-fL-RCq"/>
+                        </constraints>
+                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" state="on" borderStyle="bezel" drawsBackground="YES" id="EBj-i4-UsA">
+                            <font key="font" metaFont="system"/>
+                            <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
+                            <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                        </textFieldCell>
+                        <connections>
+                            <action selector="sendInput:" target="-2" id="X4Z-Nx-aRk"/>
+                            <binding destination="-2" name="enabled" keyPath="portHandle" id="4ct-gM-GrV">
+                                <dictionary key="options">
+                                    <string key="NSValueTransformerName">NSIsNotNil</string>
+                                </dictionary>
+                            </binding>
+                        </connections>
+                    </textField>
+                    <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="MOe-eO-fyb">
+                        <rect key="frame" x="651" y="-1" width="50" height="22"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="20" id="eLx-yy-gCn"/>
+                            <constraint firstAttribute="width" constant="50" id="vaT-Kd-3pn"/>
+                        </constraints>
+                        <buttonCell key="cell" type="smallSquare" title="Send" bezelStyle="smallSquare" imagePosition="overlaps" alignment="center" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="Xt6-lT-b4z">
+                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                            <font key="font" metaFont="system"/>
+                        </buttonCell>
+                        <connections>
+                            <action selector="sendInput:" target="-2" id="oTn-KE-mXZ"/>
+                            <binding destination="-2" name="enabled" keyPath="portHandle" id="pX6-Xy-5IQ">
+                                <dictionary key="options">
+                                    <string key="NSValueTransformerName">NSIsNotNil</string>
+                                </dictionary>
+                            </binding>
+                        </connections>
+                    </button>
+                    <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="H05-Rp-UzR">
+                        <rect key="frame" x="701" y="-1" width="50" height="22"/>
+                        <constraints>
+                            <constraint firstAttribute="width" constant="50" id="FWw-BQ-WKa"/>
+                            <constraint firstAttribute="height" constant="20" id="s7i-ZT-S7W"/>
+                        </constraints>
+                        <buttonCell key="cell" type="smallSquare" title="Now" bezelStyle="smallSquare" imagePosition="overlaps" alignment="center" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="vZ4-fd-aE8">
+                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                            <font key="font" metaFont="system"/>
+                        </buttonCell>
+                    </button>
+                    <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="YB5-mV-vY7">
+                        <rect key="frame" x="336" y="372" width="35" height="19"/>
+                        <constraints>
+                            <constraint firstAttribute="width" constant="35" id="M1a-Tj-gbw"/>
+                        </constraints>
+                        <buttonCell key="cell" type="recessed" title="CR" bezelStyle="recessed" alignment="center" state="on" borderStyle="border" inset="2" id="SpZ-Qv-eXn">
+                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES" changeBackground="YES" changeGray="YES"/>
+                            <font key="font" metaFont="systemBold" size="12"/>
+                        </buttonCell>
+                        <connections>
+                            <binding destination="-2" name="value" keyPath="sendCR" id="HSR-Ct-mvX"/>
+                        </connections>
+                    </button>
+                    <popUpButton verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="P3j-nY-jrB">
+                        <rect key="frame" x="20" y="369" width="200" height="25"/>
+                        <constraints>
+                            <constraint firstAttribute="width" constant="200" id="Pcu-k9-a3F"/>
+                        </constraints>
+                        <popUpButtonCell key="cell" type="roundTextured" title="Item 1" bezelStyle="texturedRounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" selectedItem="1gh-oB-cvv" id="dH3-sr-yK8">
+                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                            <font key="font" metaFont="menu"/>
+                            <menu key="menu" id="dld-b3-fF6">
+                                <items>
+                                    <menuItem title="Item 1" state="on" id="1gh-oB-cvv"/>
+                                    <menuItem title="Item 2" id="dOl-ce-EBm"/>
+                                    <menuItem title="Item 3" id="md7-eV-5UJ"/>
+                                </items>
+                            </menu>
+                        </popUpButtonCell>
+                    </popUpButton>
+                    <popUpButton verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="efl-ex-LQ4">
+                        <rect key="frame" x="228" y="369" width="100" height="25"/>
+                        <constraints>
+                            <constraint firstAttribute="width" constant="100" id="aVR-Sh-ml8"/>
+                        </constraints>
+                        <popUpButtonCell key="cell" type="roundTextured" title="19200 baud" bezelStyle="texturedRounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="border" tag="19200" imageScaling="proportionallyDown" inset="2" selectedItem="RuE-wb-cfx" id="Q1O-jv-TY5">
+                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                            <font key="font" metaFont="menu"/>
+                            <menu key="menu" id="zhD-RA-600">
+                                <items>
+                                    <menuItem title="300 baud" tag="300" id="WMN-Od-fdj" userLabel="300 baud"/>
+                                    <menuItem title="1200 baud" tag="1200" id="Foo-2N-MQb" userLabel="1200 baud"/>
+                                    <menuItem title="2400 baud" tag="2400" id="jkv-KB-7Vc" userLabel="2400 baud"/>
+                                    <menuItem title="4800 baud" tag="4800" id="Efs-B8-jLD">
+                                        <modifierMask key="keyEquivalentModifierMask"/>
+                                    </menuItem>
+                                    <menuItem title="9600 baud" tag="9600" id="x7Y-Ul-fJv">
+                                        <modifierMask key="keyEquivalentModifierMask"/>
+                                    </menuItem>
+                                    <menuItem title="14400 baud" tag="14400" id="jYi-Pk-iBz">
+                                        <modifierMask key="keyEquivalentModifierMask"/>
+                                    </menuItem>
+                                    <menuItem title="19200 baud" state="on" tag="19200" id="RuE-wb-cfx">
+                                        <modifierMask key="keyEquivalentModifierMask"/>
+                                    </menuItem>
+                                    <menuItem title="28800 baud" tag="28800" id="sW4-7s-Knn">
+                                        <modifierMask key="keyEquivalentModifierMask"/>
+                                    </menuItem>
+                                    <menuItem title="38400 baud" tag="38400" id="YVg-iX-49U">
+                                        <modifierMask key="keyEquivalentModifierMask"/>
+                                    </menuItem>
+                                    <menuItem title="57600 baud" tag="57600" id="xwJ-6c-zDK">
+                                        <modifierMask key="keyEquivalentModifierMask"/>
+                                    </menuItem>
+                                    <menuItem title="115200 baud" tag="115200" id="get-rX-rev">
+                                        <modifierMask key="keyEquivalentModifierMask"/>
+                                    </menuItem>
+                                    <menuItem title="230400 baud" tag="230400" id="33o-mv-833">
+                                        <modifierMask key="keyEquivalentModifierMask"/>
+                                    </menuItem>
+                                </items>
+                            </menu>
+                        </popUpButtonCell>
+                        <connections>
+                            <binding destination="-2" name="selectedTag" keyPath="baudRate" id="pDO-CA-0VU"/>
+                        </connections>
+                    </popUpButton>
+                    <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="LrH-O2-kmq">
+                        <rect key="frame" x="379" y="372" width="35" height="19"/>
+                        <constraints>
+                            <constraint firstAttribute="width" constant="35" id="raR-vK-kQ1"/>
+                        </constraints>
+                        <buttonCell key="cell" type="recessed" title="LF" bezelStyle="recessed" alignment="center" state="on" borderStyle="border" inset="2" id="J4k-mA-Des">
+                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES" changeBackground="YES" changeGray="YES"/>
+                            <font key="font" metaFont="systemBold" size="12"/>
+                        </buttonCell>
+                        <connections>
+                            <binding destination="-2" name="value" keyPath="sendLF" id="VbY-fJ-J9E"/>
+                        </connections>
+                    </button>
+                    <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="r6K-Jm-mZe">
+                        <rect key="frame" x="651" y="369" width="80" height="25"/>
+                        <constraints>
+                            <constraint firstAttribute="width" constant="80" id="0VI-Yv-M9O"/>
+                        </constraints>
+                        <buttonCell key="cell" type="squareTextured" title="Connect" alternateTitle="Disconnect" bezelStyle="texturedSquare" alignment="center" state="on" borderStyle="border" inset="2" id="leF-uH-PU3">
+                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                            <font key="font" metaFont="system"/>
+                        </buttonCell>
+                        <connections>
+                            <action selector="connect:" target="-2" id="8wr-LK-b6p"/>
+                            <binding destination="-2" name="title" keyPath="connectButtonTitle" id="E2G-J3-sGe"/>
+                        </connections>
+                    </button>
+                    <customView translatesAutoresizingMaskIntoConstraints="NO" id="ta6-x2-NZt" customClass="ACEView">
+                        <rect key="frame" x="0.0" y="20" width="751" height="343"/>
+                    </customView>
+                </subviews>
+                <constraints>
+                    <constraint firstItem="MOe-eO-fyb" firstAttribute="baseline" secondItem="H05-Rp-UzR" secondAttribute="baseline" id="1lu-Th-ZWy"/>
+                    <constraint firstAttribute="bottom" secondItem="H05-Rp-UzR" secondAttribute="bottom" id="3yV-pC-gLd"/>
+                    <constraint firstItem="ta6-x2-NZt" firstAttribute="leading" secondItem="rIR-2b-lAh" secondAttribute="leading" id="3yl-1R-D3G"/>
+                    <constraint firstItem="LrH-O2-kmq" firstAttribute="centerY" secondItem="r6K-Jm-mZe" secondAttribute="centerY" id="6lX-PM-B49"/>
+                    <constraint firstItem="P3j-nY-jrB" firstAttribute="leading" secondItem="se5-gp-TjO" secondAttribute="leading" constant="20" symbolic="YES" id="77p-ZO-9Li"/>
+                    <constraint firstItem="ta6-x2-NZt" firstAttribute="trailing" secondItem="H05-Rp-UzR" secondAttribute="trailing" id="8GP-Eq-sFq"/>
+                    <constraint firstItem="r6K-Jm-mZe" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="LrH-O2-kmq" secondAttribute="trailing" constant="8" symbolic="YES" id="Fmj-AX-OLl"/>
+                    <constraint firstItem="P3j-nY-jrB" firstAttribute="top" secondItem="se5-gp-TjO" secondAttribute="top" constant="10" id="R9e-ne-2Uq"/>
+                    <constraint firstItem="LrH-O2-kmq" firstAttribute="leading" secondItem="YB5-mV-vY7" secondAttribute="trailing" constant="8" symbolic="YES" id="Txe-Zl-aYz"/>
+                    <constraint firstItem="YB5-mV-vY7" firstAttribute="leading" secondItem="efl-ex-LQ4" secondAttribute="trailing" constant="8" symbolic="YES" id="Uc0-iA-Qbi"/>
+                    <constraint firstItem="efl-ex-LQ4" firstAttribute="baseline" secondItem="P3j-nY-jrB" secondAttribute="baseline" id="XLQ-85-9yK"/>
+                    <constraint firstAttribute="trailing" secondItem="r6K-Jm-mZe" secondAttribute="trailing" constant="20" symbolic="YES" id="Y5v-lS-PaP"/>
+                    <constraint firstItem="MOe-eO-fyb" firstAttribute="leading" secondItem="rIR-2b-lAh" secondAttribute="trailing" id="Zbk-LU-Ff1"/>
+                    <constraint firstAttribute="bottom" secondItem="ta6-x2-NZt" secondAttribute="bottom" constant="20" symbolic="YES" id="bsR-t3-YF5"/>
+                    <constraint firstItem="efl-ex-LQ4" firstAttribute="leading" secondItem="P3j-nY-jrB" secondAttribute="trailing" constant="8" symbolic="YES" id="cLW-5d-9Sf"/>
+                    <constraint firstItem="H05-Rp-UzR" firstAttribute="leading" secondItem="MOe-eO-fyb" secondAttribute="trailing" id="cXy-nX-qgy"/>
+                    <constraint firstAttribute="trailing" secondItem="H05-Rp-UzR" secondAttribute="trailing" id="dii-07-TA9"/>
+                    <constraint firstItem="ta6-x2-NZt" firstAttribute="top" secondItem="P3j-nY-jrB" secondAttribute="bottom" constant="8" symbolic="YES" id="f7E-bv-epu"/>
+                    <constraint firstItem="rIR-2b-lAh" firstAttribute="leading" secondItem="se5-gp-TjO" secondAttribute="leading" id="oK1-50-wsP"/>
+                    <constraint firstItem="LrH-O2-kmq" firstAttribute="baseline" secondItem="YB5-mV-vY7" secondAttribute="baseline" id="s4q-VN-G9l"/>
+                    <constraint firstItem="MOe-eO-fyb" firstAttribute="baseline" secondItem="rIR-2b-lAh" secondAttribute="baseline" id="t7L-ad-xpD"/>
+                    <constraint firstItem="H05-Rp-UzR" firstAttribute="top" secondItem="MOe-eO-fyb" secondAttribute="top" id="te2-kl-pfy"/>
+                    <constraint firstItem="efl-ex-LQ4" firstAttribute="centerY" secondItem="YB5-mV-vY7" secondAttribute="centerY" id="zgD-Re-nSq"/>
+                </constraints>
+            </view>
+            <connections>
+                <outlet property="delegate" destination="-2" id="0bl-1N-AYu"/>
+            </connections>
+            <point key="canvasLocation" x="271.5" y="416.5"/>
+        </window>
+        <menuItem title="Item" id="LMX-DA-dj7">
+            <modifierMask key="keyEquivalentModifierMask"/>
+        </menuItem>
+    </objects>
+</document>

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="7096" systemVersion="14C82" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="6250" systemVersion="14C79" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="7096"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="6250"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="ASProjDoc" customModule="AVRsack">
@@ -114,6 +114,12 @@
                             <action selector="disassembleProject:" target="-2" id="idL-cS-KK9"/>
                         </connections>
                     </toolbarItem>
+                    <toolbarItem implicitItemIdentifier="509BEB7C-6259-4D29-952B-6CA05671EADC" label="Connect" paletteLabel="Connect" tag="-1" image="ConnIcon" autovalidates="NO" id="5gL-i2-xOK">
+                        <connections>
+                            <action selector="serialConnect:" target="-2" id="zIs-rA-Ger"/>
+                            <binding destination="-2" name="enabled" keyPath="hasValidPort" id="VV7-dW-3xH"/>
+                        </connections>
+                    </toolbarItem>
                     <toolbarItem implicitItemIdentifier="2B98B0B2-C192-4A20-9C17-8CDBD6A9002F" label="Clean" paletteLabel="Clean" tag="-1" image="CleanIcon" id="lGv-lT-Eh9">
                         <connections>
                             <action selector="cleanProject:" target="-1" id="LzL-6C-IDi"/>
@@ -210,6 +216,7 @@
                     <toolbarItem reference="vAE-60-8kd"/>
                     <toolbarItem reference="Lt2-Z7-7Pg"/>
                     <toolbarItem reference="r8E-ar-tLo"/>
+                    <toolbarItem reference="5gL-i2-xOK"/>
                     <toolbarItem reference="FYt-ZW-Epr"/>
                     <toolbarItem reference="ln2-Ky-MBg"/>
                 </defaultToolbarItems>
@@ -224,6 +231,7 @@
     <resources>
         <image name="BuildIcon" width="32" height="32"/>
         <image name="CleanIcon" width="32" height="32"/>
+        <image name="ConnIcon" width="32" height="32"/>
         <image name="DisassIcon" width="32" height="32"/>
         <image name="UploadIcon" width="32" height="32"/>
     </resources>

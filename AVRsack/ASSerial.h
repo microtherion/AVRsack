@@ -14,5 +14,6 @@ extern NSString * kASSerialPortsChanged;
 
 + (NSArray *) ports;
 + (NSFileHandle *)openPort:(NSString *) port withSpeed:(int)speed;
++ (void)restorePort:(int)fileDescriptor;
 
 @end

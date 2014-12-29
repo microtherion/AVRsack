@@ -9,8 +9,11 @@
 #import "ASSerial.h"
 
 #include <dispatch/dispatch.h>
+#include <termios.h>
+#include <sys/ioctl.h>
 
-static dispatch_source_t watchSlashDev;
+static dispatch_source_t        watchSlashDev;
+static NSMutableDictionary *    savedAttrs;
 
 NSString * kASSerialPortsChanged = @"PortsChanged";
 
@@ -33,6 +36,41 @@ NSString * kASSerialPortsChanged = @"PortsChanged";
             [cuPorts addObject:[@"/dev/" stringByAppendingString:port]];
     }
     return cuPorts;
+}
+
++ (NSFileHandle *)openPort:(NSString *)port withSpeed:(int)speed {
+    int fd = open([port UTF8String], O_RDWR | O_NOCTTY | O_NONBLOCK);
+    if (fd < 0)
+        return nil;
+    if (ioctl(fd, TIOCEXCL) < 0)
+        goto failed;
+    termios origAttr, newAttr;
+    if (tcgetattr(fd, &origAttr) < 0)
+        goto failed;
+    newAttr = origAttr;
+    cfmakeraw(&newAttr);
+    cfsetspeed(&newAttr, speed);
+    newAttr.c_cflag |= CS8 | CCTS_OFLOW | CRTS_IFLOW;
+    newAttr.c_cflag &= ~(PARENB);
+    tcsetattr(fd, TCSANOW, &newAttr);
+    if (!savedAttrs) {
+        savedAttrs = [NSMutableDictionary dictionary];
+    }
+    [savedAttrs setObject:[NSData dataWithBytes:&origAttr length:sizeof(origAttr)] forKey:[NSNumber numberWithInt:fd]];
+    
+    return [[NSFileHandle alloc] initWithFileDescriptor:fd closeOnDealloc:NO];
+failed:
+    close(fd);
+    
+    return nil;
+}
+
++ (void)restorePort:(int)fileDescriptor {
+    NSNumber * fd = [NSNumber numberWithInt:fileDescriptor];
+    if (NSData * attr = [savedAttrs objectForKey:fd]) {
+        tcsetattr(fileDescriptor, TCSADRAIN, (termios *)[attr bytes]);
+        [savedAttrs removeObjectForKey:fd];
+    }
 }
 
 @end

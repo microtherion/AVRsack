@@ -19,6 +19,8 @@
 		95468DDF1A228BE600668EE2 /* ASHardware.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95468DDE1A228BE600668EE2 /* ASHardware.swift */; };
 		95468DE31A228E1300668EE2 /* Defaults.plist in Resources */ = {isa = PBXBuildFile; fileRef = 95468DE21A228E1300668EE2 /* Defaults.plist */; };
 		95539B681A3E7EAF00D8595C /* ASSerial.mm in Sources */ = {isa = PBXBuildFile; fileRef = 95539B671A3E7EAF00D8595C /* ASSerial.mm */; };
+		956005F41A4EF79D00327007 /* ASSerialWin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 956005F21A4EF79D00327007 /* ASSerialWin.swift */; };
+		956005F51A4EF79D00327007 /* ASSerialWin.xib in Resources */ = {isa = PBXBuildFile; fileRef = 956005F31A4EF79D00327007 /* ASSerialWin.xib */; };
 		95A7C6401A38914300EF1963 /* ASPreferences.xib in Resources */ = {isa = PBXBuildFile; fileRef = 95A7C63E1A38914300EF1963 /* ASPreferences.xib */; };
 		95A7C6461A3894C900EF1963 /* ASPreferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95A7C6451A3894C900EF1963 /* ASPreferences.swift */; };
 		95BF80EB1A185C9E0004A693 /* ASFileTree.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95BF80EA1A185C9E0004A693 /* ASFileTree.swift */; };
@@ -83,6 +85,8 @@
 		95468DE21A228E1300668EE2 /* Defaults.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Defaults.plist; sourceTree = "<group>"; };
 		95539B661A3E7EAF00D8595C /* ASSerial.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ASSerial.h; sourceTree = "<group>"; };
 		95539B671A3E7EAF00D8595C /* ASSerial.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = ASSerial.mm; sourceTree = "<group>"; };
+		956005F21A4EF79D00327007 /* ASSerialWin.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ASSerialWin.swift; sourceTree = "<group>"; };
+		956005F31A4EF79D00327007 /* ASSerialWin.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ASSerialWin.xib; sourceTree = "<group>"; };
 		958D76811A17DA1C00917D96 /* AVRsack-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "AVRsack-Bridging-Header.h"; sourceTree = "<group>"; };
 		95A7C63F1A38914300EF1963 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/ASPreferences.xib; sourceTree = "<group>"; };
 		95A7C6451A3894C900EF1963 /* ASPreferences.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ASPreferences.swift; sourceTree = "<group>"; };
@@ -182,6 +186,7 @@
 				95539B661A3E7EAF00D8595C /* ASSerial.h */,
 				95539B671A3E7EAF00D8595C /* ASSerial.mm */,
 				95DF20661A45A6090013D1B5 /* ASSketchBook.swift */,
+				956005F21A4EF79D00327007 /* ASSerialWin.swift */,
 			);
 			name = Source;
 			sourceTree = "<group>";
@@ -193,6 +198,7 @@
 				950AB9261A296A160033A9DA /* ProjIcon.icns */,
 				9501D80A1A17025C0034C530 /* MainMenu.xib */,
 				9501D8051A17025C0034C530 /* ASProjDoc.xib */,
+				956005F31A4EF79D00327007 /* ASSerialWin.xib */,
 				95A7C63E1A38914300EF1963 /* ASPreferences.xib */,
 				95468DE21A228E1300668EE2 /* Defaults.plist */,
 			);
@@ -331,6 +337,7 @@
 			files = (
 				95A7C6401A38914300EF1963 /* ASPreferences.xib in Resources */,
 				95468DE31A228E1300668EE2 /* Defaults.plist in Resources */,
+				956005F51A4EF79D00327007 /* ASSerialWin.xib in Resources */,
 				9501D8071A17025C0034C530 /* ASProjDoc.xib in Resources */,
 				950AB9271A296A160033A9DA /* ProjIcon.icns in Resources */,
 				9501D8091A17025C0034C530 /* Images.xcassets in Resources */,
@@ -353,6 +360,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				956005F41A4EF79D00327007 /* ASSerialWin.swift in Sources */,
 				9501D8041A17025C0034C530 /* ASProjDoc.swift in Sources */,
 				95539B681A3E7EAF00D8595C /* ASSerial.mm in Sources */,
 				95468DDF1A228BE600668EE2 /* ASHardware.swift in Sources */,

@@ -91,6 +91,8 @@ class ASBuilder {
         if variantPath != nil {
             args.append("variant_path="+variantPath!)
         }
+        args.append("usb_vid="+(boardProp["build.vid"] ?? "null"));
+        args.append("usb_pid="+(boardProp["build.pid"] ?? "null"));
         args.append("--")
         args                   += files.paths
         task!.arguments         =   args;
@@ -110,20 +112,44 @@ class ASBuilder {
         task!.standardOutput    = logOut
         task!.standardError     = logOut
         
-        let libPath     = (ASLibraries.instance().directories as NSArray).componentsJoinedByString(":")
-        let boardProp   = ASHardware.instance().boards[board]!
-        let progProp    = ASHardware.instance().programmers[programmer]
-        let proto       = boardProp["upload.protocol"] ?? progProp?["protocol"]
-        let speed       = boardProp["upload.speed"]    ?? progProp?["speed"]
-        let verbosity   = NSUserDefaults.standardUserDefaults().integerForKey("UploadVerbosity")
-        var args        = Array<String>(count: verbosity, repeatedValue: "-v")
-        args           += [
+        let libPath         = (ASLibraries.instance().directories as NSArray).componentsJoinedByString(":")
+        let boardProp       = ASHardware.instance().boards[board]!
+        let progProp        = ASHardware.instance().programmers[programmer]
+        let hasBootloader   = boardProp["upload.protocol"] != nil
+        let leonardish      = hasBootloader && (boardProp["bootloader.path"] ?? "").hasPrefix("caterina")
+        let proto           = hasBootloader ? boardProp["upload.protocol"] : progProp?["protocol"]
+        let speed           = hasBootloader ? boardProp["upload.speed"]    : progProp?["speed"]
+        let verbosity       = NSUserDefaults.standardUserDefaults().integerForKey("UploadVerbosity")
+        var args            = Array<String>(count: verbosity, repeatedValue: "-v")
+        args               += [
             "-C", toolChain+"/etc/avrdude.conf",
             "-p", boardProp["build.mcu"]!, "-c", proto!, "-P", port,
             "-U", "flash:w:build/"+board+"/"+dir.lastPathComponent+".hex:i"]
         if speed != nil {
             args.append("-b")
             args.append(speed!)
+        }
+        
+        //
+        // For Leonardo & the like, reset by opening port at 1200 baud
+        //
+        if leonardish {
+            if verbosity > 0 {
+                logOut.writeData("Opening \(port) at 1200 baud\n".dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: true)!)
+            }
+            if let dummyConnection = ASSerial.openPort(port, withSpeed: 1200) {
+                ASSerial.restorePort(dummyConnection.fileDescriptor)
+                dummyConnection.closeFile()
+                sleep(5)
+                for (var retry=0; retry < 10; ++retry) {
+                    if (NSFileManager.defaultManager().fileExistsAtPath(port)) {
+                        if verbosity > 0 {
+                            logOut.writeData("Found port \(port) after \(retry) attempts.\n".dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: true)!)
+                        }
+                        break;
+                    }
+                }
+            }
         }
         let cmdLine = task!.launchPath+" "+(args as NSArray).componentsJoinedByString(" ")+"\n"
         logOut.writeData(cmdLine.dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: true)!)
