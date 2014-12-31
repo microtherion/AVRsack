@@ -43,7 +43,7 @@ enum ASFileType : String {
         case .Markdown:
             return ACEModeMarkdown
         default:
-            return ACEModeASCIIDoc
+            return ACEModeText
         }
     }
 }

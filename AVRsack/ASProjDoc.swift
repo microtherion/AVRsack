@@ -67,19 +67,13 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate, NSMenuDelegate {
         super.init()
         let userDefaults = NSUserDefaults.standardUserDefaults()
         if let themeName = userDefaults.stringForKey(kThemeKey) {
-            for (themeIdx, theme) in enumerate(ACEThemeNames.themeNames() as [NSString]) {
-                if themeName == theme {
-                    currentTheme = UInt(themeIdx)
-                    break
-                }
+            if let themeId = ACEView.themeIdByName(themeName) {
+                currentTheme = themeId
             }
         }
         if let handlerName = userDefaults.stringForKey(kBindingsKey) {
-            for (handlerIdx, handler) in enumerate(ACEKeyboardHandlerNames.humanKeyboardHandlerNames() as [NSString]) {
-                if handlerName == handler {
-                    keyboardHandler = ACEKeyboardHandler(rawValue: UInt(handlerIdx))!
-                    break
-                }
+            if let handlerId = ACEView.handlerIdByName(handlerName) {
+                keyboardHandler = handlerId
             }
         }
         
@@ -199,11 +193,8 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate, NSMenuDelegate {
         let projectVersion = projectData[kVersionKey] as Double
         assert(projectVersion <= floor(kCurVersion+1.0), "Project version too new for this app")
         if let themeName = projectData[kThemeKey] as? NSString {
-            for (themeIdx, theme) in enumerate(ACEThemeNames.themeNames() as [NSString]) {
-                if themeName == theme {
-                    currentTheme = UInt(themeIdx)
-                    break
-                }
+            if let themeId = ACEView.themeIdByName(themeName) {
+                currentTheme = themeId
             }
         }
         if let fontSz = projectData[kFontSizeKey] as? Int {
@@ -257,7 +248,7 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate, NSMenuDelegate {
             mainEditor = selection
         } else if let log = (selection as? ASLogNode) {
             editor.setString("")
-            editor.setMode(UInt(ACEModeASCIIDoc))
+            editor.setMode(UInt(ACEModeText))
             editor.alphaValue = 0.8
             logModified = NSDate.distantPast() as NSDate
             logSize     = -1

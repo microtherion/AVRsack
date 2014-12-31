@@ -24,6 +24,7 @@
 		95A7C6401A38914300EF1963 /* ASPreferences.xib in Resources */ = {isa = PBXBuildFile; fileRef = 95A7C63E1A38914300EF1963 /* ASPreferences.xib */; };
 		95A7C6461A3894C900EF1963 /* ASPreferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95A7C6451A3894C900EF1963 /* ASPreferences.swift */; };
 		95BF80EB1A185C9E0004A693 /* ASFileTree.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95BF80EA1A185C9E0004A693 /* ASFileTree.swift */; };
+		95DA9B161A515AF700DE018D /* ACEViewExt.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95DA9B151A515AF700DE018D /* ACEViewExt.swift */; };
 		95DF20671A45A6090013D1B5 /* ASSketchBook.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95DF20661A45A6090013D1B5 /* ASSketchBook.swift */; };
 		95EA32621A17B90600F66EB0 /* ACEView.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 95EA325B1A17B8DA00F66EB0 /* ACEView.framework */; };
 		95EA32651A17BA8C00F66EB0 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 95EA32631A17BA8C00F66EB0 /* Cocoa.framework */; };
@@ -91,6 +92,7 @@
 		95A7C63F1A38914300EF1963 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/ASPreferences.xib; sourceTree = "<group>"; };
 		95A7C6451A3894C900EF1963 /* ASPreferences.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ASPreferences.swift; sourceTree = "<group>"; };
 		95BF80EA1A185C9E0004A693 /* ASFileTree.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ASFileTree.swift; sourceTree = "<group>"; };
+		95DA9B151A515AF700DE018D /* ACEViewExt.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ACEViewExt.swift; sourceTree = "<group>"; };
 		95DF20661A45A6090013D1B5 /* ASSketchBook.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ASSketchBook.swift; sourceTree = "<group>"; };
 		95EA32541A17B8DA00F66EB0 /* ACEView.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ACEView.xcodeproj; path = ../ACEView/ACEView.xcodeproj; sourceTree = "<group>"; };
 		95EA32631A17BA8C00F66EB0 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
@@ -187,6 +189,7 @@
 				95539B671A3E7EAF00D8595C /* ASSerial.mm */,
 				95DF20661A45A6090013D1B5 /* ASSketchBook.swift */,
 				956005F21A4EF79D00327007 /* ASSerialWin.swift */,
+				95DA9B151A515AF700DE018D /* ACEViewExt.swift */,
 			);
 			name = Source;
 			sourceTree = "<group>";
@@ -364,6 +367,7 @@
 				9501D8041A17025C0034C530 /* ASProjDoc.swift in Sources */,
 				95539B681A3E7EAF00D8595C /* ASSerial.mm in Sources */,
 				95468DDF1A228BE600668EE2 /* ASHardware.swift in Sources */,
+				95DA9B161A515AF700DE018D /* ACEViewExt.swift in Sources */,
 				951CD1741A23C9FC0066C1A1 /* ASBuilder.swift in Sources */,
 				9501D8021A17025C0034C530 /* ASApplication.swift in Sources */,
 				95BF80EB1A185C9E0004A693 /* ASFileTree.swift in Sources */,

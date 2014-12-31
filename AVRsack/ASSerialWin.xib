@@ -68,9 +68,12 @@
                             <constraint firstAttribute="height" constant="20" id="s7i-ZT-S7W"/>
                         </constraints>
                         <buttonCell key="cell" type="smallSquare" title="Now" bezelStyle="smallSquare" imagePosition="overlaps" alignment="center" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="vZ4-fd-aE8">
-                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES" changeBackground="YES" changeGray="YES"/>
                             <font key="font" metaFont="system"/>
                         </buttonCell>
+                        <connections>
+                            <binding destination="-2" name="value" keyPath="scrollToBottom" id="xlw-TM-qoV"/>
+                        </connections>
                     </button>
                     <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="YB5-mV-vY7">
                         <rect key="frame" x="336" y="372" width="35" height="19"/>

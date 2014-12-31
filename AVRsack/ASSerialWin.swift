@@ -8,7 +8,8 @@
 
 import Cocoa
 
-private var serialInstances = [String : ASSerialWin]()
+private var serialInstances     = [String : ASSerialWin]()
+private var keyboardHandler     : ACEKeyboardHandler = .Ace
 
 class ASSerialWin: NSWindowController {
     @IBOutlet weak var portPopUp : NSPopUpButton!
@@ -25,10 +26,20 @@ class ASSerialWin: NSWindowController {
     }
     var sendCR              = false
     var sendLF              = true
+    var scrollToBottom      : Bool = true {
+        didSet(oldScroll) {
+            if scrollToBottom {
+                logView.gotoLine(1000000000, column: 0, animated: true)
+            }
+        }
+    }
     var port                = ""
     var serialData          = ""
     var serialObserver      : AnyObject!
     dynamic var portHandle  : NSFileHandle?
+    var currentTheme        : UInt = 0
+    var fontSize            : UInt = 12
+    var portDefaults        = [String: AnyObject]()
     
     class func showWindowWithPort(port: String) {
         if let existing = serialInstances[port] {
@@ -40,13 +51,47 @@ class ASSerialWin: NSWindowController {
         }
     }
     
-    convenience init(port: String) {
-        self.init(windowNibName:"ASSerialWin")
+    init(port: String) {
+        super.init()
         self.port       = port
+
+        let userDefaults = NSUserDefaults.standardUserDefaults()
+       
+        if let portDef = (userDefaults.objectForKey("SerialDefaults") as NSDictionary).objectForKey(port) as? [String: AnyObject] {
+            portDefaults = portDef
+        } else {
+            portDefaults["Theme"]       = userDefaults.stringForKey("SerialTheme")
+            portDefaults["FontSize"]    = userDefaults.objectForKey("FontSize")
+            portDefaults["SendCR"]      = sendCR
+            portDefaults["SendLF"]      = sendLF
+        }
+        if let themeId = ACEView.themeIdByName(portDefaults["Theme"] as String) {
+            currentTheme = themeId
+        }
+        fontSize = portDefaults["FontSize"] as UInt
+        sendCR   = portDefaults["SendCR"] as Bool
+        sendLF   = portDefaults["SendLF"] as Bool
+
+        if let handlerName = userDefaults.stringForKey("Bindings") {
+            if let handlerId = ACEView.handlerIdByName(handlerName) {
+                keyboardHandler = handlerId
+            }
+        }
+
         var nc          = NSNotificationCenter.defaultCenter()
         serialObserver  = nc.addObserverForName(kASSerialPortsChanged, object: nil, queue: nil, usingBlock: { (NSNotification) in
             self.rebuildPortMenu()
         })
+    }
+
+    func windowNibName() -> String {
+        return "ASSerialWin"
+    }
+    required override init(window: NSWindow!) {
+        super.init(window:window)
+    }
+    required init?(coder: NSCoder) {
+        super.init(coder:coder)
     }
     
     override func finalize() {
@@ -57,6 +102,11 @@ class ASSerialWin: NSWindowController {
     override func windowDidLoad() {
         logView.setReadOnly(true)
         logView.setShowPrintMargin(false)
+        logView.setTheme(currentTheme)
+        logView.setKeyboardHandler(keyboardHandler)
+        logView.setFontSize(fontSize)
+        logView.setMode(UInt(ACEModeText))
+        logView.alphaValue = 0.8
         rebuildPortMenu()
         window?.title   = port
         connect(self)
@@ -96,6 +146,9 @@ class ASSerialWin: NSWindowController {
                     self.serialData    += newString
                     dispatch_async(dispatch_get_main_queue(), { () -> Void in
                         self.logView.setString(self.serialData)
+                        if self.scrollToBottom {
+                            self.logView.gotoLine(1000000000, column: 0, animated: true)
+                        }
                     })
                 }
             }
@@ -109,5 +162,58 @@ class ASSerialWin: NSWindowController {
     }
     class func keyPathsForValuesAffectingConnectButtonTitle() -> NSSet {
         return NSSet(object: "portHandle")
+    }
+
+    // MARK: Editor configuration
+    
+    @IBAction func changeTheme(item: NSMenuItem) {
+        let userDefaults = NSUserDefaults.standardUserDefaults()
+        currentTheme = UInt(item.tag)
+        logView.setTheme(currentTheme)
+        let themeName = ACEThemeNames.humanNameForTheme(currentTheme)
+        userDefaults.setObject(themeName, forKey: "SerialTheme")
+        portDefaults["Theme"] = themeName
+        updatePortDefaults()
+    }
+    @IBAction func changeKeyboardHandler(item: NSMenuItem) {
+        keyboardHandler = ACEKeyboardHandler(rawValue: UInt(item.tag))!
+        NSUserDefaults.standardUserDefaults().setObject(
+            ACEKeyboardHandlerNames.humanNameForKeyboardHandler(keyboardHandler), forKey: "Bindings")
+        NSNotificationCenter.defaultCenter().postNotificationName("Bindings", object: item)
+    }
+    
+    func validateUserInterfaceItem(anItem: NSValidatedUserInterfaceItem) -> Bool {
+        if let menuItem = anItem as? NSMenuItem {
+            if menuItem.action == "changeTheme:" {
+                menuItem.state = (menuItem.tag == Int(currentTheme) ? NSOnState : NSOffState)
+                return true
+            } else if menuItem.action == "changeKeyboardHandler:" {
+                menuItem.state = (menuItem.tag == Int(keyboardHandler.rawValue) ? NSOnState : NSOffState)
+                return true
+            }
+        }
+        return true
+    }
+    
+    @IBAction func makeTextLarger(AnyObject) {
+        fontSize += 1
+        logView.setFontSize(fontSize)
+        portDefaults["FontSize"] = fontSize
+        updatePortDefaults()
+    }
+    @IBAction func makeTextSmaller(AnyObject) {
+        if fontSize > 6 {
+            fontSize -= 1
+            logView.setFontSize(fontSize)
+            portDefaults["FontSize"] = fontSize
+            updatePortDefaults()
+        }
+    }
+    
+    func updatePortDefaults() {
+        let userDefaults = NSUserDefaults.standardUserDefaults()
+        let serialDefaults = userDefaults.objectForKey("SerialDefaults") as NSDictionary
+        serialDefaults.setValue(portDefaults, forKey:port)
+        userDefaults.setObject(serialDefaults, forKey:"SerialDefaults")
     }
 }
