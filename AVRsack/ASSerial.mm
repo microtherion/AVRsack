@@ -35,7 +35,7 @@ NSString * kASSerialPortsChanged = @"PortsChanged";
         if ([[port substringToIndex:2] isEqualToString:@"cu"])
             [cuPorts addObject:[port substringFromIndex:3]];
     }
-    return cuPorts;
+    return [cuPorts sortedArrayUsingSelector:@selector(compare:)];
 }
 
 + (NSString *) fileNameForPort:(NSString *)port

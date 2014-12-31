@@ -10,12 +10,20 @@ import Cocoa
 
 @NSApplicationMain
 class ASApplication: NSObject, NSApplicationDelegate, NSMenuDelegate {
-    @IBOutlet weak var themeMenu    : NSMenu!
-    @IBOutlet weak var keyboardMenu : NSMenu!
-    @IBOutlet weak var preferences  : ASPreferences!
+    @IBOutlet var themeMenu    : NSMenu!
+    @IBOutlet var keyboardMenu : NSMenu!
+    @IBOutlet var preferences  : ASPreferences!
     var sketches = [String]()
     var examples = [String]()
-    
+
+    func hasDocument() -> Bool {
+        if let doc = NSDocumentController.sharedDocumentController().currentDocument as? NSDocument {
+            return true
+        } else {
+            return false
+        }
+    }
+
     func applicationWillFinishLaunching(notification: NSNotification) {
         //
         // Retrieve static app defaults
@@ -80,12 +88,23 @@ class ASApplication: NSObject, NSApplicationDelegate, NSMenuDelegate {
                 let examplePath = arduinoPath.stringByAppendingPathComponent("Contents/Resources/Java/examples")
                 ASSketchBook.addSketches(menu, target: self, action: "openExample:", path: examplePath, sketches: &examples)
             }
-            
+        case "Serial Monitor":
+            menu.itemAtIndex(0)?.hidden = !hasDocument()
+            while menu.numberOfItems > 2 {
+                menu.removeItemAtIndex(2)
+            }
+            for port in ASSerial.ports() as [String] {
+                menu.addItemWithTitle(port, action:"serialConnectMenu:", keyEquivalent:"")
+            }
         default:
             break
         }
     }
-    
+
+    @IBAction func serialConnectMenu(port: NSMenuItem) {
+        ASSerialWin.showWindowWithPort(port.title)
+    }
+
     func openTemplate(template: NSURL) {
         ASApplication.newProjectLocation(nil,
             message: "Save editable copy of project \(template.lastPathComponent)")

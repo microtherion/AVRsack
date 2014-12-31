@@ -310,6 +310,10 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate, NSMenuDelegate {
             } else if menuItem.action == "changeKeyboardHandler:" {
                 menuItem.state = (menuItem.tag == Int(keyboardHandler.rawValue) ? NSOnState : NSOffState)
                 return true
+            } else if menuItem.action == "serialConnect:" {
+                menuItem.title = port
+
+                return true
             }
         }
         return super.validateUserInterfaceItem(anItem)

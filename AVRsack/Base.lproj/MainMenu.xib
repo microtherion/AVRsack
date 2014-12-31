@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="7096" systemVersion="14C82" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="6250" systemVersion="14C79" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="7096"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="6250"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="NSApplication">
@@ -11,7 +11,7 @@
         </customObject>
         <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
         <customObject id="-3" userLabel="Application" customClass="NSObject"/>
-        <customObject id="Voe-Tx-rLC" customClass="ASApplication" customModule="AVRsack">
+        <customObject id="Voe-Tx-rLC" userLabel="AppDelegate" customClass="ASApplication" customModule="AVRsack">
             <connections>
                 <outlet property="keyboardMenu" destination="WWD-TD-lpw" id="Tr8-cg-fXf"/>
                 <outlet property="preferences" destination="sor-iB-NZD" id="zad-hM-0R0"/>
@@ -384,17 +384,51 @@
                                     <action selector="buildProject:" target="-1" id="d3i-8e-6sp"/>
                                 </connections>
                             </menuItem>
+                            <menuItem title="Disassemble" keyEquivalent="d" id="QfC-vq-ugs">
+                                <connections>
+                                    <action selector="disassembleProject:" target="-1" id="sLA-dm-Dzo"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem isSeparatorItem="YES" id="ebE-qS-CZ6"/>
                             <menuItem title="Upload" keyEquivalent="u" id="rRD-Cm-5An">
                                 <connections>
                                     <action selector="uploadProject:" target="-1" id="Un4-q1-nWg"/>
                                 </connections>
                             </menuItem>
+                            <menuItem title="Serial Monitor" id="GxC-cS-qvx">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <menu key="submenu" title="Serial Monitor" id="i2j-Ds-oRH">
+                                    <items>
+                                        <menuItem title="Current Port" keyEquivalent="M" id="KeI-AS-2tX">
+                                            <connections>
+                                                <action selector="serialConnect:" target="-1" id="l7A-MU-U4h"/>
+                                            </connections>
+                                        </menuItem>
+                                        <menuItem isSeparatorItem="YES" id="V8r-XG-DbV">
+                                            <connections>
+                                                <binding destination="Voe-Tx-rLC" name="hidden" keyPath="hasDocument" id="iL4-Mk-XXX">
+                                                    <dictionary key="options">
+                                                        <string key="NSValueTransformerName">NSNegateBoolean</string>
+                                                    </dictionary>
+                                                </binding>
+                                            </connections>
+                                        </menuItem>
+                                    </items>
+                                    <connections>
+                                        <outlet property="delegate" destination="Voe-Tx-rLC" id="4mJ-AQ-EY3"/>
+                                    </connections>
+                                </menu>
+                            </menuItem>
+                            <menuItem isSeparatorItem="YES" id="l8E-4R-wRl"/>
                             <menuItem title="Clean" keyEquivalent="K" id="bin-2x-Ysd">
                                 <connections>
                                     <action selector="cleanProject:" target="-1" id="4hi-zQ-Zoi"/>
                                 </connections>
                             </menuItem>
                         </items>
+                        <connections>
+                            <outlet property="delegate" destination="Voe-Tx-rLC" id="hr7-QB-jdo"/>
+                        </connections>
                     </menu>
                 </menuItem>
                 <menuItem title="Window" id="aUF-d1-5bR">
@@ -436,5 +470,6 @@
                 </menuItem>
             </items>
         </menu>
+        <userDefaultsController representsSharedInstance="YES" id="Jox-o7-4sb"/>
     </objects>
 </document>
