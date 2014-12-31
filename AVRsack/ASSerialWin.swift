@@ -15,12 +15,14 @@ class ASSerialWin: NSWindowController {
     @IBOutlet weak var inputLine : NSTextField!
     @IBOutlet weak var logView   : ACEView!
     
-    var baudRate        : Int32 = 9600 {
+    var baudRate        : Int = 9600 {
         didSet(oldRate) {
             if portHandle != nil {
                 connect(self)   // Disconnect existing
                 connect(self)   // Reconnect
             }
+            portDefaults["BaudRate"] = baudRate
+            updatePortDefaults()
         }
     }
     var sendCR              = false
@@ -74,6 +76,7 @@ class ASSerialWin: NSWindowController {
             portDefaults["FontSize"]    = userDefaults.objectForKey("FontSize")
             portDefaults["SendCR"]      = sendCR
             portDefaults["SendLF"]      = sendLF
+            portDefaults["BaudRate"]    = 19200
         }
         if let themeId = ACEView.themeIdByName(portDefaults["Theme"] as String) {
             currentTheme = themeId
@@ -81,6 +84,7 @@ class ASSerialWin: NSWindowController {
         fontSize = portDefaults["FontSize"] as UInt
         sendCR   = portDefaults["SendCR"] as Bool
         sendLF   = portDefaults["SendLF"] as Bool
+        baudRate = portDefaults["BaudRate"] as Int
 
         if let handlerName = userDefaults.stringForKey("Bindings") {
             if let handlerId = ACEView.handlerIdByName(handlerName) {
@@ -137,7 +141,7 @@ class ASSerialWin: NSWindowController {
             portHandle!.closeFile()
             portHandle = nil
         } else {
-            portHandle = ASSerial.openPort(port, withSpeed: baudRate)
+            portHandle = ASSerial.openPort(port, withSpeed: Int32(baudRate))
             if portHandle != nil {
                 serialData  = ""
                 logView.setString(serialData)
@@ -229,7 +233,7 @@ class ASSerialWin: NSWindowController {
     
     func updatePortDefaults() {
         let userDefaults = NSUserDefaults.standardUserDefaults()
-        let serialDefaults = userDefaults.objectForKey("SerialDefaults") as NSDictionary
+        let serialDefaults = NSMutableDictionary(dictionary:userDefaults.objectForKey("SerialDefaults") as NSDictionary)
         serialDefaults.setValue(portDefaults, forKey:port)
         userDefaults.setObject(serialDefaults, forKey:"SerialDefaults")
     }
