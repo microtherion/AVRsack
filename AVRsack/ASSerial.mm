@@ -38,10 +38,16 @@ NSString * kASSerialPortsChanged = @"PortsChanged";
     return cuPorts;
 }
 
++ (NSString *) fileNameForPort:(NSString *)port
+{
+    if ([port containsString:@"/"])
+        return port;
+    else
+        return [NSString stringWithFormat:@"/dev/cu.%@", port];
+}
+
 + (NSFileHandle *)openPort:(NSString *)port withSpeed:(int)speed {
-    if (![port containsString:@"/"])
-        port = [NSString stringWithFormat:@"/dev/cu.%@", port];
-    int fd = open([port UTF8String], O_RDWR | O_NOCTTY | O_NONBLOCK);
+    int fd = open([[self fileNameForPort:port] UTF8String], O_RDWR | O_NOCTTY | O_NONBLOCK);
     if (fd < 0)
         return nil;
     if (ioctl(fd, TIOCEXCL) < 0)

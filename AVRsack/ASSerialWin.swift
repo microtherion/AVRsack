@@ -12,7 +12,6 @@ private var serialInstances     = [String : ASSerialWin]()
 private var keyboardHandler     : ACEKeyboardHandler = .Ace
 
 class ASSerialWin: NSWindowController {
-    @IBOutlet weak var portPopUp : NSPopUpButton!
     @IBOutlet weak var inputLine : NSTextField!
     @IBOutlet weak var logView   : ACEView!
     
@@ -40,6 +39,7 @@ class ASSerialWin: NSWindowController {
     var currentTheme        : UInt = 0
     var fontSize            : UInt = 12
     var portDefaults        = [String: AnyObject]()
+    var shouldReconnect     = false
     
     class func showWindowWithPort(port: String) {
         if let existing = serialInstances[port] {
@@ -48,6 +48,16 @@ class ASSerialWin: NSWindowController {
             let newInstance = ASSerialWin(port:port)
             serialInstances[port] = newInstance
             newInstance.showWindow(self)
+        }
+    }
+    class func portNeededForUpload(port: String) {
+        if let existing = serialInstances[port] {
+            existing.disconnectTemporarily()
+        }
+    }
+    class func portAvailableAfterUpload(port: String) {
+        if let existing = serialInstances[port] {
+            existing.reconnect()
         }
     }
     
@@ -80,7 +90,14 @@ class ASSerialWin: NSWindowController {
 
         var nc          = NSNotificationCenter.defaultCenter()
         serialObserver  = nc.addObserverForName(kASSerialPortsChanged, object: nil, queue: nil, usingBlock: { (NSNotification) in
-            self.rebuildPortMenu()
+            self.willChangeValueForKey("hasValidPort")
+            self.didChangeValueForKey("hasValidPort")
+
+            if self.hasValidPort {
+                self.reconnect()
+            } else {
+                self.disconnectTemporarily()
+            }
         })
     }
     
@@ -97,16 +114,9 @@ class ASSerialWin: NSWindowController {
         logView.setFontSize(fontSize)
         logView.setMode(UInt(ACEModeText))
         logView.alphaValue = 0.8
-        rebuildPortMenu()
         window?.title   = port
         connect(self)
         super.windowDidLoad()
-    }
-    
-    func rebuildPortMenu() {
-        portPopUp.removeAllItems()
-        portPopUp.addItemsWithTitles(ASSerial.ports())
-        portPopUp.selectItemWithTitle(port)
     }
     
     @IBAction func selectPort(item: AnyObject) {
@@ -121,6 +131,7 @@ class ASSerialWin: NSWindowController {
     }
     
     @IBAction func connect(AnyObject) {
+        shouldReconnect = false
         if portHandle != nil {
             ASSerial.restorePort(portHandle!.fileDescriptor)
             portHandle!.closeFile()
@@ -144,6 +155,17 @@ class ASSerialWin: NSWindowController {
             }
         }
     }
+    func disconnectTemporarily() {
+        if portHandle != nil {
+            connect(self)           // Disconnect temporarily
+            shouldReconnect  = true // But express interest to reconnect
+        }
+    }
+    func reconnect() {
+        if portHandle == nil && shouldReconnect {
+            connect(self)           // Reconnect
+        }
+    }
     
     var connectButtonTitle : String {
         get {
@@ -152,6 +174,11 @@ class ASSerialWin: NSWindowController {
     }
     class func keyPathsForValuesAffectingConnectButtonTitle() -> NSSet {
         return NSSet(object: "portHandle")
+    }
+    var hasValidPort : Bool {
+        get {
+            return (ASSerial.ports() as NSArray).containsObject(port)
+        }
     }
 
     // MARK: Editor configuration

@@ -12,6 +12,7 @@ extern NSString * kASSerialPortsChanged;
 
 @interface ASSerial : NSObject
 
++ (NSString *) fileNameForPort:(NSString *)port;
 + (NSArray *) ports;
 + (NSFileHandle *)openPort:(NSString *) port withSpeed:(int)speed;
 + (void)restorePort:(int)fileDescriptor;
