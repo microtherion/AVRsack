@@ -237,4 +237,16 @@ class ASSerialWin: NSWindowController {
         serialDefaults.setValue(portDefaults, forKey:port)
         userDefaults.setObject(serialDefaults, forKey:"SerialDefaults")
     }
+
+    @IBAction func saveDocument(AnyObject) {
+        let savePanel                   = NSSavePanel()
+        savePanel.allowedFileTypes      = ["log"]
+        savePanel.allowsOtherFileTypes  = true
+        savePanel.extensionHidden       = false
+        savePanel.beginSheetModalForWindow(window!, completionHandler: { (returnCode) -> Void in
+            if returnCode == NSFileHandlingPanelOKButton {
+                self.serialData.writeToURL(savePanel.URL!, atomically:false, encoding:NSUTF8StringEncoding, error:nil)
+            }
+        })
+    }
 }
