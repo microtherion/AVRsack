@@ -51,8 +51,8 @@ class ASSerialWin: NSWindowController {
         }
     }
     
-    init(port: String) {
-        super.init()
+    convenience init(port: String) {
+        self.init(windowNibName:"ASSerialWin")
         self.port       = port
 
         let userDefaults = NSUserDefaults.standardUserDefaults()
@@ -82,16 +82,6 @@ class ASSerialWin: NSWindowController {
         serialObserver  = nc.addObserverForName(kASSerialPortsChanged, object: nil, queue: nil, usingBlock: { (NSNotification) in
             self.rebuildPortMenu()
         })
-    }
-
-    func windowNibName() -> String {
-        return "ASSerialWin"
-    }
-    required override init(window: NSWindow!) {
-        super.init(window:window)
-    }
-    required init?(coder: NSCoder) {
-        super.init(coder:coder)
     }
     
     override func finalize() {
