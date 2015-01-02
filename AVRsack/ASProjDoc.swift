@@ -474,7 +474,9 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate, NSMenuDelegate {
                     ASSerialWin.portAvailableAfterUpload(self.port)
                 })
             }
-            self.builder.uploadProject(self.board, programmer:self.programmer, port:ASSerial.fileNameForPort(self.port))
+            dispatch_async(dispatch_get_main_queue(), {
+                self.builder.uploadProject(self.board, programmer:self.programmer, port:ASSerial.fileNameForPort(self.port))
+            })
         }
         buildProject(sender)
     }

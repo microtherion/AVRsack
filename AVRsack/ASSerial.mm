@@ -58,9 +58,10 @@ NSString * kASSerialPortsChanged = @"PortsChanged";
     newAttr = origAttr;
     cfmakeraw(&newAttr);
     cfsetspeed(&newAttr, speed);
-    newAttr.c_cflag |= CS8 | CCTS_OFLOW | CRTS_IFLOW;
-    newAttr.c_cflag &= ~(PARENB);
+    newAttr.c_cflag &= ~(PARENB | CSIZE | CSTOPB | CRTSCTS);
+    newAttr.c_cflag |= CS8;
     tcsetattr(fd, TCSANOW, &newAttr);
+    tcsetattr(fd, TCSAFLUSH, &newAttr);
     if (!savedAttrs) {
         savedAttrs = [NSMutableDictionary dictionary];
     }

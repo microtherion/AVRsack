@@ -138,10 +138,9 @@ class ASBuilder {
                 logOut.writeData("Opening \(port) at 1200 baud\n".dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: true)!)
             }
             if let dummyConnection = ASSerial.openPort(port, withSpeed: 1200) {
-                ASSerial.restorePort(dummyConnection.fileDescriptor)
-                dummyConnection.closeFile()
-                sleep(5)
-                for (var retry=0; retry < 10; ++retry) {
+                close(dummyConnection.fileDescriptor)
+                for (var retry=0; retry < 40; ++retry) {
+                    usleep(250000)
                     if (NSFileManager.defaultManager().fileExistsAtPath(port)) {
                         if verbosity > 0 {
                             logOut.writeData("Found port \(port) after \(retry) attempts.\n".dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: true)!)
