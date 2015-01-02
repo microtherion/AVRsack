@@ -10,6 +10,12 @@
 
 extern NSString * kASSerialPortsChanged;
 
+@interface NSFileHandle (ExceptionSafety)
+
+- (NSData *)availableDataIgnoringExceptions;
+
+@end
+
 @interface ASSerial : NSObject
 
 + (NSString *) fileNameForPort:(NSString *)port;

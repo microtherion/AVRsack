@@ -146,7 +146,7 @@ class ASSerialWin: NSWindowController {
                 serialData  = ""
                 logView.setString(serialData)
                 portHandle!.readabilityHandler = {(handle) in
-                    let newData         = handle.availableData
+                    let newData         = handle.availableDataIgnoringExceptions()
                     let newString       = NSString(data: newData, encoding: NSASCIIStringEncoding)!
                     self.serialData    += newString
                     dispatch_async(dispatch_get_main_queue(), { () -> Void in

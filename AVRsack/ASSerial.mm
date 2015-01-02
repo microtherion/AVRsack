@@ -17,6 +17,19 @@ static NSMutableDictionary *    savedAttrs;
 
 NSString * kASSerialPortsChanged = @"PortsChanged";
 
+@implementation NSFileHandle (ExceptionSafety)
+
+- (NSData *)availableDataIgnoringExceptions {
+    @try {
+        return [self availableData];
+    }
+    @catch (NSException *exception) {
+        return [NSData data];
+    }
+}
+
+@end
+
 @implementation ASSerial
 
 + (void)initialize {
