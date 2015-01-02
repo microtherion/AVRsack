@@ -37,12 +37,14 @@ class ASSerialWin: NSWindowController {
     var port                = ""
     var serialData          = ""
     var serialObserver      : AnyObject!
+    var termination         : AnyObject!
     dynamic var portHandle  : NSFileHandle?
     var currentTheme        : UInt = 0
     var fontSize            : UInt = 12
     var portDefaults        = [String: AnyObject]()
     var shouldReconnect     = false
-    
+    dynamic var task        : NSTask?
+
     class func showWindowWithPort(port: String) {
         if let existing = serialInstances[port] {
             existing.showWindow(self)
@@ -50,6 +52,15 @@ class ASSerialWin: NSWindowController {
             let newInstance = ASSerialWin(port:port)
             serialInstances[port] = newInstance
             newInstance.showWindow(self)
+        }
+    }
+    class func showWindowWithPort(port: String, task: NSTask, speed: Int) {
+        if let existing = serialInstances[port] {
+            existing.showWindowWithTask(task, speed:speed)
+        } else {
+            let newInstance = ASSerialWin(port:port)
+            serialInstances[port] = newInstance
+            newInstance.showWindowWithTask(task, speed:speed)
         }
     }
     class func portNeededForUpload(port: String) {
@@ -97,17 +108,37 @@ class ASSerialWin: NSWindowController {
             self.willChangeValueForKey("hasValidPort")
             self.didChangeValueForKey("hasValidPort")
 
-            if self.hasValidPort {
-                self.reconnect()
-            } else {
-                self.disconnectTemporarily()
+            if self.task == nil {
+                if self.hasValidPort {
+                    self.reconnect()
+                } else {
+                    self.disconnectTemporarily()
+                }
             }
+        })
+        termination = NSNotificationCenter.defaultCenter().addObserverForName(NSTaskDidTerminateNotification,
+            object: nil, queue: nil, usingBlock:
+            { (notification: NSNotification!) in
+                if notification.object as? NSTask == self.task {
+                    self.task        = nil
+                    self.portHandle  = nil
+                }
         })
     }
     
     override func finalize() {
+        if portHandle != nil {
+            connect(self)
+        }
         NSNotificationCenter.defaultCenter().removeObserver(serialObserver)
+        NSNotificationCenter.defaultCenter().removeObserver(termination)
         serialInstances.removeValueForKey(port)
+    }
+
+    func windowWillClose(notification: NSNotification) {
+        if portHandle != nil {
+            connect(self)
+        }
     }
     
     override func windowDidLoad() {
@@ -119,13 +150,28 @@ class ASSerialWin: NSWindowController {
         logView.setMode(UInt(ACEModeText))
         logView.alphaValue = 0.8
         window?.title   = port
-        connect(self)
+        if task == nil {
+            connect(self)
+        }
         super.windowDidLoad()
     }
-    
-    @IBAction func selectPort(item: AnyObject) {
-        port    = (item as NSPopUpButton).titleOfSelectedItem!
-        window?.title   = port
+
+    func installReader(handle: NSFileHandle?) {
+        if let readHandle = handle {
+            serialData  = ""
+            logView.setString(serialData)
+            readHandle.readabilityHandler = {(handle) in
+                let newData         = handle.availableDataIgnoringExceptions()
+                let newString       = NSString(data: newData, encoding: NSASCIIStringEncoding)!
+                self.serialData    += newString
+                dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                    self.logView.setString(self.serialData)
+                    if self.scrollToBottom {
+                        self.logView.gotoLine(1000000000, column: 0, animated: true)
+                    }
+                })
+            }
+        }
     }
 
     @IBAction func sendInput(AnyObject) {
@@ -134,29 +180,29 @@ class ASSerialWin: NSWindowController {
         portHandle?.writeData(data)
     }
     
+    func showWindowWithTask(task: NSTask, speed:Int) {
+        if portHandle != nil {
+            connect(self)
+        }
+        baudRate        = speed
+        self.task       = task
+        portHandle      = (task.standardInput as NSPipe).fileHandleForWriting
+        showWindow(self)
+        installReader((task.standardOutput as? NSPipe)?.fileHandleForReading)
+    }
+    
     @IBAction func connect(AnyObject) {
         shouldReconnect = false
-        if portHandle != nil {
-            ASSerial.restorePort(portHandle!.fileDescriptor)
-            portHandle!.closeFile()
+        if task != nil {
+            task!.interrupt()
+        } else if portHandle != nil {
+            let fd = portHandle!.fileDescriptor
+            ASSerial.restorePort(fd)
+            ASSerial.closePort(fd)
             portHandle = nil
         } else {
             portHandle = ASSerial.openPort(port, withSpeed: Int32(baudRate))
-            if portHandle != nil {
-                serialData  = ""
-                logView.setString(serialData)
-                portHandle!.readabilityHandler = {(handle) in
-                    let newData         = handle.availableDataIgnoringExceptions()
-                    let newString       = NSString(data: newData, encoding: NSASCIIStringEncoding)!
-                    self.serialData    += newString
-                    dispatch_async(dispatch_get_main_queue(), { () -> Void in
-                        self.logView.setString(self.serialData)
-                        if self.scrollToBottom {
-                            self.logView.gotoLine(1000000000, column: 0, animated: true)
-                        }
-                    })
-                }
-            }
+            installReader(portHandle)
         }
     }
     func disconnectTemporarily() {
@@ -234,7 +280,7 @@ class ASSerialWin: NSWindowController {
     func updatePortDefaults() {
         let userDefaults = NSUserDefaults.standardUserDefaults()
         let serialDefaults = NSMutableDictionary(dictionary:userDefaults.objectForKey("SerialDefaults") as NSDictionary)
-        serialDefaults.setValue(portDefaults, forKey:port)
+        serialDefaults.setValue(NSDictionary(dictionary:portDefaults), forKey:port)
         userDefaults.setObject(serialDefaults, forKey:"SerialDefaults")
     }
 

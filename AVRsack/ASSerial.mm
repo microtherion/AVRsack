@@ -79,7 +79,6 @@ NSString * kASSerialPortsChanged = @"PortsChanged";
         savedAttrs = [NSMutableDictionary dictionary];
     }
     [savedAttrs setObject:[NSData dataWithBytes:&origAttr length:sizeof(origAttr)] forKey:[NSNumber numberWithInt:fd]];
-    
     return [[NSFileHandle alloc] initWithFileDescriptor:fd closeOnDealloc:NO];
 failed:
     close(fd);
@@ -95,4 +94,9 @@ failed:
     }
 }
 
++ (void)closePort:(int)fileDescriptor {
+    NSNumber * fd = [NSNumber numberWithInt:fileDescriptor];
+    close(fileDescriptor);
+    [savedAttrs removeObjectForKey:fd];
+}
 @end

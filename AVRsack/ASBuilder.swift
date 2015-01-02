@@ -3,7 +3,7 @@
 //  AVRsack
 //
 //  Created by Matthias Neeracher on 11/24/14.
-//  Copyright © 2014 Aere Perennius. All rights reserved.
+//  Copyright © 2014-2015 Aere Perennius. All rights reserved.
 //
 
 import Foundation
@@ -99,18 +99,29 @@ class ASBuilder {
         task!.launch()
     }
     
-    func uploadProject(board: String, programmer: String, port: String) {
+    func uploadProject(board: String, programmer: String, port: String, terminal: Bool = false) {
+        let portPath                = ASSerial.fileNameForPort(port)
         let toolChain               = (NSApplication.sharedApplication().delegate as ASApplication).preferences.toolchainPath
         task = NSTask()
         task!.currentDirectoryPath  = dir.path!
         task!.launchPath            = toolChain+"/bin/avrdude"
         
         let fileManager = NSFileManager.defaultManager()
-        let logURL              = dir.URLByAppendingPathComponent("build/upload.log")
-        fileManager.createFileAtPath(logURL.path!, contents: NSData(), attributes: nil)
-        let logOut              = NSFileHandle(forWritingAtPath: logURL.path!)!
-        task!.standardOutput    = logOut
-        task!.standardError     = logOut
+        var logOut      : NSFileHandle
+        if terminal {
+            let inputPipe           = NSPipe()
+            let outputPipe          = NSPipe()
+            logOut                  = outputPipe.fileHandleForWriting
+            task!.standardInput     = inputPipe
+            task!.standardOutput    = outputPipe
+            task!.standardError     = outputPipe
+        } else {
+            let logURL              = dir.URLByAppendingPathComponent("build/upload.log")
+            fileManager.createFileAtPath(logURL.path!, contents: NSData(), attributes: nil)
+            logOut                  = NSFileHandle(forWritingAtPath: logURL.path!)!
+            task!.standardOutput    = logOut
+            task!.standardError     = logOut
+        }
         
         let libPath         = (ASLibraries.instance().directories as NSArray).componentsJoinedByString(":")
         let boardProp       = ASHardware.instance().boards[board]!
@@ -123,8 +134,12 @@ class ASBuilder {
         var args            = Array<String>(count: verbosity, repeatedValue: "-v")
         args               += [
             "-C", toolChain+"/etc/avrdude.conf",
-            "-p", boardProp["build.mcu"]!, "-c", proto!, "-P", port,
-            "-U", "flash:w:build/"+board+"/"+dir.lastPathComponent+".hex:i"]
+            "-p", boardProp["build.mcu"]!, "-c", proto!, "-P", portPath]
+        if terminal {
+            args          += ["-t"]
+        } else {
+            args          += ["-U", "flash:w:build/"+board+"/"+dir.lastPathComponent+".hex:i"]
+        }
         if speed != nil {
             args.append("-b")
             args.append(speed!)
@@ -135,13 +150,15 @@ class ASBuilder {
         //
         if leonardish {
             if verbosity > 0 {
-                logOut.writeData("Opening \(port) at 1200 baud\n".dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: true)!)
+                logOut.writeData("Opening port \(port) at 1200 baud\n".dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: true)!)
             }
-            if let dummyConnection = ASSerial.openPort(port, withSpeed: 1200) {
-                close(dummyConnection.fileDescriptor)
+            if let dummyConnection = ASSerial.openPort(portPath, withSpeed: 1200) {
+                usleep(50000)
+                ASSerial.closePort(dummyConnection.fileDescriptor)
+                sleep(1)
                 for (var retry=0; retry < 40; ++retry) {
                     usleep(250000)
-                    if (NSFileManager.defaultManager().fileExistsAtPath(port)) {
+                    if (fileManager.fileExistsAtPath(portPath)) {
                         if verbosity > 0 {
                             logOut.writeData("Found port \(port) after \(retry) attempts.\n".dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: true)!)
                         }
@@ -154,6 +171,11 @@ class ASBuilder {
         logOut.writeData(cmdLine.dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: true)!)
         task!.arguments         =   args;
         task!.launch()
+        if terminal {
+            let intSpeed = speed?.toInt() ?? 19200
+            ASSerialWin.showWindowWithPort(port, task:task!, speed:intSpeed)
+            task = nil
+        }
     }
     
     func disassembleProject(board: String) {

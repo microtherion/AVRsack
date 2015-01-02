@@ -13,20 +13,17 @@
         </customObject>
         <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
         <customObject id="-3" userLabel="Application" customClass="NSObject"/>
-        <window title="Window" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" oneShot="NO" releasedWhenClosed="NO" animationBehavior="default" id="F0z-JX-Cv5">
+        <window title="Window" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" oneShot="NO" animationBehavior="default" id="F0z-JX-Cv5">
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
             <rect key="contentRect" x="196" y="240" width="751" height="403"/>
             <rect key="screenRect" x="0.0" y="0.0" width="1440" height="877"/>
             <view key="contentView" id="se5-gp-TjO">
                 <rect key="frame" x="0.0" y="0.0" width="751" height="403"/>
-                <autoresizingMask key="autoresizingMask"/>
+                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                 <subviews>
-                    <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="rIR-2b-lAh">
+                    <textField verticalHuggingPriority="750" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="rIR-2b-lAh">
                         <rect key="frame" x="0.0" y="0.0" width="651" height="22"/>
-                        <constraints>
-                            <constraint firstAttribute="height" constant="22" id="Y1V-fL-RCq"/>
-                        </constraints>
                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" state="on" borderStyle="bezel" drawsBackground="YES" id="EBj-i4-UsA">
                             <font key="font" metaFont="system"/>
                             <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
@@ -42,12 +39,12 @@
                         </connections>
                     </textField>
                     <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="MOe-eO-fyb">
-                        <rect key="frame" x="651" y="-1" width="50" height="22"/>
+                        <rect key="frame" x="651" y="0.0" width="50" height="20"/>
                         <constraints>
                             <constraint firstAttribute="height" constant="20" id="eLx-yy-gCn"/>
                             <constraint firstAttribute="width" constant="50" id="vaT-Kd-3pn"/>
                         </constraints>
-                        <buttonCell key="cell" type="smallSquare" title="Send" bezelStyle="smallSquare" imagePosition="overlaps" alignment="center" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="Xt6-lT-b4z">
+                        <buttonCell key="cell" type="square" title="Send" bezelStyle="shadowlessSquare" imagePosition="overlaps" alignment="center" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="Xt6-lT-b4z">
                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                             <font key="font" metaFont="system"/>
                         </buttonCell>
@@ -61,18 +58,15 @@
                         </connections>
                     </button>
                     <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="H05-Rp-UzR">
-                        <rect key="frame" x="701" y="-1" width="50" height="22"/>
+                        <rect key="frame" x="701" y="0.0" width="50" height="20"/>
                         <constraints>
                             <constraint firstAttribute="width" constant="50" id="FWw-BQ-WKa"/>
                             <constraint firstAttribute="height" constant="20" id="s7i-ZT-S7W"/>
                         </constraints>
-                        <buttonCell key="cell" type="smallSquare" title="Now" bezelStyle="smallSquare" imagePosition="overlaps" alignment="center" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="vZ4-fd-aE8">
-                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES" changeBackground="YES" changeGray="YES"/>
+                        <buttonCell key="cell" type="square" title="Now" bezelStyle="shadowlessSquare" imagePosition="overlaps" alignment="center" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="vZ4-fd-aE8">
+                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                             <font key="font" metaFont="system"/>
                         </buttonCell>
-                        <connections>
-                            <binding destination="-2" name="value" keyPath="scrollToBottom" id="xlw-TM-qoV"/>
-                        </connections>
                     </button>
                     <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="YB5-mV-vY7">
                         <rect key="frame" x="128" y="374" width="35" height="19"/>
@@ -132,6 +126,11 @@
                         </popUpButtonCell>
                         <connections>
                             <binding destination="-2" name="selectedTag" keyPath="baudRate" id="pDO-CA-0VU"/>
+                            <binding destination="-2" name="enabled" keyPath="task" id="plM-ZJ-GjO">
+                                <dictionary key="options">
+                                    <string key="NSValueTransformerName">NSIsNil</string>
+                                </dictionary>
+                            </binding>
                         </connections>
                     </popUpButton>
                     <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="r6K-Jm-mZe">
@@ -191,6 +190,7 @@
             </view>
             <connections>
                 <outlet property="delegate" destination="-2" id="0bl-1N-AYu"/>
+                <outlet property="initialFirstResponder" destination="rIR-2b-lAh" id="NJo-kw-Ewt"/>
             </connections>
             <point key="canvasLocation" x="271.5" y="416.5"/>
         </window>

@@ -395,6 +395,11 @@
                                     <action selector="uploadProject:" target="-1" id="Un4-q1-nWg"/>
                                 </connections>
                             </menuItem>
+                            <menuItem title="Upload Terminal" keyEquivalent="U" id="jAF-od-ZFb">
+                                <connections>
+                                    <action selector="uploadTerminal:" target="-1" id="hth-ZZ-S3I"/>
+                                </connections>
+                            </menuItem>
                             <menuItem title="Serial Monitor" id="GxC-cS-qvx">
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <menu key="submenu" title="Serial Monitor" id="i2j-Ds-oRH">

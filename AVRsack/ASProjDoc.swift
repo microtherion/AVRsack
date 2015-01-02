@@ -475,12 +475,16 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate, NSMenuDelegate {
                 })
             }
             dispatch_async(dispatch_get_main_queue(), {
-                self.builder.uploadProject(self.board, programmer:self.programmer, port:ASSerial.fileNameForPort(self.port))
+                self.builder.uploadProject(self.board, programmer:self.programmer, port:self.port)
             })
         }
         buildProject(sender)
     }
-    
+
+    @IBAction func uploadTerminal(sender: AnyObject) {
+        builder.uploadProject(board, programmer:programmer, port:port, terminal:true)
+    }
+
     @IBAction func disassembleProject(sender: AnyObject) {
         builder.continuation = {
             self.selectNodeInOutline(self.files.disassembly)
