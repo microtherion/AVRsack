@@ -22,8 +22,8 @@
                 <rect key="frame" x="0.0" y="0.0" width="751" height="403"/>
                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                 <subviews>
-                    <textField verticalHuggingPriority="750" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="rIR-2b-lAh">
-                        <rect key="frame" x="0.0" y="0.0" width="651" height="22"/>
+                    <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="rIR-2b-lAh">
+                        <rect key="frame" x="0.0" y="2" width="601" height="22"/>
                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" state="on" borderStyle="bezel" drawsBackground="YES" id="EBj-i4-UsA">
                             <font key="font" metaFont="system"/>
                             <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
@@ -39,10 +39,10 @@
                         </connections>
                     </textField>
                     <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="MOe-eO-fyb">
-                        <rect key="frame" x="651" y="0.0" width="50" height="20"/>
+                        <rect key="frame" x="601" y="0.0" width="75" height="20"/>
                         <constraints>
                             <constraint firstAttribute="height" constant="20" id="eLx-yy-gCn"/>
-                            <constraint firstAttribute="width" constant="50" id="vaT-Kd-3pn"/>
+                            <constraint firstAttribute="width" constant="75" id="vaT-Kd-3pn"/>
                         </constraints>
                         <buttonCell key="cell" type="square" title="Send" bezelStyle="shadowlessSquare" imagePosition="overlaps" alignment="center" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="Xt6-lT-b4z">
                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
@@ -58,9 +58,9 @@
                         </connections>
                     </button>
                     <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="H05-Rp-UzR">
-                        <rect key="frame" x="701" y="0.0" width="50" height="20"/>
+                        <rect key="frame" x="676" y="0.0" width="75" height="20"/>
                         <constraints>
-                            <constraint firstAttribute="width" constant="50" id="FWw-BQ-WKa"/>
+                            <constraint firstAttribute="width" constant="75" id="FWw-BQ-WKa"/>
                             <constraint firstAttribute="height" constant="20" id="s7i-ZT-S7W"/>
                         </constraints>
                         <buttonCell key="cell" type="square" title="Now" bezelStyle="shadowlessSquare" imagePosition="overlaps" alignment="center" state="on" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="vZ4-fd-aE8">

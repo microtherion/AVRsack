@@ -395,6 +395,12 @@
                                     <action selector="uploadProject:" target="-1" id="Un4-q1-nWg"/>
                                 </connections>
                             </menuItem>
+                            <menuItem title="Burn Bootloader/Fuses" id="vvl-LN-SXu">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <connections>
+                                    <action selector="burnBootloader:" target="-1" id="FYp-at-8g4"/>
+                                </connections>
+                            </menuItem>
                             <menuItem title="Upload Terminal" keyEquivalent="U" id="jAF-od-ZFb">
                                 <connections>
                                     <action selector="uploadTerminal:" target="-1" id="hth-ZZ-S3I"/>

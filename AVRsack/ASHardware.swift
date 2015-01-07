@@ -72,6 +72,7 @@ class ASHardware {
                         if seen.updateValue(true, forKey: board) == nil {
                             boards[board]                   = ASPropertyEntry()
                             boards[board]!["provenience"]   = provenience
+                            boards[board]!["library"]       = dir
                         }
                         boards[board]![property]  = value
                     }

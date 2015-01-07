@@ -468,12 +468,6 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate, NSMenuDelegate {
     @IBAction func uploadProject(sender: AnyObject) {
         builder.continuation = {
             self.selectNodeInOutline(self.files.uploadLog)
-            ASSerialWin.portNeededForUpload(self.port)
-            self.builder.continuation = {
-                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, Int64(2*NSEC_PER_SEC)), dispatch_get_main_queue(), {
-                    ASSerialWin.portAvailableAfterUpload(self.port)
-                })
-            }
             dispatch_async(dispatch_get_main_queue(), {
                 self.builder.uploadProject(self.board, programmer:self.programmer, port:self.port)
             })
@@ -482,7 +476,12 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate, NSMenuDelegate {
     }
 
     @IBAction func uploadTerminal(sender: AnyObject) {
-        builder.uploadProject(board, programmer:programmer, port:port, terminal:true)
+        builder.uploadProject(board, programmer:programmer, port:port, mode:.Interactive)
+    }
+
+    @IBAction func burnBootloader(sender: AnyObject) {
+        self.selectNodeInOutline(self.files.uploadLog)
+        builder.uploadProject(board, programmer:programmer, port:port, mode:.BurnBootloader)
     }
 
     @IBAction func disassembleProject(sender: AnyObject) {

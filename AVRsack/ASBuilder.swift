@@ -57,25 +57,19 @@ class ASBuilder {
         let libPath     = (ASLibraries.instance().directories as NSArray).componentsJoinedByString(":")
         var args        = [NSString]()
         let boardProp   = ASHardware.instance().boards[board]!
-        var corePath    = ""
+        let library     = boardProp["library"]!
+        var corePath    = library+"/cores/"+boardProp["build.core"]!
         var variantPath : NSString?
-        for hw in ASHardware.instance().directories {
-            corePath = hw+"/cores/"+boardProp["build.core"]!
-            if fileManager.fileExistsAtPath(corePath) {
-                if let variantName = boardProp["build.variant"] {
-                    variantPath = hw+"/variants/"+variantName
-                    if fileManager.fileExistsAtPath(variantPath!) {
-                        args.append("variant="+variantName)
-                   } else {
-                        variantPath = nil
-                    }
+        if fileManager.fileExistsAtPath(corePath) {
+            if let variantName = boardProp["build.variant"] {
+                variantPath = library+"/variants/"+variantName
+                if fileManager.fileExistsAtPath(variantPath!) {
+                    args.append("variant="+variantName)
+               } else {
+                    variantPath = nil
                 }
-                break
-            } else {
-                corePath = ""
             }
-        }
-        if corePath == "" {
+        } else {
             NSLog("Unable to find core %s\n", boardProp["build.core"]!)
             return
         }
@@ -98,8 +92,16 @@ class ASBuilder {
         task!.arguments         =   args;
         task!.launch()
     }
-    
-    func uploadProject(board: String, programmer: String, port: String, terminal: Bool = false) {
+
+    enum Mode {
+    case Upload
+    case BurnBootloader
+    case Interactive
+    }
+
+    func uploadProject(board: String, programmer: String, port: String, mode: Mode = .Upload) {
+        let useProgrammer           = mode != .Upload
+        let interactive             = mode == .Interactive
         let portPath                = ASSerial.fileNameForPort(port)
         let toolChain               = (NSApplication.sharedApplication().delegate as ASApplication).preferences.toolchainPath
         task = NSTask()
@@ -108,7 +110,7 @@ class ASBuilder {
         
         let fileManager = NSFileManager.defaultManager()
         var logOut      : NSFileHandle
-        if terminal {
+        if interactive {
             let inputPipe           = NSPipe()
             let outputPipe          = NSPipe()
             logOut                  = outputPipe.fileHandleForWriting
@@ -116,6 +118,7 @@ class ASBuilder {
             task!.standardOutput    = outputPipe
             task!.standardError     = outputPipe
         } else {
+            ASSerialWin.portNeededForUpload(port)
             let logURL              = dir.URLByAppendingPathComponent("build/upload.log")
             fileManager.createFileAtPath(logURL.path!, contents: NSData(), attributes: nil)
             logOut                  = NSFileHandle(forWritingAtPath: logURL.path!)!
@@ -126,7 +129,7 @@ class ASBuilder {
         let libPath         = (ASLibraries.instance().directories as NSArray).componentsJoinedByString(":")
         let boardProp       = ASHardware.instance().boards[board]!
         let progProp        = ASHardware.instance().programmers[programmer]
-        let hasBootloader   = boardProp["upload.protocol"] != nil
+        let hasBootloader   = !useProgrammer && boardProp["upload.protocol"] != nil
         let leonardish      = hasBootloader && (boardProp["bootloader.path"] ?? "").hasPrefix("caterina")
         let proto           = hasBootloader ? boardProp["upload.protocol"] : progProp?["protocol"]
         let speed           = hasBootloader ? boardProp["upload.speed"]    : progProp?["speed"]
@@ -135,10 +138,59 @@ class ASBuilder {
         args               += [
             "-C", toolChain+"/etc/avrdude.conf",
             "-p", boardProp["build.mcu"]!, "-c", proto!, "-P", portPath]
-        if terminal {
-            args          += ["-t"]
-        } else {
+        switch mode {
+        case .Upload:
+            if hasBootloader {
+                args      += ["-D"]
+            }
             args          += ["-U", "flash:w:build/"+board+"/"+dir.lastPathComponent+".hex:i"]
+            continuation   = {
+                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, Int64(2*NSEC_PER_SEC)), dispatch_get_main_queue(), {
+                    ASSerialWin.portAvailableAfterUpload(port)
+                })
+            }
+        case .BurnBootloader:
+            var loaderArgs = args
+            args          += ["-e"]
+            if let unlock = boardProp["bootloader.unlock_bits"] {
+                args      += ["-Ulock:w:"+unlock+":m"]
+            }
+            if let efuse = boardProp["bootloader.extended_fuses"] {
+                args      += ["-Uefuse:w:"+efuse+":m"]
+            }
+            let hfuse = boardProp["bootloader.high_fuses"]!
+            let lfuse = boardProp["bootloader.low_fuses"]!
+            args          += ["-Uhfuse:w:"+hfuse+":m", "-Ulfuse:w:"+lfuse+":m"]
+            var needPhase2 = false
+            if let loaderPath = boardProp["bootloader.path"] {
+                let loader  = boardProp["library"]!+"/bootloaders/"+loaderPath+"/"+boardProp["bootloader.file"]!
+                loaderArgs += ["-Uflash:w:"+loader+":i"]
+                needPhase2  = true
+            }
+            if let lock = boardProp["bootloader.lock_bits"] {
+                loaderArgs += ["-Ulock:w:"+lock+":m"]
+                needPhase2  = true
+            }
+            if needPhase2 {
+                let task2 = NSTask()
+                task2.currentDirectoryPath = dir.path!
+                task2.launchPath           = toolChain+"/bin/avrdude"
+                task2.arguments            = loaderArgs
+                task2.standardOutput       = logOut
+                task2.standardError        = logOut
+                continuation                = {
+                    let cmdLine = task2.launchPath+" "+(loaderArgs as NSArray).componentsJoinedByString(" ")+"\n"
+                    logOut.writeData(cmdLine.dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: true)!)
+                    task2.launch()
+                    self.continuation = {
+                        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, Int64(2*NSEC_PER_SEC)), dispatch_get_main_queue(), {
+                            ASSerialWin.portAvailableAfterUpload(port)
+                        })
+                    }
+                }
+            }
+        case .Interactive:
+            args          += ["-t"]
         }
         if speed != nil {
             args.append("-b")
@@ -171,7 +223,7 @@ class ASBuilder {
         logOut.writeData(cmdLine.dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: true)!)
         task!.arguments         =   args;
         task!.launch()
-        if terminal {
+        if interactive {
             let intSpeed = speed?.toInt() ?? 19200
             ASSerialWin.showWindowWithPort(port, task:task!, speed:intSpeed)
             task = nil
