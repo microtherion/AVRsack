@@ -279,10 +279,16 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate, NSMenuDelegate {
         updateChangeCount(.ChangeDone)
     }
     func outlineView(outlineView: NSOutlineView, willDisplayCell cell: AnyObject, forTableColumn tableColumn: NSTableColumn?, item: AnyObject) {
-        if item === files.root || item === files.buildLog || item === files.uploadLog || item === files.disassembly {
-            (cell as NSCell).font = NSFont.boldSystemFontOfSize(13.0)
-        } else {
-            (cell as NSCell).font = NSFont.systemFontOfSize(13.0)
+        if let textCell = cell as? NSTextFieldCell {
+            textCell.textColor = NSColor.blackColor()
+            if item === files.root || item === files.buildLog || item === files.uploadLog || item === files.disassembly {
+                textCell.font = NSFont.boldSystemFontOfSize(13.0)
+            } else {
+                textCell.font = NSFont.systemFontOfSize(13.0)
+                if !(item as ASFileNode).exists() {
+                    textCell.textColor = NSColor.redColor()
+                }
+            }
         }
     }
     

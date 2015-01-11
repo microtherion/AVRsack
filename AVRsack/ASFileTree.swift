@@ -79,6 +79,9 @@ class ASFileNode {
     func paths(rootPath: NSString) -> [NSString] {
         return [NSString]()
     }
+    func exists() -> Bool {
+        return true
+    }
 }
 
 class ASLogNode : ASFileNode {
@@ -199,6 +202,9 @@ class ASFileItem : ASFileNode {
     }
     override func paths(rootPath: NSString) -> [NSString] {
         return [relativePath(rootPath)]
+    }
+    override func exists() -> Bool {
+        return url.checkResourceIsReachableAndReturnError(nil)
     }
 }
 
