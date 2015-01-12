@@ -24,6 +24,12 @@
 		95A7C6401A38914300EF1963 /* ASPreferences.xib in Resources */ = {isa = PBXBuildFile; fileRef = 95A7C63E1A38914300EF1963 /* ASPreferences.xib */; };
 		95A7C6461A3894C900EF1963 /* ASPreferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95A7C6451A3894C900EF1963 /* ASPreferences.swift */; };
 		95BF80EB1A185C9E0004A693 /* ASFileTree.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95BF80EA1A185C9E0004A693 /* ASFileTree.swift */; };
+		95CC3F051A6385B8003507AD /* AsmSrcIcon.icns in Resources */ = {isa = PBXBuildFile; fileRef = 95CC3EFF1A6385B8003507AD /* AsmSrcIcon.icns */; };
+		95CC3F061A6385B8003507AD /* CppSrcIcon.icns in Resources */ = {isa = PBXBuildFile; fileRef = 95CC3F001A6385B8003507AD /* CppSrcIcon.icns */; };
+		95CC3F071A6385B8003507AD /* CSrcIcon.icns in Resources */ = {isa = PBXBuildFile; fileRef = 95CC3F011A6385B8003507AD /* CSrcIcon.icns */; };
+		95CC3F081A6385B8003507AD /* HSrcIcon.icns in Resources */ = {isa = PBXBuildFile; fileRef = 95CC3F021A6385B8003507AD /* HSrcIcon.icns */; };
+		95CC3F091A6385B8003507AD /* InoIcon.icns in Resources */ = {isa = PBXBuildFile; fileRef = 95CC3F031A6385B8003507AD /* InoIcon.icns */; };
+		95CC3F0A1A6385B8003507AD /* MdSrcIcon.icns in Resources */ = {isa = PBXBuildFile; fileRef = 95CC3F041A6385B8003507AD /* MdSrcIcon.icns */; };
 		95DA9B161A515AF700DE018D /* ACEViewExt.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95DA9B151A515AF700DE018D /* ACEViewExt.swift */; };
 		95DF20671A45A6090013D1B5 /* ASSketchBook.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95DF20661A45A6090013D1B5 /* ASSketchBook.swift */; };
 		95EA32621A17B90600F66EB0 /* ACEView.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 95EA325B1A17B8DA00F66EB0 /* ACEView.framework */; };
@@ -92,6 +98,12 @@
 		95A7C63F1A38914300EF1963 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/ASPreferences.xib; sourceTree = "<group>"; };
 		95A7C6451A3894C900EF1963 /* ASPreferences.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ASPreferences.swift; sourceTree = "<group>"; };
 		95BF80EA1A185C9E0004A693 /* ASFileTree.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ASFileTree.swift; sourceTree = "<group>"; };
+		95CC3EFF1A6385B8003507AD /* AsmSrcIcon.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = AsmSrcIcon.icns; path = IconResources/AsmSrcIcon.icns; sourceTree = "<group>"; };
+		95CC3F001A6385B8003507AD /* CppSrcIcon.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = CppSrcIcon.icns; path = IconResources/CppSrcIcon.icns; sourceTree = "<group>"; };
+		95CC3F011A6385B8003507AD /* CSrcIcon.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = CSrcIcon.icns; path = IconResources/CSrcIcon.icns; sourceTree = "<group>"; };
+		95CC3F021A6385B8003507AD /* HSrcIcon.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = HSrcIcon.icns; path = IconResources/HSrcIcon.icns; sourceTree = "<group>"; };
+		95CC3F031A6385B8003507AD /* InoIcon.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = InoIcon.icns; path = IconResources/InoIcon.icns; sourceTree = "<group>"; };
+		95CC3F041A6385B8003507AD /* MdSrcIcon.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = MdSrcIcon.icns; path = IconResources/MdSrcIcon.icns; sourceTree = "<group>"; };
 		95DA9B151A515AF700DE018D /* ACEViewExt.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ACEViewExt.swift; sourceTree = "<group>"; };
 		95DF20661A45A6090013D1B5 /* ASSketchBook.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ASSketchBook.swift; sourceTree = "<group>"; };
 		95EA32541A17B8DA00F66EB0 /* ACEView.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ACEView.xcodeproj; path = ../ACEView/ACEView.xcodeproj; sourceTree = "<group>"; };
@@ -199,6 +211,12 @@
 			children = (
 				9501D8081A17025C0034C530 /* Images.xcassets */,
 				950AB9261A296A160033A9DA /* ProjIcon.icns */,
+				95CC3EFF1A6385B8003507AD /* AsmSrcIcon.icns */,
+				95CC3F001A6385B8003507AD /* CppSrcIcon.icns */,
+				95CC3F011A6385B8003507AD /* CSrcIcon.icns */,
+				95CC3F021A6385B8003507AD /* HSrcIcon.icns */,
+				95CC3F031A6385B8003507AD /* InoIcon.icns */,
+				95CC3F041A6385B8003507AD /* MdSrcIcon.icns */,
 				9501D80A1A17025C0034C530 /* MainMenu.xib */,
 				9501D8051A17025C0034C530 /* ASProjDoc.xib */,
 				956005F31A4EF79D00327007 /* ASSerialWin.xib */,
@@ -339,13 +357,19 @@
 			buildActionMask = 2147483647;
 			files = (
 				95A7C6401A38914300EF1963 /* ASPreferences.xib in Resources */,
+				95CC3F091A6385B8003507AD /* InoIcon.icns in Resources */,
 				95468DE31A228E1300668EE2 /* Defaults.plist in Resources */,
 				956005F51A4EF79D00327007 /* ASSerialWin.xib in Resources */,
 				9501D8071A17025C0034C530 /* ASProjDoc.xib in Resources */,
 				950AB9271A296A160033A9DA /* ProjIcon.icns in Resources */,
 				9501D8091A17025C0034C530 /* Images.xcassets in Resources */,
+				95CC3F0A1A6385B8003507AD /* MdSrcIcon.icns in Resources */,
 				9501D80C1A17025C0034C530 /* MainMenu.xib in Resources */,
+				95CC3F071A6385B8003507AD /* CSrcIcon.icns in Resources */,
 				951CD1771A2615000066C1A1 /* BuildProject in Resources */,
+				95CC3F081A6385B8003507AD /* HSrcIcon.icns in Resources */,
+				95CC3F061A6385B8003507AD /* CppSrcIcon.icns in Resources */,
+				95CC3F051A6385B8003507AD /* AsmSrcIcon.icns in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

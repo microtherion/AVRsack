@@ -31,6 +31,8 @@
 			<array>
 				<string>ino</string>
 			</array>
+			<key>CFBundleTypeIconFile</key>
+			<string>InoIcon</string>
 			<key>CFBundleTypeMIMETypes</key>
 			<array>
 				<string>text/plain</string>
@@ -39,6 +41,8 @@
 			<string>Arduino Source File</string>
 			<key>CFBundleTypeRole</key>
 			<string>Viewer</string>
+			<key>ICExtension</key>
+			<string>INO</string>
 			<key>NSDocumentClass</key>
 			<string>AVRsack.ASProjDoc</string>
 		</dict>
@@ -62,10 +66,122 @@
 	<key>LSMinimumSystemVersion</key>
 	<string>$(MACOSX_DEPLOYMENT_TARGET)</string>
 	<key>NSHumanReadableCopyright</key>
-	<string>Copyright © 2014 Aere Perennius. All rights reserved.</string>
+	<string>Copyright © 2014-2015 Aere Perennius. All rights reserved.</string>
 	<key>NSMainNibFile</key>
 	<string>MainMenu</string>
 	<key>NSPrincipalClass</key>
 	<string>NSApplication</string>
+	<key>UTImportedTypeDeclarations</key>
+	<array>
+		<dict>
+			<key>ICExtension</key>
+			<string>C</string>
+			<key>UTTypeConformsTo</key>
+			<array>
+				<string>public.source-code</string>
+			</array>
+			<key>UTTypeDescription</key>
+			<string>C Source Code</string>
+			<key>UTTypeIconFile</key>
+			<string>CSrcIcon</string>
+			<key>UTTypeIdentifier</key>
+			<string>public.c-source</string>
+			<key>UTTypeTagSpecification</key>
+			<dict>
+				<key>public.filename-extension</key>
+				<array>
+					<string>c</string>
+				</array>
+			</dict>
+		</dict>
+		<dict>
+			<key>ICExtension</key>
+			<string>HDR</string>
+			<key>UTTypeConformsTo</key>
+			<array>
+				<string>public.source-code</string>
+			</array>
+			<key>UTTypeDescription</key>
+			<string>C Header</string>
+			<key>UTTypeIconFile</key>
+			<string>HSrcIcon</string>
+			<key>UTTypeIdentifier</key>
+			<string>public.c-header</string>
+			<key>UTTypeTagSpecification</key>
+			<dict>
+				<key>public.filename-extension</key>
+				<array>
+					<string>h</string>
+				</array>
+			</dict>
+		</dict>
+		<dict>
+			<key>ICExtension</key>
+			<string>C++</string>
+			<key>UTTypeConformsTo</key>
+			<array>
+				<string>public.source-code</string>
+			</array>
+			<key>UTTypeDescription</key>
+			<string>C++ Source Code</string>
+			<key>UTTypeIconFile</key>
+			<string>CppSrcIcon</string>
+			<key>UTTypeIdentifier</key>
+			<string>public.c-plus-plus-source</string>
+			<key>UTTypeTagSpecification</key>
+			<dict>
+				<key>public.filename-extension</key>
+				<array>
+					<string>c++</string>
+					<string>cpp</string>
+					<string>cxx</string>
+					<string>cc</string>
+					<string>cp</string>
+				</array>
+			</dict>
+		</dict>
+		<dict>
+			<key>ICExtension</key>
+			<string>ASM</string>
+			<key>UTTypeConformsTo</key>
+			<array>
+				<string>public.source-code</string>
+			</array>
+			<key>UTTypeDescription</key>
+			<string>Assembly Source</string>
+			<key>UTTypeIconFile</key>
+			<string>AsmSrcIcon</string>
+			<key>UTTypeIdentifier</key>
+			<string>public.assembly-source</string>
+			<key>UTTypeTagSpecification</key>
+			<dict>
+				<key>public.filename-extension</key>
+				<array>
+					<string>s</string>
+				</array>
+			</dict>
+		</dict>
+		<dict>
+			<key>ICExtension</key>
+			<string>DOCS</string>
+			<key>UTTypeConformsTo</key>
+			<array>
+				<string>public.plain-text</string>
+			</array>
+			<key>UTTypeDescription</key>
+			<string>Markdown</string>
+			<key>UTTypeIconFile</key>
+			<string>MdSrcIcon</string>
+			<key>UTTypeIdentifier</key>
+			<string>net.daringfireball.markdown</string>
+			<key>UTTypeTagSpecification</key>
+			<dict>
+				<key>public.filename-extension</key>
+				<array>
+					<string>md</string>
+				</array>
+			</dict>
+		</dict>
+	</array>
 </dict>
 </plist>
