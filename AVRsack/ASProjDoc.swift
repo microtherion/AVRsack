@@ -26,7 +26,7 @@ func pushToFront(inout list: [String], front: String) {
     list.insert(front, atIndex: 0)
 }
 
-class ASProjDoc: NSDocument, NSOutlineViewDelegate, NSMenuDelegate {
+class ASProjDoc: NSDocument, NSOutlineViewDelegate, NSMenuDelegate, NSOpenSavePanelDelegate {
     @IBOutlet weak var editor   : ACEView!
     @IBOutlet weak var outline  : NSOutlineView!
     @IBOutlet weak var boardTool: NSPopUpButton!
@@ -262,11 +262,24 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate, NSMenuDelegate {
         let selectedIndexes = NSIndexSet(index: outline.rowForItem(selection))
         outline.selectRowIndexes(selectedIndexes, byExtendingSelection: false)
     }
+    func selectedFiles() -> [ASFileItem] {
+        var selection = [ASFileItem]()
+        outline.selectedRowIndexes.enumerateIndexesUsingBlock() { (index, stop) in
+            if let file = self.outline.itemAtRow(index) as? ASFileItem {
+                selection.append(file)
+            }
+        }
+        return selection
+    }
 
     // MARK: Outline View Delegate
 
     func outlineViewSelectionDidChange(notification: NSNotification) {
-        selectNode(outline.itemAtRow(outline.selectedRow) as ASFileNode?)
+        willChangeValueForKey("hasSelection")
+        if outline.numberOfSelectedRows < 2 {
+            selectNode(outline.itemAtRow(outline.selectedRow) as ASFileNode?)
+        }
+        didChangeValueForKey("hasSelection")
     }
     func outlineViewItemDidExpand(notification: NSNotification) {
         let group       = notification.userInfo!["NSObject"] as ASFileGroup
@@ -291,7 +304,92 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate, NSMenuDelegate {
             }
         }
     }
-    
+
+    // MARK: File manipulation
+
+    @IBAction func delete(AnyObject) {
+        let selection  = selectedFiles()
+        var name       : String
+        var ref        : String
+        if selection.count == 1 {
+            name    = "file “\(selection[0].url.lastPathComponent)”"
+            ref     = "reference to it"
+        } else {
+            name    = "\(selection.count) selected files"
+            ref     = "references to them"
+        }
+        let alert           = NSAlert()
+        alert.messageText   =
+            "Do you want to move the \(name) to the Trash, or only remove the \(ref)?"
+        alert.addButtonWithTitle("Move to Trash")
+        alert.addButtonWithTitle(selection.count == 1 ? "Remove Reference" : "Remove References")
+        alert.addButtonWithTitle("Cancel")
+        (alert.buttons[0] as NSButton).keyEquivalent = ""
+        (alert.buttons[1] as NSButton).keyEquivalent = "\r"
+        alert.beginSheetModalForWindow(outline.window!) { (response) in
+            if response != NSAlertThirdButtonReturn {
+                if response == NSAlertFirstButtonReturn {
+                    NSWorkspace.sharedWorkspace().recycleURLs(selection.map {$0.url}, completionHandler:nil)
+                }
+                self.files.apply { (node) in
+                    if let group = node as? ASFileGroup {
+                        for file in selection {
+                            for (groupIdx, groupItem) in enumerate(group.children) {
+                                if file as ASFileNode === groupItem {
+                                    group.children.removeAtIndex(groupIdx)
+                                    break
+                                }
+                            }
+                        }
+                    }
+                }
+                self.outline.deselectAll(self)
+                self.outline.reloadData()
+                self.updateChangeCount(.ChangeDone)
+            }
+        }
+    }
+
+    @IBAction func add(AnyObject) {
+        let panel = NSOpenPanel()
+        panel.canChooseFiles            = true
+        panel.canChooseDirectories      = false
+        panel.allowsMultipleSelection   = true
+        panel.allowedFileTypes          = ["h", "hpp", "hh", "c", "cxx", "c++", "cpp", "cc", "ino", "s", "md"]
+        panel.delegate                  = self
+        panel.beginSheetModalForWindow(outline.window!, completionHandler: { (returnCode: Int) -> Void in
+            if returnCode == NSFileHandlingPanelOKButton {
+                for url in panel.URLs as [NSURL] {
+                    self.files.addFileURL(url)
+                }
+                self.outline.deselectAll(self)
+                self.outline.reloadData()
+                self.updateChangeCount(.ChangeDone)
+            }
+        })
+
+    }
+
+    func panel(panel:NSSavePanel, shouldEnableURL url:NSURL) -> Bool {
+        var shouldEnable = true
+        var resourceID   : AnyObject?
+        url.getResourceValue(&resourceID, forKey:NSURLFileResourceIdentifierKey, error:nil)
+        files.apply {(node) in
+            if let file = node as? ASFileItem {
+                var thisID : AnyObject?
+                file.url.getResourceValue(&thisID, forKey:NSURLFileResourceIdentifierKey, error:nil)
+                if thisID != nil && resourceID!.isEqual(thisID!) {
+                    shouldEnable = false
+                }
+            }
+        }
+        return shouldEnable
+    }
+
+    var hasSelection : Bool {
+        return selectedFiles().count > 0
+    }
+
     // MARK: Editor configuration
     
     @IBAction func changeTheme(item: NSMenuItem) {
