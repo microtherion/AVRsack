@@ -152,6 +152,23 @@ class ASApplication: NSObject, NSApplicationDelegate, NSMenuDelegate {
         let url = NSURL(fileURLWithPath: examples[item.tag])!
         openTemplate(url.URLByDeletingLastPathComponent!)
     }
+
+    @IBAction func createSketch(AnyObject) {
+        ASApplication.newProjectLocation(nil,
+            message: "Create Project")
+        { (saveTo) -> Void in
+            let fileManager = NSFileManager.defaultManager()
+            fileManager.createDirectoryAtURL(saveTo, withIntermediateDirectories:false, attributes:nil, error:nil)
+            let proj            = saveTo.URLByAppendingPathComponent(saveTo.lastPathComponent+".avrsackproj")
+            let docController   = NSDocumentController.sharedDocumentController() as NSDocumentController
+            if let doc = docController.openUntitledDocumentAndDisplay(true, error:nil) as? ASProjDoc {
+                doc.fileURL = proj
+                doc.updateProjectURL()
+                doc.createFileAtURL(saveTo.URLByAppendingPathComponent(saveTo.lastPathComponent+".ino"))
+                doc.writeToURL(proj, ofType: "Project", forSaveOperation: .SaveAsOperation, originalContentsURL: nil, error: nil)
+            }
+        }
+    }
     
     class func newProjectLocation(documentWindow: NSWindow?, message: String, completion: (NSURL) -> ()) {
         let savePanel                       = NSSavePanel()

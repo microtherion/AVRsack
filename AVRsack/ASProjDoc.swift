@@ -151,6 +151,11 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate, NSMenuDelegate, NSOpenSavePa
         return NSPropertyListSerialization.dataFromPropertyList(data, format: .XMLFormat_v1_0, errorDescription: nil)
     }
 
+    func updateProjectURL() {
+        files.setProjectURL(fileURL!)
+        builder.setProjectURL(fileURL!)
+    }
+
     func importProject(url: NSURL, error outError: NSErrorPointer) -> Bool {
         let existingProject = url.URLByAppendingPathComponent(url.lastPathComponent+".avrsackproj")
         if existingProject.checkResourceIsReachableAndReturnError(nil) {
@@ -160,7 +165,7 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate, NSMenuDelegate, NSOpenSavePa
         let filesInProject =
             NSFileManager.defaultManager().contentsOfDirectoryAtURL(url, includingPropertiesForKeys: nil,
                 options: .SkipsHiddenFiles, error: nil)!
-        files.setProjectURL(fileURL!)
+        updateProjectURL()
         for file in filesInProject {
             files.addFileURL(file as NSURL)
         }
@@ -173,8 +178,6 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate, NSMenuDelegate, NSOpenSavePa
             let projectURL = url.URLByDeletingPathExtension!.URLByAppendingPathExtension("avrsackproj")
             success = importProject(url.URLByDeletingLastPathComponent!, error: outError)
             if success {
-                files.setProjectURL(projectURL)
-                builder.setProjectURL(projectURL)
                 fileURL = projectURL
                 success = writeToURL(projectURL, ofType: "Project", forSaveOperation: .SaveAsOperation, originalContentsURL: nil, error: outError)
             }
@@ -187,8 +190,7 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate, NSMenuDelegate, NSOpenSavePa
         if typeName != "Project" {
             return false
         }
-        files.setProjectURL(fileURL!)
-        builder.setProjectURL(fileURL!)
+        updateProjectURL()
         let projectData : NSDictionary = NSPropertyListSerialization.propertyListFromData(data, mutabilityOption: .Immutable, format: nil, errorDescription: nil) as NSDictionary
         let projectVersion = projectData[kVersionKey] as Double
         assert(projectVersion <= floor(kCurVersion+1.0), "Project version too new for this app")
@@ -388,6 +390,48 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate, NSMenuDelegate, NSOpenSavePa
 
     var hasSelection : Bool {
         return selectedFiles().count > 0
+    }
+
+    func createFileAtURL(url:NSURL) {
+        let type        = ASFileType.guessForURL(url)
+        var firstPfx    = ""
+        var prefix      = ""
+        var lastPfx     = ""
+        switch type {
+        case .Header, .CFile:
+            firstPfx    = "/*"
+            prefix      = " *"
+            lastPfx     = " */"
+        case .CppFile, .Arduino:
+            prefix      = "//"
+        case .AsmFile:
+            prefix      = ";"
+        case .Markdown:
+            firstPfx    = "<!---"
+            prefix      = " "
+            lastPfx     = " -->"
+        default:
+            break
+        }
+        var header = ""
+        if prefix != "" {
+            if firstPfx == "" {
+                firstPfx    = prefix
+            }
+            if lastPfx == "" {
+                lastPfx     = prefix
+            }
+            let dateFmt = NSDateFormatter()
+            dateFmt.dateFormat = "yyyy-MM-dd"
+            header = firstPfx + "\n" +
+                prefix + " Project: " + fileURL!.URLByDeletingLastPathComponent!.lastPathComponent + "\n" +
+                prefix + " File:    " + url.lastPathComponent + "\n" +
+                prefix + " Created: " + dateFmt.stringFromDate(NSDate()) + "\n" +
+                lastPfx + "\n\n"
+        }
+        header.writeToURL(url, atomically: true, encoding: NSUTF8StringEncoding, error: nil)
+        files.addFileURL(url)
+        outline.reloadData()
     }
 
     // MARK: Editor configuration
