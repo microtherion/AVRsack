@@ -80,7 +80,7 @@
                                     <items>
                                         <menuItem title="File" keyEquivalent="n" id="Was-JA-tGl">
                                             <connections>
-                                                <action selector="newDocument:" target="-1" id="4Si-XN-c54"/>
+                                                <action selector="createFile:" target="-1" id="rEL-As-mOF"/>
                                             </connections>
                                         </menuItem>
                                         <menuItem title="Sketch" keyEquivalent="N" id="2hE-2e-TSR">

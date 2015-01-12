@@ -434,6 +434,18 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate, NSMenuDelegate, NSOpenSavePa
         outline.reloadData()
     }
 
+    @IBAction func createFile(AnyObject) {
+        let savePanel                       = NSSavePanel()
+        savePanel.allowedFileTypes          =
+            [kUTTypeCSource, kUTTypeCHeader, kUTTypeCPlusPlusSource, kUTTypeCSource,
+             "public.assembly-source", "net.daringfireball.markdown"]
+        savePanel.beginSheetModalForWindow(outline.window!, completionHandler: { (returnCode) -> Void in
+            if returnCode == NSFileHandlingPanelOKButton {
+                self.createFileAtURL(savePanel.URL!)
+            }
+        })
+    }
+
     // MARK: Editor configuration
     
     @IBAction func changeTheme(item: NSMenuItem) {
