@@ -18,7 +18,7 @@ enum ASFileType : String {
     case Markdown   = "doc.md"
     
     static func guessForURL(url: NSURL) -> ASFileType {
-        switch url.pathExtension.lowercaseString {
+        switch url.pathExtension!.lowercaseString {
         case "hpp", "hh", "h":
             return .Header
         case "c":
@@ -172,7 +172,7 @@ class ASFileItem : ASFileNode {
         }
     }
     override func nodeName() -> String {
-        return "📄 "+url.lastPathComponent
+        return "📄 "+url.lastPathComponent!
     }
     
     func relativePath(relativeTo: String) -> String {
@@ -222,7 +222,7 @@ class ASFileTree : NSObject, NSOutlineViewDataSource {
         }
     }
     func setProjectURL(url: NSURL) {
-        root.name = url.lastPathComponent.stringByDeletingPathExtension
+        root.name = url.lastPathComponent!.stringByDeletingPathExtension
         dir       = url.URLByDeletingLastPathComponent!.standardizedURL!
     }
     func apply(closure: (ASFileNode) -> ()) {

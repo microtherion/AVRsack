@@ -74,7 +74,7 @@ class ASBuilder {
             return
         }
         args.append("toolchain="+toolChain)
-        args.append("project="+dir.lastPathComponent)
+        args.append("project="+dir.lastPathComponent!)
         args.append("board="+board)
         args.append("mcu="+boardProp["build.mcu"]!)
         args.append("f_cpu="+boardProp["build.f_cpu"]!)
@@ -143,7 +143,7 @@ class ASBuilder {
             if hasBootloader {
                 args      += ["-D"]
             }
-            args          += ["-U", "flash:w:build/"+board+"/"+dir.lastPathComponent+".hex:i"]
+            args          += ["-U", "flash:w:build/"+board+"/"+dir.lastPathComponent!+".hex:i"]
             continuation   = {
                 dispatch_after(dispatch_time(DISPATCH_TIME_NOW, Int64(2*NSEC_PER_SEC)), dispatch_get_main_queue(), {
                     ASSerialWin.portAvailableAfterUpload(port)
@@ -245,7 +245,7 @@ class ASBuilder {
         
         let showSource  = NSUserDefaults.standardUserDefaults().boolForKey("ShowSourceInDisassembly")
         var args        = showSource ? ["-S"] : []
-        args           += ["-d", "build/"+board+"/"+dir.lastPathComponent+".elf"]
+        args           += ["-d", "build/"+board+"/"+dir.lastPathComponent!+".elf"]
         let cmdLine     = task!.launchPath+" "+(args as NSArray).componentsJoinedByString(" ")+"\n"
         logOut.writeData(cmdLine.dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: true)!)
         task!.arguments         =   args;

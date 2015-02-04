@@ -109,8 +109,8 @@ class ASApplication: NSObject, NSApplicationDelegate, NSMenuDelegate {
         ASApplication.newProjectLocation(nil,
             message: "Save editable copy of project \(template.lastPathComponent)")
         { (saveTo) -> Void in
-            let oldName     = template.lastPathComponent
-            let newName     = saveTo.lastPathComponent
+            let oldName     = template.lastPathComponent!
+            let newName     = saveTo.lastPathComponent!
             let fileManager = NSFileManager.defaultManager()
             fileManager.copyItemAtURL(template, toURL: saveTo, error: nil)
             let contents = fileManager.enumeratorAtURL(saveTo,
@@ -118,7 +118,7 @@ class ASApplication: NSObject, NSApplicationDelegate, NSMenuDelegate {
                 options: .SkipsHiddenFiles, errorHandler: nil)
             while let item = contents?.nextObject() as? NSURL {
                 var renameItem = false
-                var itemName   = item.lastPathComponent
+                var itemName   = item.lastPathComponent!
                 if itemName.stringByDeletingPathExtension == oldName {
                     renameItem = true
                     itemName   = newName.stringByAppendingPathExtension(itemName.pathExtension)!
@@ -159,12 +159,12 @@ class ASApplication: NSObject, NSApplicationDelegate, NSMenuDelegate {
         { (saveTo) -> Void in
             let fileManager = NSFileManager.defaultManager()
             fileManager.createDirectoryAtURL(saveTo, withIntermediateDirectories:false, attributes:nil, error:nil)
-            let proj            = saveTo.URLByAppendingPathComponent(saveTo.lastPathComponent+".avrsackproj")
+            let proj            = saveTo.URLByAppendingPathComponent(saveTo.lastPathComponent!+".avrsackproj")
             let docController   = NSDocumentController.sharedDocumentController() as NSDocumentController
             if let doc = docController.openUntitledDocumentAndDisplay(true, error:nil) as? ASProjDoc {
                 doc.fileURL = proj
                 doc.updateProjectURL()
-                doc.createFileAtURL(saveTo.URLByAppendingPathComponent(saveTo.lastPathComponent+".ino"))
+                doc.createFileAtURL(saveTo.URLByAppendingPathComponent(saveTo.lastPathComponent!+".ino"))
                 doc.writeToURL(proj, ofType: "Project", forSaveOperation: .SaveAsOperation, originalContentsURL: nil, error: nil)
             }
         }

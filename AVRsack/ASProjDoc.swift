@@ -157,7 +157,7 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate, NSMenuDelegate, NSOpenSavePa
     }
 
     func importProject(url: NSURL, error outError: NSErrorPointer) -> Bool {
-        let existingProject = url.URLByAppendingPathComponent(url.lastPathComponent+".avrsackproj")
+        let existingProject = url.URLByAppendingPathComponent(url.lastPathComponent!+".avrsackproj")
         if existingProject.checkResourceIsReachableAndReturnError(nil) {
             fileURL = existingProject
             return readFromURL(existingProject, ofType:"Project", error:outError)
@@ -424,8 +424,8 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate, NSMenuDelegate, NSOpenSavePa
             let dateFmt = NSDateFormatter()
             dateFmt.dateFormat = "yyyy-MM-dd"
             header = firstPfx + "\n" +
-                prefix + " Project: " + fileURL!.URLByDeletingLastPathComponent!.lastPathComponent + "\n" +
-                prefix + " File:    " + url.lastPathComponent + "\n" +
+                prefix + " Project: " + fileURL!.URLByDeletingLastPathComponent!.lastPathComponent! + "\n" +
+                prefix + " File:    " + url.lastPathComponent! + "\n" +
                 prefix + " Created: " + dateFmt.stringFromDate(NSDate()) + "\n" +
                 lastPfx + "\n\n"
         }
