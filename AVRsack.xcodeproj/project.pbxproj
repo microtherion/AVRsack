@@ -16,6 +16,7 @@
 		950AB9271A296A160033A9DA /* ProjIcon.icns in Resources */ = {isa = PBXBuildFile; fileRef = 950AB9261A296A160033A9DA /* ProjIcon.icns */; };
 		951CD1741A23C9FC0066C1A1 /* ASBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 951CD1731A23C9FC0066C1A1 /* ASBuilder.swift */; };
 		951CD1771A2615000066C1A1 /* BuildProject in Resources */ = {isa = PBXBuildFile; fileRef = 951CD1761A2615000066C1A1 /* BuildProject */; };
+		9538E0EC1A8FB215001E02CC /* ACEView.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 95EA325B1A17B8DA00F66EB0 /* ACEView.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		95468DDF1A228BE600668EE2 /* ASHardware.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95468DDE1A228BE600668EE2 /* ASHardware.swift */; };
 		95468DE31A228E1300668EE2 /* Defaults.plist in Resources */ = {isa = PBXBuildFile; fileRef = 95468DE21A228E1300668EE2 /* Defaults.plist */; };
 		95539B681A3E7EAF00D8595C /* ASSerial.mm in Sources */ = {isa = PBXBuildFile; fileRef = 95539B671A3E7EAF00D8595C /* ASSerial.mm */; };
@@ -73,6 +74,19 @@
 			remoteInfo = ACEView;
 		};
 /* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		9538E0EB1A8FB205001E02CC /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				9538E0EC1A8FB215001E02CC /* ACEView.framework in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		9501D7FC1A17025C0034C530 /* AVRsack.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AVRsack.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -255,6 +269,7 @@
 				9501D7F81A17025C0034C530 /* Sources */,
 				9501D7F91A17025C0034C530 /* Frameworks */,
 				9501D7FA1A17025C0034C530 /* Resources */,
+				9538E0EB1A8FB205001E02CC /* CopyFiles */,
 			);
 			buildRules = (
 			);
