@@ -80,7 +80,7 @@ class ASSerialWin: NSWindowController {
 
         let userDefaults = NSUserDefaults.standardUserDefaults()
        
-        if let portDef = (userDefaults.objectForKey("SerialDefaults") as NSDictionary).objectForKey(port) as? [String: AnyObject] {
+        if let portDef = (userDefaults.objectForKey("SerialDefaults") as! NSDictionary).objectForKey(port) as? [String: AnyObject] {
             portDefaults = portDef
         } else {
             portDefaults["Theme"]       = userDefaults.stringForKey("SerialTheme")
@@ -89,13 +89,13 @@ class ASSerialWin: NSWindowController {
             portDefaults["SendLF"]      = sendLF
             portDefaults["BaudRate"]    = 19200
         }
-        if let themeId = ACEView.themeIdByName(portDefaults["Theme"] as String) {
+        if let themeId = ACEView.themeIdByName(portDefaults["Theme"] as! String) {
             currentTheme = themeId
         }
-        fontSize = portDefaults["FontSize"] as UInt
-        sendCR   = portDefaults["SendCR"] as Bool
-        sendLF   = portDefaults["SendLF"] as Bool
-        baudRate = portDefaults["BaudRate"] as Int
+        fontSize = portDefaults["FontSize"] as! UInt
+        sendCR   = portDefaults["SendCR"] as! Bool
+        sendLF   = portDefaults["SendLF"] as! Bool
+        baudRate = portDefaults["BaudRate"] as! Int
 
         if let handlerName = userDefaults.stringForKey("Bindings") {
             if let handlerId = ACEView.handlerIdByName(handlerName) {
@@ -162,7 +162,7 @@ class ASSerialWin: NSWindowController {
             logView.setString(serialData)
             readHandle.readabilityHandler = {(handle) in
                 let newData         = handle.availableDataIgnoringExceptions()
-                let newString       = NSString(data: newData, encoding: NSASCIIStringEncoding)!
+                let newString       = NSString(data: newData, encoding: NSASCIIStringEncoding) as! String
                 self.serialData    += newString
                 dispatch_async(dispatch_get_main_queue(), { () -> Void in
                     self.logView.setString(self.serialData)
@@ -186,7 +186,7 @@ class ASSerialWin: NSWindowController {
         }
         baudRate        = speed
         self.task       = task
-        portHandle      = (task.standardInput as NSPipe).fileHandleForWriting
+        portHandle      = (task.standardInput as! NSPipe).fileHandleForWriting
         showWindow(self)
         installReader((task.standardOutput as? NSPipe)?.fileHandleForReading)
     }
@@ -227,7 +227,7 @@ class ASSerialWin: NSWindowController {
     }
     var hasValidPort : Bool {
         get {
-            return (ASSerial.ports() as NSArray).containsObject(port)
+            return contains(ASSerial.ports() as! [String], port)
         }
     }
 
@@ -278,8 +278,9 @@ class ASSerialWin: NSWindowController {
     }
     
     func updatePortDefaults() {
-        let userDefaults = NSUserDefaults.standardUserDefaults()
-        let serialDefaults = NSMutableDictionary(dictionary:userDefaults.objectForKey("SerialDefaults") as NSDictionary)
+        let userDefaults    = NSUserDefaults.standardUserDefaults()
+        let sd              = userDefaults.objectForKey("SerialDefaults") as! [String: AnyObject]
+        let serialDefaults  = NSMutableDictionary(dictionary: sd)
         serialDefaults.setValue(NSDictionary(dictionary:portDefaults), forKey:port)
         userDefaults.setObject(serialDefaults, forKey:"SerialDefaults")
     }

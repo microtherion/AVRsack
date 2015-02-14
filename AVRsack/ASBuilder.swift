@@ -48,18 +48,18 @@ class ASBuilder {
     }
     
     func buildProject(board: String, files: ASFileTree) {
-        let toolChain               = (NSApplication.sharedApplication().delegate as ASApplication).preferences.toolchainPath
+        let toolChain               = (NSApplication.sharedApplication().delegate as! ASApplication).preferences.toolchainPath
         task = NSTask()
         task!.currentDirectoryPath  = dir.path!
         task!.launchPath            = NSBundle.mainBundle().pathForResource("BuildProject", ofType: "")!
         
         let fileManager = NSFileManager.defaultManager()
         let libPath     = (ASLibraries.instance().directories as NSArray).componentsJoinedByString(":")
-        var args        = [NSString]()
+        var args        = [String]()
         let boardProp   = ASHardware.instance().boards[board]!
         let library     = boardProp["library"]!
         var corePath    = library+"/cores/"+boardProp["build.core"]!
-        var variantPath : NSString?
+        var variantPath : String?
         if fileManager.fileExistsAtPath(corePath) {
             if let variantName = boardProp["build.variant"] {
                 variantPath = library+"/variants/"+variantName
@@ -103,7 +103,7 @@ class ASBuilder {
         let useProgrammer           = mode != .Upload
         let interactive             = mode == .Interactive
         let portPath                = ASSerial.fileNameForPort(port)
-        let toolChain               = (NSApplication.sharedApplication().delegate as ASApplication).preferences.toolchainPath
+        let toolChain               = (NSApplication.sharedApplication().delegate as! ASApplication).preferences.toolchainPath
         task = NSTask()
         task!.currentDirectoryPath  = dir.path!
         task!.launchPath            = toolChain+"/bin/avrdude"
@@ -231,7 +231,7 @@ class ASBuilder {
     }
     
     func disassembleProject(board: String) {
-        let toolChain               = (NSApplication.sharedApplication().delegate as ASApplication).preferences.toolchainPath
+        let toolChain               = (NSApplication.sharedApplication().delegate as! ASApplication).preferences.toolchainPath
         task = NSTask()
         task!.currentDirectoryPath  = dir.path!
         task!.launchPath            = toolChain+"/bin/avr-objdump"

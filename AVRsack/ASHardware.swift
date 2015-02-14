@@ -20,12 +20,12 @@ extension NSMenu {
     }
 }
 
-private func subdirectories(path: NSString) -> [NSString] {
+private func subdirectories(path: String) -> [String] {
     let fileManager         = NSFileManager.defaultManager()
-    var subDirs             = [NSString]()
+    var subDirs             = [String]()
     var isDir : ObjCBool    = false
     if fileManager.fileExistsAtPath(path, isDirectory: &isDir) && isDir {
-        for item in fileManager.contentsOfDirectoryAtPath(path, error: nil) as [NSString] {
+        for item in fileManager.contentsOfDirectoryAtPath(path, error: nil) as! [String] {
             let subPath = path+"/"+item
             if fileManager.fileExistsAtPath(subPath, isDirectory: &isDir) && isDir {
                 subDirs.append(subPath)
@@ -38,9 +38,9 @@ private func subdirectories(path: NSString) -> [NSString] {
 private let hardwareInstance = ASHardware()
 class ASHardware {
     class func instance() -> ASHardware { return hardwareInstance }
-    let directories = [NSString]()
-    let programmers = ASProperties()
-    let boards      = ASProperties()
+    var directories = [String]()
+    var programmers = ASProperties()
+    var boards      = ASProperties()
     init() {
         //
         // Gather hardware directories
@@ -51,11 +51,11 @@ class ASHardware {
             let arduinoHardwarePath = arduinoPath + "/Contents/Resources/Java/hardware"
             directories += subdirectories(arduinoHardwarePath)
         }
-        for sketchDir in userDefaults.objectForKey("Sketchbooks") as [NSString] {
+        for sketchDir in userDefaults.objectForKey("Sketchbooks") as! [String] {
             let hardwarePath = sketchDir + "/hardware"
             directories     += subdirectories(hardwarePath)
         }
-        let property = NSRegularExpression(pattern: "\\s*(\\w+)\\.(\\S+?)\\s*=\\s*(\\S.*\\S)\\s*", options: nil, error: nil)
+        let property = NSRegularExpression(pattern: "\\s*(\\w+)\\.(\\S+?)\\s*=\\s*(\\S.*\\S)\\s*", options: nil, error: nil)!
         //
         // Gather board declarations
         //
@@ -64,11 +64,11 @@ class ASHardware {
             let provenience = dir.lastPathComponent
             if let boardsFile = NSString(contentsOfFile: boardsPath, usedEncoding: nil, error: nil) {
                 var seen = [String: Bool]()
-                for line in boardsFile.componentsSeparatedByString("\n") as [NSString] {
-                    if let match = property?.firstMatchInString(line, options: .Anchored, range: NSMakeRange(0, line.length)) {
-                        let board           = line.substringWithRange(match.rangeAtIndex(1))
-                        let property        = line.substringWithRange(match.rangeAtIndex(2))
-                        let value           = line.substringWithRange(match.rangeAtIndex(3))
+                for line in boardsFile.componentsSeparatedByString("\n") as! [NSString] {
+                    if let match = property.firstMatchInString(line as String, options: .Anchored, range: NSMakeRange(0, line.length)) {
+                        let board           = line.substringWithRange(match.rangeAtIndex(1)) as String
+                        let property        = line.substringWithRange(match.rangeAtIndex(2)) as String
+                        let value           = line.substringWithRange(match.rangeAtIndex(3)) as String
                         if seen.updateValue(true, forKey: board) == nil {
                             boards[board]                   = ASPropertyEntry()
                             boards[board]!["provenience"]   = provenience
@@ -88,8 +88,8 @@ class ASHardware {
             let provenience = dir.lastPathComponent
             if let programmersFile = NSString(contentsOfFile: programmersPath, usedEncoding: nil, error: nil) {
                 var seen = [String: Bool]()
-                for line in programmersFile.componentsSeparatedByString("\n") as [NSString] {
-                    if let match = property?.firstMatchInString(line, options: .Anchored, range: NSMakeRange(0, line.length)) {
+                for line in programmersFile.componentsSeparatedByString("\n") as! [NSString] {
+                    if let match = property.firstMatchInString(line as String, options: .Anchored, range: NSMakeRange(0, line.length)) {
                         let programmer      = line.substringWithRange(match.rangeAtIndex(1))
                         let property        = line.substringWithRange(match.rangeAtIndex(2))
                         let value           = line.substringWithRange(match.rangeAtIndex(3))
@@ -145,8 +145,8 @@ class ASHardware {
 private let librariesInstance = ASLibraries()
 class ASLibraries {
     class func instance() -> ASLibraries { return librariesInstance }
-    let directories = [NSString]()
-    let libraries   = [NSString]()
+    var directories = [String]()
+    var libraries   = [String]()
     init() {
         //
         // Gather hardware directories
@@ -161,7 +161,7 @@ class ASLibraries {
                 libraries   += dirs
             }
         }
-        for sketchDir in userDefaults.objectForKey("Sketchbooks") as [NSString] {
+        for sketchDir in userDefaults.objectForKey("Sketchbooks") as! [String] {
             let librariesPath = sketchDir + "/libraries"
             let dirs                 = subdirectories(librariesPath)
             if dirs.count > 0 {

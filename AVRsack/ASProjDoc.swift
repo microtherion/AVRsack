@@ -45,7 +45,7 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate, NSMenuDelegate, NSOpenSavePa
     dynamic var port            : String = ""
     var recentBoards            = [String]()
     var recentProgrammers       = [String]()
-    var logModified             = NSDate.distantPast() as NSDate
+    var logModified             = NSDate.distantPast() as! NSDate
     var logSize                 = 0
     var updateLogTimer          : NSTimer?
     
@@ -81,8 +81,8 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate, NSMenuDelegate, NSOpenSavePa
         board               = userDefaults.stringForKey(kBoardKey)!
         programmer          = userDefaults.stringForKey(kProgrammerKey)!
         port                = userDefaults.stringForKey(kPortKey)!
-        recentBoards        = userDefaults.objectForKey(kRecentBoardsKey) as [String]
-        recentProgrammers   = userDefaults.objectForKey(kRecentProgrammersKey) as [String]
+        recentBoards        = userDefaults.objectForKey(kRecentBoardsKey) as! [String]
+        recentProgrammers   = userDefaults.objectForKey(kRecentProgrammersKey) as! [String]
         
         var nc          = NSNotificationCenter.defaultCenter()
         themeObserver   = nc.addObserverForName(kBindingsKey, object: nil, queue: nil, usingBlock: { (NSNotification) in
@@ -164,10 +164,10 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate, NSMenuDelegate, NSOpenSavePa
         }
         let filesInProject =
             NSFileManager.defaultManager().contentsOfDirectoryAtURL(url, includingPropertiesForKeys: nil,
-                options: .SkipsHiddenFiles, error: nil)!
+                options: .SkipsHiddenFiles, error: nil) as! [NSURL]
         updateProjectURL()
         for file in filesInProject {
-            files.addFileURL(file as NSURL)
+            files.addFileURL(file)
         }
         return true
     }
@@ -187,14 +187,14 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate, NSMenuDelegate, NSOpenSavePa
         return success
     }
     override func readFromData(data: NSData, ofType typeName: String, error outError: NSErrorPointer) -> Bool {
-        if typeName != "Project" {
+        if typeName != ("Project" as String) {
             return false
         }
         updateProjectURL()
-        let projectData : NSDictionary = NSPropertyListSerialization.propertyListFromData(data, mutabilityOption: .Immutable, format: nil, errorDescription: nil) as NSDictionary
-        let projectVersion = projectData[kVersionKey] as Double
+        let projectData : NSDictionary = NSPropertyListSerialization.propertyListFromData(data, mutabilityOption: .Immutable, format: nil, errorDescription: nil) as! NSDictionary
+        let projectVersion = projectData[kVersionKey] as! Double
         assert(projectVersion <= floor(kCurVersion+1.0), "Project version too new for this app")
-        if let themeName = projectData[kThemeKey] as? NSString {
+        if let themeName = projectData[kThemeKey] as? String {
             if let themeId = ACEView.themeIdByName(themeName) {
                 currentTheme = themeId
             }
@@ -202,7 +202,7 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate, NSMenuDelegate, NSOpenSavePa
         if let fontSz = projectData[kFontSizeKey] as? Int {
             fontSize = UInt(fontSz)
         }
-        files.readPropertyList(projectData[kFilesKey] as NSDictionary)
+        files.readPropertyList(projectData[kFilesKey] as! NSDictionary)
         board               = (projectData[kBoardKey] as? String) ?? board
         programmer          = (projectData[kProgrammerKey] as? String) ?? programmer
         port                = (projectData[kPortKey] as? String) ?? port
@@ -228,13 +228,13 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate, NSMenuDelegate, NSOpenSavePa
                 return
             }
             
-            if (modified as NSDate).compare(logModified) == .OrderedDescending || (size as Int) != logSize {
+            if (modified as! NSDate).compare(logModified) == .OrderedDescending || (size as! Int) != logSize {
                 var enc : UInt  = 0
-                let newText     = NSString(contentsOfURL:url!, usedEncoding:&enc, error:nil)
+                let newText     = NSString(contentsOfURL:url!, usedEncoding:&enc, error:nil) as! String
                 editor.setString(newText)
                 editor.gotoLine(1000000000, column: 0, animated: true)
-                logModified = modified as NSDate
-                logSize     = size as Int
+                logModified = modified as! NSDate
+                logSize     = size as! Int
             }
         }
     }
@@ -244,7 +244,7 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate, NSMenuDelegate, NSOpenSavePa
         }
         if let file = (selection as? ASFileItem) {
             var enc : UInt = 0
-            editor.setString(NSString(contentsOfURL:file.url, usedEncoding:&enc, error:nil))
+            editor.setString(NSString(contentsOfURL:file.url, usedEncoding:&enc, error:nil) as! String)
             editor.setMode(UInt(file.type.aceMode))
             editor.alphaValue = 1.0
             mainEditor = selection
@@ -252,7 +252,7 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate, NSMenuDelegate, NSOpenSavePa
             editor.setString("")
             editor.setMode(UInt(ACEModeText))
             editor.alphaValue = 0.8
-            logModified = NSDate.distantPast() as NSDate
+            logModified = NSDate.distantPast() as! NSDate
             logSize     = -1
             mainEditor  = selection
             updateLog(nil)
@@ -279,17 +279,17 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate, NSMenuDelegate, NSOpenSavePa
     func outlineViewSelectionDidChange(notification: NSNotification) {
         willChangeValueForKey("hasSelection")
         if outline.numberOfSelectedRows < 2 {
-            selectNode(outline.itemAtRow(outline.selectedRow) as ASFileNode?)
+            selectNode(outline.itemAtRow(outline.selectedRow) as! ASFileNode?)
         }
         didChangeValueForKey("hasSelection")
     }
     func outlineViewItemDidExpand(notification: NSNotification) {
-        let group       = notification.userInfo!["NSObject"] as ASFileGroup
+        let group       = notification.userInfo!["NSObject"] as! ASFileGroup
         group.expanded  = true
         updateChangeCount(.ChangeDone)
     }
     func outlineViewItemDidCollapse(notification: NSNotification) {
-        let group       = notification.userInfo!["NSObject"] as ASFileGroup
+        let group       = notification.userInfo!["NSObject"] as! ASFileGroup
         group.expanded  = false
         updateChangeCount(.ChangeDone)
     }
@@ -300,7 +300,7 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate, NSMenuDelegate, NSOpenSavePa
                 textCell.font = NSFont.boldSystemFontOfSize(13.0)
             } else {
                 textCell.font = NSFont.systemFontOfSize(13.0)
-                if !(item as ASFileNode).exists() {
+                if !(item as! ASFileNode).exists() {
                     textCell.textColor = NSColor.redColor()
                 }
             }
@@ -326,8 +326,8 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate, NSMenuDelegate, NSOpenSavePa
         alert.addButtonWithTitle("Move to Trash")
         alert.addButtonWithTitle(selection.count == 1 ? "Remove Reference" : "Remove References")
         alert.addButtonWithTitle("Cancel")
-        (alert.buttons[0] as NSButton).keyEquivalent = ""
-        (alert.buttons[1] as NSButton).keyEquivalent = "\r"
+        (alert.buttons[0] as! NSButton).keyEquivalent = ""
+        (alert.buttons[1] as! NSButton).keyEquivalent = "\r"
         alert.beginSheetModalForWindow(outline.window!) { (response) in
             if response != NSAlertThirdButtonReturn {
                 if response == NSAlertFirstButtonReturn {
@@ -361,7 +361,7 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate, NSMenuDelegate, NSOpenSavePa
         panel.delegate                  = self
         panel.beginSheetModalForWindow(outline.window!, completionHandler: { (returnCode: Int) -> Void in
             if returnCode == NSFileHandlingPanelOKButton {
-                for url in panel.URLs as [NSURL] {
+                for url in panel.URLs as! [NSURL] {
                     self.files.addFileURL(url)
                 }
                 self.outline.deselectAll(self)
@@ -372,7 +372,7 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate, NSMenuDelegate, NSOpenSavePa
 
     }
 
-    func panel(panel:NSSavePanel, shouldEnableURL url:NSURL) -> Bool {
+    func panel(panel:AnyObject, shouldEnableURL url:NSURL) -> Bool {
         var shouldEnable = true
         var resourceID   : AnyObject?
         url.getResourceValue(&resourceID, forKey:NSURLFileResourceIdentifierKey, error:nil)
@@ -414,7 +414,7 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate, NSMenuDelegate, NSOpenSavePa
             break
         }
         var header = ""
-        if prefix != "" {
+        if prefix != ("" as String) {
             if firstPfx == "" {
                 firstPfx    = prefix
             }
@@ -541,7 +541,7 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate, NSMenuDelegate, NSOpenSavePa
                     pushToFront(&recentBoards, board)
                     
                     let userDefaults = NSUserDefaults.standardUserDefaults()
-                    var globalBoards = userDefaults.objectForKey(kRecentBoardsKey) as [String]
+                    var globalBoards = userDefaults.objectForKey(kRecentBoardsKey) as! [String]
                     pushToFront(&globalBoards, board)
                     userDefaults.setObject(globalBoards, forKey: kRecentBoardsKey)
 
@@ -555,7 +555,7 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate, NSMenuDelegate, NSOpenSavePa
     }
     
     @IBAction func selectBoard(item: AnyObject) {
-        selectedBoard = (item as NSMenuItem).title
+        selectedBoard = (item as! NSMenuItem).title
     }
 
     var selectedProgrammer : String {
@@ -571,7 +571,7 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate, NSMenuDelegate, NSOpenSavePa
                     pushToFront(&recentProgrammers, programmer)
                     
                     let userDefaults = NSUserDefaults.standardUserDefaults()
-                    var globalProgs = userDefaults.objectForKey(kRecentProgrammersKey) as [String]
+                    var globalProgs = userDefaults.objectForKey(kRecentProgrammersKey) as! [String]
                     pushToFront(&globalProgs, programmer)
                     userDefaults.setObject(globalProgs, forKey: kRecentProgrammersKey)
                     
@@ -586,18 +586,18 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate, NSMenuDelegate, NSOpenSavePa
     }
     
     @IBAction func selectProgrammer(item: AnyObject) {
-        selectedProgrammer = (item as NSMenuItem).title
+        selectedProgrammer = (item as! NSMenuItem).title
     }
     
     @IBAction func selectPort(item: AnyObject) {
-        port    = (item as NSPopUpButton).titleOfSelectedItem!
+        port    = (item as! NSPopUpButton).titleOfSelectedItem!
         portTool.setTitle(port)
     }
     
     var hasUploadProtocol : Bool {
         get {
             if let proto = ASHardware.instance().boards[board]?["upload.protocol"] {
-                return proto != ""
+                return proto != ("" as String)
             } else {
                 return false
             }
@@ -609,7 +609,7 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate, NSMenuDelegate, NSOpenSavePa
     
     var hasValidPort : Bool {
         get {
-            return (ASSerial.ports() as NSArray).containsObject(port)
+            return contains(ASSerial.ports() as! [String], port)
         }
     }
     class func keyPathsForValuesAffectingHasValidPort() -> NSSet {
@@ -618,7 +618,7 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate, NSMenuDelegate, NSOpenSavePa
     
     var canUpload : Bool {
         get {
-            return hasValidPort && (hasUploadProtocol || programmer != "")
+            return hasValidPort && (hasUploadProtocol || programmer != ("" as String))
         }
     }
     class func keyPathsForValuesAffectingCanUpload() -> NSSet {

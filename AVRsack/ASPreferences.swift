@@ -15,7 +15,7 @@ private let kASToolchainOther       = 2
 class ASPreferences: NSWindowController, NSOpenSavePanelDelegate {
     var toolchainPref : String {
         get {
-            return NSUserDefaults.standardUserDefaults().objectForKey("Toolchain") as String
+            return NSUserDefaults.standardUserDefaults().objectForKey("Toolchain") as! String
         }
         set(newToolchain) {
             NSUserDefaults.standardUserDefaults().setObject(newToolchain, forKey: "Toolchain")
@@ -50,7 +50,7 @@ class ASPreferences: NSWindowController, NSOpenSavePanelDelegate {
 
     var toolchainPath : String {
         get {
-            if toolchainPref != "" {
+            if toolchainPref != ("" as String) {
                 return toolchainPref
             } else {
                 return NSWorkspace.sharedWorkspace().URLForApplicationWithBundleIdentifier("cc.arduino.Arduino")!.path! +

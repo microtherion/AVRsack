@@ -32,7 +32,7 @@ class ASApplication: NSObject, NSApplicationDelegate, NSMenuDelegate {
         let workSpace       = NSWorkspace.sharedWorkspace()
         let userDefaults    = NSUserDefaults.standardUserDefaults()
         let appDefaultsURL  = NSBundle.mainBundle().URLForResource("Defaults", withExtension: "plist")!
-        let appDefaults     = NSMutableDictionary(contentsOfURL: appDefaultsURL)!
+        var appDefaults     = NSDictionary(contentsOfURL: appDefaultsURL) as! [String: AnyObject]
         //
         // Add dynamic app defaults
         //
@@ -55,12 +55,12 @@ class ASApplication: NSObject, NSApplicationDelegate, NSMenuDelegate {
     }
     func applicationDidFinishLaunching(aNotification: NSNotification) {
         themeMenu.removeAllItems()
-        for (index, theme) in enumerate(ACEThemeNames.humanThemeNames() as [NSString]) {
+        for (index, theme) in enumerate(ACEThemeNames.humanThemeNames() as! [String]) {
             let menuItem = themeMenu.addItemWithTitle(theme, action: "changeTheme:", keyEquivalent: "")
             menuItem!.tag = index
         }
         keyboardMenu.removeAllItems()
-        for (index, theme) in enumerate(ACEKeyboardHandlerNames.humanKeyboardHandlerNames() as [NSString]) {
+        for (index, theme) in enumerate(ACEKeyboardHandlerNames.humanKeyboardHandlerNames() as! [String]) {
             let menuItem = keyboardMenu.addItemWithTitle(theme, action: "changeKeyboardHandler:", keyEquivalent: "")
             menuItem!.tag = index
         }
@@ -76,7 +76,7 @@ class ASApplication: NSObject, NSApplicationDelegate, NSMenuDelegate {
         case "Sketchbook":
             menu.removeAllItems()
             sketches = [String]()
-            for sketchBook in NSUserDefaults.standardUserDefaults().objectForKey("Sketchbooks") as [NSString] {
+            for sketchBook in NSUserDefaults.standardUserDefaults().objectForKey("Sketchbooks") as! [String] {
                 if NSFileManager.defaultManager().fileExistsAtPath(sketchBook) {
                     ASSketchBook.addSketches(menu, target: self, action: "openSketch:", path: sketchBook, sketches: &sketches)
                 }
@@ -93,7 +93,7 @@ class ASApplication: NSObject, NSApplicationDelegate, NSMenuDelegate {
             while menu.numberOfItems > 2 {
                 menu.removeItemAtIndex(2)
             }
-            for port in ASSerial.ports() as [String] {
+            for port in ASSerial.ports() as! [String] {
                 menu.addItemWithTitle(port, action:"serialConnectMenu:", keyEquivalent:"")
             }
         default:
@@ -132,7 +132,7 @@ class ASApplication: NSObject, NSApplicationDelegate, NSMenuDelegate {
             let sketch = ASSketchBook.findSketch(saveTo.path!)
             switch sketch {
             case .Sketch(_, let path):
-                let doc = NSDocumentController.sharedDocumentController() as NSDocumentController
+                let doc = NSDocumentController.sharedDocumentController() as! NSDocumentController
                 doc.openDocumentWithContentsOfURL(NSURL(fileURLWithPath: path)!, display: true) { (doc, alreadyOpen, error) -> Void in
                 }
             default:
@@ -143,7 +143,7 @@ class ASApplication: NSObject, NSApplicationDelegate, NSMenuDelegate {
     
     @IBAction func openSketch(item: NSMenuItem) {
         let url = NSURL(fileURLWithPath: sketches[item.tag])!
-        let doc = NSDocumentController.sharedDocumentController() as NSDocumentController
+        let doc = NSDocumentController.sharedDocumentController() as! NSDocumentController
         doc.openDocumentWithContentsOfURL(url, display: true) { (doc, alreadyOpen, error) -> Void in
         }
     }
@@ -160,7 +160,7 @@ class ASApplication: NSObject, NSApplicationDelegate, NSMenuDelegate {
             let fileManager = NSFileManager.defaultManager()
             fileManager.createDirectoryAtURL(saveTo, withIntermediateDirectories:false, attributes:nil, error:nil)
             let proj            = saveTo.URLByAppendingPathComponent(saveTo.lastPathComponent!+".avrsackproj")
-            let docController   = NSDocumentController.sharedDocumentController() as NSDocumentController
+            let docController   = NSDocumentController.sharedDocumentController() as! NSDocumentController
             if let doc = docController.openUntitledDocumentAndDisplay(true, error:nil) as? ASProjDoc {
                 doc.fileURL = proj
                 doc.updateProjectURL()

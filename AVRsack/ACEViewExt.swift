@@ -10,7 +10,7 @@ import Foundation
 
 extension ACEView {
     class func themeIdByName(themeName: String) -> UInt? {
-        for (themeIdx, theme) in enumerate(ACEThemeNames.themeNames() as [NSString]) {
+        for (themeIdx, theme) in enumerate(ACEThemeNames.themeNames() as! [String]) {
             if themeName == theme {
                 return UInt(themeIdx)
             }
@@ -19,7 +19,7 @@ extension ACEView {
     }
     
     class func handlerIdByName(handlerName: String) -> ACEKeyboardHandler? {
-        for (handlerIdx, handler) in enumerate(ACEKeyboardHandlerNames.humanKeyboardHandlerNames() as [NSString]) {
+        for (handlerIdx, handler) in enumerate(ACEKeyboardHandlerNames.humanKeyboardHandlerNames() as! [String]) {
             if handlerName == handler {
                 return ACEKeyboardHandler(rawValue: UInt(handlerIdx))!
             }

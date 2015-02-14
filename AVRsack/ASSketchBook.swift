@@ -15,10 +15,10 @@ class ASSketchBook {
     case SketchDir(String, [SketchBookItem])
     }
     
-    class func findSketch(path: NSString) -> SketchBookItem {
+    class func findSketch(path: String) -> SketchBookItem {
         let fileManager = NSFileManager.defaultManager()
         var inoSketch   = SketchBookItem.Nothing
-        let contents    = fileManager.contentsOfDirectoryAtPath(path, error: nil) as [String]
+        let contents    = fileManager.contentsOfDirectoryAtPath(path, error: nil) as! [String]
         for item in contents {
             switch item.pathExtension {
             case "avrsackproj":
@@ -32,9 +32,9 @@ class ASSketchBook {
         return inoSketch
     }
     
-    private class func enumerateSketches(path: NSString) -> SketchBookItem {
+    private class func enumerateSketches(path: String) -> SketchBookItem {
         let fileManager = NSFileManager.defaultManager()
-        let contents    = fileManager.contentsOfDirectoryAtPath(path, error: nil) as [String]
+        let contents    = fileManager.contentsOfDirectoryAtPath(path, error: nil) as! [String]
         let sketch = findSketch(path)
         switch sketch {
         case .Sketch:
@@ -98,7 +98,7 @@ class ASSketchBook {
         }
     }
     
-    class func addSketches(menu: NSMenu, target: AnyObject, action: Selector, path: NSString, inout sketches: [String]) {
+    class func addSketches(menu: NSMenu, target: AnyObject, action: Selector, path: String, inout sketches: [String]) {
         switch enumerateSketches(path) {
         case .SketchDir(let item, let sketchList):
             appendSketchesToMenu(menu, target: target, action: action, sketchList: sketchList, sketches: &sketches)
