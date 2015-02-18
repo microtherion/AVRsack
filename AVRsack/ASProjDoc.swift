@@ -244,7 +244,7 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate, NSMenuDelegate, NSOpenSavePa
         }
         if let file = (selection as? ASFileItem) {
             var enc : UInt = 0
-            editor.setString(NSString(contentsOfURL:file.url, usedEncoding:&enc, error:nil) as! String)
+            editor.setString(NSString(contentsOfURL:file.url, usedEncoding:&enc, error:nil) as? String ?? "")
             editor.setMode(UInt(file.type.aceMode))
             editor.alphaValue = 1.0
             mainEditor = selection
