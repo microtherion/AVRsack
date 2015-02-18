@@ -35,7 +35,7 @@ class ASBuilder {
     }
     
     func setProjectURL(url: NSURL) {
-        dir       = url.URLByDeletingLastPathComponent!.standardizedURL!
+        dir       = url.URLByDeletingLastPathComponent!.URLByStandardizingPath!
     }
 
     func stop() {

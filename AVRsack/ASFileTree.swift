@@ -166,9 +166,9 @@ class ASFileItem : ASFileNode {
     init(_ prop: NSDictionary, withRootURL rootURL: NSURL) {
         type = ASFileType(rawValue: prop[kKindKey] as! String)!
         if let relativeURL = NSURL(string: prop[kPathKey] as! String, relativeToURL: rootURL) {
-            url  = relativeURL.standardizedURL!
+            url  = relativeURL.URLByStandardizingPath!
         } else {
-            url = NSURL(fileURLWithPath:(prop[kPathKey] as! String))!.standardizedURL!
+            url = NSURL(fileURLWithPath:(prop[kPathKey] as! String))!.URLByStandardizingPath!
         }
     }
     override func nodeName() -> String {
@@ -223,7 +223,7 @@ class ASFileTree : NSObject, NSOutlineViewDataSource {
     }
     func setProjectURL(url: NSURL) {
         root.name = url.lastPathComponent!.stringByDeletingPathExtension
-        dir       = url.URLByDeletingLastPathComponent!.standardizedURL!
+        dir       = url.URLByDeletingLastPathComponent!.URLByStandardizingPath!
     }
     func apply(closure: (ASFileNode) -> ()) {
         root.apply(closure)
