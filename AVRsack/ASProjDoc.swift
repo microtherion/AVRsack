@@ -314,7 +314,7 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate, NSMenuDelegate, NSOpenSavePa
         var name       : String
         var ref        : String
         if selection.count == 1 {
-            name    = "file “\(selection[0].url.lastPathComponent)”"
+            name    = "file “\(selection[0].url.lastPathComponent!)”"
             ref     = "reference to it"
         } else {
             name    = "\(selection.count) selected files"
