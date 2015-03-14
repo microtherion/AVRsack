@@ -62,7 +62,7 @@ class ASPreferences: NSWindowController, NSOpenSavePanelDelegate {
         return NSSet(objects: "toolchainPref")
     }
 
-    override convenience init() {
+    convenience init() {
         self.init(windowNibName:"ASPreferences")
     }
     

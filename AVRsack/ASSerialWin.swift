@@ -39,7 +39,7 @@ class ASSerialWin: NSWindowController {
     var serialObserver      : AnyObject!
     var termination         : AnyObject!
     dynamic var portHandle  : NSFileHandle?
-    var currentTheme        : UInt = 0
+    var currentTheme        : ACETheme = .Xcode
     var fontSize            : UInt = 12
     var portDefaults        = [String: AnyObject]()
     var shouldReconnect     = false
@@ -147,7 +147,7 @@ class ASSerialWin: NSWindowController {
         logView.setTheme(currentTheme)
         logView.setKeyboardHandler(keyboardHandler)
         logView.setFontSize(fontSize)
-        logView.setMode(UInt(ACEModeText))
+        logView.setMode(.Text)
         logView.alphaValue = 0.8
         window?.title   = port
         if task == nil {
@@ -235,7 +235,7 @@ class ASSerialWin: NSWindowController {
     
     @IBAction func changeTheme(item: NSMenuItem) {
         let userDefaults = NSUserDefaults.standardUserDefaults()
-        currentTheme = UInt(item.tag)
+        currentTheme = ACETheme(rawValue: UInt(item.tag)) ?? .Xcode
         logView.setTheme(currentTheme)
         let themeName = ACEThemeNames.humanNameForTheme(currentTheme)
         userDefaults.setObject(themeName, forKey: "SerialTheme")
@@ -252,7 +252,7 @@ class ASSerialWin: NSWindowController {
     func validateUserInterfaceItem(anItem: NSValidatedUserInterfaceItem) -> Bool {
         if let menuItem = anItem as? NSMenuItem {
             if menuItem.action == "changeTheme:" {
-                menuItem.state = (menuItem.tag == Int(currentTheme) ? NSOnState : NSOffState)
+                menuItem.state = (UInt(menuItem.tag) == currentTheme.rawValue ? NSOnState : NSOffState)
                 return true
             } else if menuItem.action == "changeKeyboardHandler:" {
                 menuItem.state = (menuItem.tag == Int(keyboardHandler.rawValue) ? NSOnState : NSOffState)

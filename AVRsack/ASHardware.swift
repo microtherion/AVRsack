@@ -8,7 +8,7 @@
 
 import Foundation
 
-typealias ASPropertyEntry = [String: String]
+typealias ASPropertyEntry   = [String: String]
 typealias ASProperties      = [String: ASPropertyEntry]
 
 extension NSMenu {

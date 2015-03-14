@@ -9,10 +9,10 @@
 import Foundation
 
 extension ACEView {
-    class func themeIdByName(themeName: String) -> UInt? {
+    class func themeIdByName(themeName: String) -> ACETheme? {
         for (themeIdx, theme) in enumerate(ACEThemeNames.themeNames() as! [String]) {
             if themeName == theme {
-                return UInt(themeIdx)
+                return ACETheme(rawValue: UInt(themeIdx))
             }
         }
         return nil

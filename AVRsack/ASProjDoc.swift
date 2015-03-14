@@ -32,11 +32,12 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate, NSMenuDelegate, NSOpenSavePa
     @IBOutlet weak var boardTool: NSPopUpButton!
     @IBOutlet weak var progTool : NSPopUpButton!
     @IBOutlet weak var portTool : NSPopUpButton!
+    @IBOutlet weak var printView: ACEView!
     
     let files                   = ASFileTree()
     let builder                 = ASBuilder()
     var mainEditor              : ASFileNode?
-    var currentTheme            : UInt = 0
+    var currentTheme            : ACETheme = .Xcode
     var fontSize                : UInt = 12
     var themeObserver           : AnyObject!
     var serialObserver          : AnyObject!
@@ -245,12 +246,12 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate, NSMenuDelegate, NSOpenSavePa
         if let file = (selection as? ASFileItem) {
             var enc : UInt = 0
             editor.setString(NSString(contentsOfURL:file.url, usedEncoding:&enc, error:nil) as? String ?? "")
-            editor.setMode(UInt(file.type.aceMode))
+            editor.setMode(file.type.aceMode)
             editor.alphaValue = 1.0
             mainEditor = selection
         } else if let log = (selection as? ASLogNode) {
             editor.setString("")
-            editor.setMode(UInt(ACEModeText))
+            editor.setMode(.Text)
             editor.alphaValue = 0.8
             logModified = NSDate.distantPast() as! NSDate
             logSize     = -1
@@ -272,6 +273,12 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate, NSMenuDelegate, NSOpenSavePa
             }
         }
         return selection
+    }
+
+    // MARK: Printing
+
+    override func printDocument(sender: AnyObject?) {
+        editor.print(sender)
     }
 
     // MARK: Outline View Delegate
@@ -449,7 +456,7 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate, NSMenuDelegate, NSOpenSavePa
     // MARK: Editor configuration
     
     @IBAction func changeTheme(item: NSMenuItem) {
-        currentTheme = UInt(item.tag)
+        currentTheme = ACETheme(rawValue: UInt(item.tag)) ?? .Xcode
         editor.setTheme(currentTheme)
         NSUserDefaults.standardUserDefaults().setObject(
             ACEThemeNames.humanNameForTheme(currentTheme), forKey: kThemeKey)
@@ -465,7 +472,7 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate, NSMenuDelegate, NSOpenSavePa
     override func validateUserInterfaceItem(anItem: NSValidatedUserInterfaceItem) -> Bool {
         if let menuItem = anItem as? NSMenuItem {
             if menuItem.action == "changeTheme:" {
-                menuItem.state = (menuItem.tag == Int(currentTheme) ? NSOnState : NSOffState)
+                menuItem.state = (UInt(menuItem.tag) == currentTheme.rawValue ? NSOnState : NSOffState)
                 return true
             } else if menuItem.action == "changeKeyboardHandler:" {
                 menuItem.state = (menuItem.tag == Int(keyboardHandler.rawValue) ? NSOnState : NSOffState)

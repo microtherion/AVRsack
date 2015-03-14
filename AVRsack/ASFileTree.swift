@@ -39,11 +39,11 @@ enum ASFileType : String {
     var aceMode : ACEMode {
         switch self {
         case .Header,.CFile,.CppFile,.Arduino:
-            return ACEModeCPP
+            return .CPP
         case .Markdown:
-            return ACEModeMarkdown
+            return .Markdown
         default:
-            return ACEModeText
+            return .Text
         }
     }
 }
@@ -54,7 +54,12 @@ private let kNodeTypeGroup      = "Group"
 private let kNodeTypeFile       = "File"
 private let kNameKey            = "Name"
 
-class ASFileNode {
+//
+// <rdar://problem/19787270> At the moment, Swift crashes at link time with an assertion 
+//      if anything other than a value type or an @objc class is put into a container
+//      exposed to ObjC APIs. As a workaround, we declare this hierarchy @objc
+//
+@objc class ASFileNode {
     func nodeName() -> String {
         return ""
     }
