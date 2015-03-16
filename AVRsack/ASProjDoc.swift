@@ -52,6 +52,7 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate, NSMenuDelegate, NSOpenSavePa
     var printingDone            : () -> () = {}
     var printModDate            : NSDate?
     var printRevision           : String?
+    var printShowPanel          = false
 
     let kVersionKey             = "Version"
     let kCurVersion             = 1.0
@@ -294,11 +295,12 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate, NSMenuDelegate, NSOpenSavePa
             }
         printModDate    = mainEditor?.modDate()
         printRevision   = mainEditor?.revision()
+        printShowPanel  = showPrintPanel
 
         editor.print(self)
     }
 
-    func printSettings() -> NSPrintInfo! {
+    func printInformation() -> NSPrintInfo! {
         var info = printInfo.copy() as! NSPrintInfo
 
         //
@@ -327,10 +329,11 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate, NSMenuDelegate, NSOpenSavePa
         return info
     }
 
-    func printJobTitle() -> String! {
-        return mainEditor?.nodeName() ??
+    func startPrintOperation(printOp: NSPrintOperation) {
+        printOp.jobTitle = mainEditor?.nodeName() ??
             fileURL?.lastPathComponent?.stringByDeletingPathExtension ??
             "Untitled"
+        printOp.showsPrintPanel = printShowPanel
     }
 
     func printHeaderHeight() -> Float {
@@ -421,7 +424,7 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate, NSMenuDelegate, NSOpenSavePa
         }
     }
 
-    func printingComplete() {
+    func endPrintOperation() {
         printingDone()
     }
 
