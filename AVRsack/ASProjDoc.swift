@@ -293,7 +293,17 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate, NSMenuDelegate, NSOpenSavePa
                     NSThread.detachNewThreadSelector(didPrintSelector, toTarget: del, withObject: contextInfo as? AnyObject)
                 }
             }
-        printModDate    = mainEditor?.modDate()
+        if let logNode = mainEditor as? ASLogNode {
+            let url = fileURL!.URLByDeletingLastPathComponent?.URLByAppendingPathComponent(logNode.path)
+            var modified : AnyObject?
+            if url?.getResourceValue(&modified, forKey:NSURLAttributeModificationDateKey, error:nil) != nil {
+                printModDate = modified as? NSDate
+            } else {
+                printModDate = nil
+            }
+        } else {
+            printModDate    = mainEditor?.modDate()
+        }
         printRevision   = mainEditor?.revision()
         printShowPanel  = showPrintPanel
 
@@ -330,7 +340,7 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate, NSMenuDelegate, NSOpenSavePa
     }
 
     func startPrintOperation(printOp: NSPrintOperation) {
-        printOp.jobTitle = mainEditor?.nodeName() ??
+        printOp.jobTitle = mainEditor?.name ??
             fileURL?.lastPathComponent?.stringByDeletingPathExtension ??
             "Untitled"
         printOp.showsPrintPanel = printShowPanel

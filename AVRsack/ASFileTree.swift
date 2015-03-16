@@ -111,12 +111,6 @@ class ASLogNode : ASFileNode {
     override func nodeName() -> String {
         return "📜 "+name
     }
-    override func modDate() -> NSDate? {
-        let url = NSURL(fileURLWithPath: path)
-        var date: AnyObject?
-        url?.getResourceValue(&date, forKey: NSURLContentModificationDateKey, error: nil)
-        return date as? NSDate
-    }
 }
 
 class ASFileGroup : ASFileNode {
