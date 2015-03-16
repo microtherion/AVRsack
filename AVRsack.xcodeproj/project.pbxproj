@@ -17,6 +17,7 @@
 		951CD1741A23C9FC0066C1A1 /* ASBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 951CD1731A23C9FC0066C1A1 /* ASBuilder.swift */; };
 		951CD1771A2615000066C1A1 /* BuildProject in Resources */ = {isa = PBXBuildFile; fileRef = 951CD1761A2615000066C1A1 /* BuildProject */; };
 		95388E5D1AB6882600061435 /* FileRevision in Resources */ = {isa = PBXBuildFile; fileRef = 95388E5C1AB6882600061435 /* FileRevision */; };
+		95388E621AB7235000061435 /* ASVestigial.mm in Sources */ = {isa = PBXBuildFile; fileRef = 95388E611AB7235000061435 /* ASVestigial.mm */; };
 		9538E0EC1A8FB215001E02CC /* ACEView.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 95EA325B1A17B8DA00F66EB0 /* ACEView.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		95468DDF1A228BE600668EE2 /* ASHardware.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95468DDE1A228BE600668EE2 /* ASHardware.swift */; };
 		95468DE31A228E1300668EE2 /* Defaults.plist in Resources */ = {isa = PBXBuildFile; fileRef = 95468DE21A228E1300668EE2 /* Defaults.plist */; };
@@ -104,6 +105,8 @@
 		951CD1731A23C9FC0066C1A1 /* ASBuilder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ASBuilder.swift; sourceTree = "<group>"; };
 		951CD1761A2615000066C1A1 /* BuildProject */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; fileEncoding = 4; path = BuildProject; sourceTree = "<group>"; };
 		95388E5C1AB6882600061435 /* FileRevision */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; fileEncoding = 4; path = FileRevision; sourceTree = "<group>"; };
+		95388E601AB7235000061435 /* ASVestigial.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ASVestigial.h; sourceTree = "<group>"; };
+		95388E611AB7235000061435 /* ASVestigial.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = ASVestigial.mm; sourceTree = "<group>"; };
 		95468DDE1A228BE600668EE2 /* ASHardware.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ASHardware.swift; sourceTree = "<group>"; };
 		95468DE21A228E1300668EE2 /* Defaults.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Defaults.plist; sourceTree = "<group>"; };
 		95539B661A3E7EAF00D8595C /* ASSerial.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ASSerial.h; sourceTree = "<group>"; };
@@ -219,6 +222,8 @@
 				95DF20661A45A6090013D1B5 /* ASSketchBook.swift */,
 				956005F21A4EF79D00327007 /* ASSerialWin.swift */,
 				95DA9B151A515AF700DE018D /* ACEViewExt.swift */,
+				95388E601AB7235000061435 /* ASVestigial.h */,
+				95388E611AB7235000061435 /* ASVestigial.mm */,
 			);
 			name = Source;
 			sourceTree = "<group>";
@@ -409,6 +414,7 @@
 			files = (
 				956005F41A4EF79D00327007 /* ASSerialWin.swift in Sources */,
 				9501D8041A17025C0034C530 /* ASProjDoc.swift in Sources */,
+				95388E621AB7235000061435 /* ASVestigial.mm in Sources */,
 				95539B681A3E7EAF00D8595C /* ASSerial.mm in Sources */,
 				95468DDF1A228BE600668EE2 /* ASHardware.swift in Sources */,
 				95DA9B161A515AF700DE018D /* ACEViewExt.swift in Sources */,

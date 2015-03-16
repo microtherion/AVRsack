@@ -284,14 +284,9 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate, NSMenuDelegate, NSOpenSavePa
     // MARK: Printing
 
     override func printDocumentWithSettings(printSettings: [NSObject : AnyObject], showPrintPanel: Bool, delegate: AnyObject?, didPrintSelector: Selector, contextInfo: UnsafeMutablePointer<Void>) {
-        //
-        // Thanks to Erica Sadun for showing me how to call a selector in Swift
-        //
         printingDone =
             { () -> () in
-                if let del : AnyObject = delegate {
-                    NSThread.detachNewThreadSelector(didPrintSelector, toTarget: del, withObject: contextInfo as? AnyObject)
-                }
+                InvokeCallback(delegate, didPrintSelector, contextInfo);
             }
         if let logNode = mainEditor as? ASLogNode {
             let url = fileURL!.URLByDeletingLastPathComponent?.URLByAppendingPathComponent(logNode.path)
