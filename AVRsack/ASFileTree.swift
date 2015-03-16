@@ -60,6 +60,12 @@ private let kNameKey            = "Name"
 //      exposed to ObjC APIs. As a workaround, we declare this hierarchy @objc
 //
 @objc class ASFileNode {
+    var name        : String
+
+    init(name: String) {
+        self.name = name
+    }
+
     func nodeName() -> String {
         return ""
     }
@@ -87,23 +93,33 @@ private let kNameKey            = "Name"
     func exists() -> Bool {
         return true
     }
+    func modDate() -> NSDate? {
+        return nil;
+    }
+    func revision() -> String? {
+        return nil;
+    }
 }
 
 class ASLogNode : ASFileNode {
-    var name        : String
     var path        : String
     
     init(name: String, path: String) {
-        self.name = name
         self.path = path
+        super.init(name: name)
     }
     override func nodeName() -> String {
         return "📜 "+name
     }
+    override func modDate() -> NSDate? {
+        let url = NSURL(fileURLWithPath: path)
+        var date: AnyObject?
+        url?.getResourceValue(&date, forKey: NSURLContentModificationDateKey, error: nil)
+        return date as? NSDate
+    }
 }
 
 class ASFileGroup : ASFileNode {
-    var name        : String
     var children    : [ASFileNode]
     var expanded    : Bool
 
@@ -111,18 +127,18 @@ class ASFileGroup : ASFileNode {
     private let kExpandedKey = "Expanded"
     private var kNodeType : String { return kNodeTypeGroup }
 
-    init(name: String = "") {
-        self.name       = name
+    override init(name: String = "") {
         self.children   = []
         self.expanded   = true
+        super.init(name: name)
     }
     init(_ prop: NSDictionary, withRootURL rootURL: NSURL) {
-        name        = prop[kNameKey] as! String
         expanded    = prop[kExpandedKey] as! Bool
         children    = []
         for child in (prop[kChildrenKey] as! [NSDictionary]) {
             children.append(ASFileNode.readPropertyList(child, rootURL: rootURL))
         }
+        super.init(name: prop[kNameKey] as! String)
     }
     override func nodeName() -> String {
         return (expanded ? "📂" : "📁")+" "+name
@@ -167,6 +183,7 @@ class ASFileItem : ASFileNode {
     init(url: NSURL, type: ASFileType) {
         self.url    = url
         self.type   = type
+        super.init(name:url.lastPathComponent!)
     }
     init(_ prop: NSDictionary, withRootURL rootURL: NSURL) {
         type = ASFileType(rawValue: prop[kKindKey] as! String)!
@@ -175,9 +192,10 @@ class ASFileItem : ASFileNode {
         } else {
             url = NSURL(fileURLWithPath:(prop[kPathKey] as! String))!.URLByStandardizingPath!
         }
+        super.init(name:url.lastPathComponent!)
     }
     override func nodeName() -> String {
-        return "📄 "+url.lastPathComponent!
+        return "📄 "+name
     }
     
     func relativePath(relativeTo: String) -> String {
@@ -210,6 +228,23 @@ class ASFileItem : ASFileNode {
     }
     override func exists() -> Bool {
         return url.checkResourceIsReachableAndReturnError(nil)
+    }
+    override func modDate() -> NSDate? {
+        var date: AnyObject?
+        url.getResourceValue(&date, forKey: NSURLContentModificationDateKey, error: nil)
+        return date as? NSDate
+    }
+    override func revision() -> String? {
+        let task            = NSTask()
+        task.launchPath     = NSBundle.mainBundle().pathForResource("FileRevision", ofType: "")!
+        let outputPipe      = NSPipe()
+        task.standardOutput = outputPipe
+        task.standardError  = NSFileHandle.fileHandleWithNullDevice()
+        task.arguments      = [url.path!]
+        task.launch()
+
+        return NSString(data: outputPipe.fileHandleForReading.readDataToEndOfFile(),
+            encoding: NSUTF8StringEncoding) as? String
     }
 }
 

@@ -26,7 +26,7 @@ func pushToFront(inout list: [String], front: String) {
     list.insert(front, atIndex: 0)
 }
 
-class ASProjDoc: NSDocument, NSOutlineViewDelegate, NSMenuDelegate, NSOpenSavePanelDelegate {
+class ASProjDoc: NSDocument, NSOutlineViewDelegate, NSMenuDelegate, NSOpenSavePanelDelegate, ACEViewDelegate {
     @IBOutlet weak var editor   : ACEView!
     @IBOutlet weak var outline  : NSOutlineView!
     @IBOutlet weak var boardTool: NSPopUpButton!
@@ -49,7 +49,10 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate, NSMenuDelegate, NSOpenSavePa
     var logModified             = NSDate.distantPast() as! NSDate
     var logSize                 = 0
     var updateLogTimer          : NSTimer?
-    
+    var printingDone            : () -> () = {}
+    var printModDate            : NSDate?
+    var printRevision           : String?
+
     let kVersionKey             = "Version"
     let kCurVersion             = 1.0
     let kFilesKey               = "Files"
@@ -107,6 +110,8 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate, NSMenuDelegate, NSOpenSavePa
         editor.setTheme(currentTheme)
         editor.setKeyboardHandler(keyboardHandler)
         editor.setFontSize(fontSize)
+        editor.delegate = self
+
         outline.setDataSource(files)
         files.apply() { node in
             if let group = node as? ASFileGroup {
@@ -277,8 +282,147 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate, NSMenuDelegate, NSOpenSavePa
 
     // MARK: Printing
 
-    override func printDocument(sender: AnyObject?) {
-        editor.print(sender)
+    override func printDocumentWithSettings(printSettings: [NSObject : AnyObject], showPrintPanel: Bool, delegate: AnyObject?, didPrintSelector: Selector, contextInfo: UnsafeMutablePointer<Void>) {
+        //
+        // Thanks to Erica Sadun for showing me how to call a selector in Swift
+        //
+        printingDone =
+            { () -> () in
+                if let del : AnyObject = delegate {
+                    NSThread.detachNewThreadSelector(didPrintSelector, toTarget: del, withObject: contextInfo as? AnyObject)
+                }
+            }
+        printModDate    = mainEditor?.modDate()
+        printRevision   = mainEditor?.revision()
+
+        editor.print(self)
+    }
+
+    func printSettings() -> NSPrintInfo! {
+        var info = printInfo.copy() as! NSPrintInfo
+
+        //
+        // Minimize margins
+        //
+        let kXMargin : CGFloat = 50.0
+        let kYMargin : CGFloat = 50.0
+        let paperSize   = info.paperSize
+        var maxBounds   = info.imageablePageBounds
+
+        if paperSize.width - maxBounds.size.width < kXMargin {
+            let adjust = kXMargin-paperSize.width+maxBounds.size.width
+            maxBounds.origin.x      += 0.5*adjust
+            maxBounds.size.width    -= adjust
+        }
+        if paperSize.height - maxBounds.size.height < kYMargin {
+            let adjust = kYMargin-paperSize.height+maxBounds.size.height
+            maxBounds.origin.y      += 0.5*adjust
+            maxBounds.size.height   -= adjust
+        }
+        info.leftMargin    = maxBounds.origin.x
+        info.bottomMargin  = maxBounds.origin.y
+        info.topMargin     = paperSize.height-maxBounds.size.height-info.bottomMargin
+        info.rightMargin   = paperSize.width-maxBounds.size.width-info.leftMargin
+
+        return info
+    }
+
+    func printJobTitle() -> String! {
+        return mainEditor?.nodeName() ??
+            fileURL?.lastPathComponent?.stringByDeletingPathExtension ??
+            "Untitled"
+    }
+
+    func printHeaderHeight() -> Float {
+        return 41.0
+    }
+
+    func printFooterHeight() -> Float {
+        return 20.0
+    }
+
+    func drawPrintHeaderForPage(pageNo: Int32, inRect r: NSRect) {
+        var rect = r
+        rect.origin.y       += 5.0
+        rect.size.height    -= 5.0
+
+        let ctx = NSGraphicsContext.currentContext()!
+        ctx.saveGraphicsState()
+        NSColor(white: 0.95, alpha: 1.0).setFill()
+        var wideBox = rect
+        wideBox.size.height = 20.0
+        wideBox.origin.y   += 0.5*(rect.size.height-wideBox.size.height)
+        NSRectFill(wideBox)
+
+        NSColor(white: 0.7, alpha: 1.0).setFill()
+        var pageNoBox = rect
+        pageNoBox.size.width = 50.0
+        pageNoBox.origin.x  += 0.5*(rect.size.width-pageNoBox.size.width)
+        NSRectFill(pageNoBox)
+        ctx.restoreGraphicsState()
+
+        let pageNoFont = NSFont.userFixedPitchFontOfSize(25.0)!
+        let pageNoAttr = [
+            NSFontAttributeName: pageNoFont,
+            NSForegroundColorAttributeName: NSColor.whiteColor(),
+            NSStrokeWidthAttributeName: -5.0]
+        let pageNoStr  = "\(pageNo)"
+        let pageNoSize = pageNoStr.sizeWithAttributes(pageNoAttr)
+        let pageNoAt   = NSPoint(
+            x: pageNoBox.origin.x+0.5*(pageNoBox.size.width-pageNoSize.width),
+            y: pageNoBox.origin.y+3.5)
+        pageNoStr.drawAtPoint(pageNoAt, withAttributes:pageNoAttr)
+
+        let kXOffset  : CGFloat = 5.0
+        let titleFont = NSFont.userFontOfSize(12.0)!
+        let titleAttr = [NSFontAttributeName:titleFont]
+        var titleAt   = NSPoint(
+            x: wideBox.origin.x+kXOffset,
+            y: wideBox.origin.y+0.5*(wideBox.size.height-titleFont.ascender+titleFont.descender))
+
+        if let fileNameStr = mainEditor?.name {
+            fileNameStr.drawAtPoint(titleAt, withAttributes:titleAttr)
+        }
+        if let projectNameStr = fileURL?.lastPathComponent?.stringByDeletingPathExtension {
+            let projectNameSize = projectNameStr.sizeWithAttributes(titleAttr)
+            titleAt.x = wideBox.origin.x+wideBox.size.width-projectNameSize.width-kXOffset
+            projectNameStr.drawAtPoint(titleAt, withAttributes:titleAttr)
+        }
+    }
+
+    func drawPrintFooterForPage(pageNo: Int32, inRect r: NSRect) {
+        var rect = r
+        rect.size.height    -= 5.0
+
+        let ctx = NSGraphicsContext.currentContext()!
+        ctx.saveGraphicsState()
+        NSColor(white: 0.95, alpha: 1.0).setFill()
+        NSRectFill(rect)
+        ctx.restoreGraphicsState()
+
+        let kXOffset  : CGFloat = 5.0
+        let footFont  = NSFont.userFixedPitchFontOfSize(10.0)!
+        let footAttr  = [NSFontAttributeName:footFont]
+        var footAt   = NSPoint(
+            x: rect.origin.x+kXOffset,
+            y: rect.origin.y+0.5*(rect.size.height-footFont.ascender+footFont.descender))
+
+        if let revisionStr = printRevision {
+            revisionStr.drawAtPoint(footAt, withAttributes:footAttr)
+        }
+        if let modDate = printModDate
+        {
+            let dateFormatter = NSDateFormatter()
+            dateFormatter.dateFormat = "yyyy-MM-dd HH:mm"
+            let modDateStr = dateFormatter.stringFromDate(modDate)
+            let modDateSize = modDateStr.sizeWithAttributes(footAttr)
+            footAt.x = rect.origin.x+rect.size.width-modDateSize.width-kXOffset
+            modDateStr.drawAtPoint(footAt, withAttributes:footAttr)
+        }
+    }
+
+    func printingComplete() {
+        printingDone()
     }
 
     // MARK: Outline View Delegate

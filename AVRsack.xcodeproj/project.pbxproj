@@ -16,6 +16,7 @@
 		950AB9271A296A160033A9DA /* ProjIcon.icns in Resources */ = {isa = PBXBuildFile; fileRef = 950AB9261A296A160033A9DA /* ProjIcon.icns */; };
 		951CD1741A23C9FC0066C1A1 /* ASBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 951CD1731A23C9FC0066C1A1 /* ASBuilder.swift */; };
 		951CD1771A2615000066C1A1 /* BuildProject in Resources */ = {isa = PBXBuildFile; fileRef = 951CD1761A2615000066C1A1 /* BuildProject */; };
+		95388E5D1AB6882600061435 /* FileRevision in Resources */ = {isa = PBXBuildFile; fileRef = 95388E5C1AB6882600061435 /* FileRevision */; };
 		9538E0EC1A8FB215001E02CC /* ACEView.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 95EA325B1A17B8DA00F66EB0 /* ACEView.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		95468DDF1A228BE600668EE2 /* ASHardware.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95468DDE1A228BE600668EE2 /* ASHardware.swift */; };
 		95468DE31A228E1300668EE2 /* Defaults.plist in Resources */ = {isa = PBXBuildFile; fileRef = 95468DE21A228E1300668EE2 /* Defaults.plist */; };
@@ -102,6 +103,7 @@
 		950AB9261A296A160033A9DA /* ProjIcon.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = ProjIcon.icns; path = IconResources/ProjIcon.icns; sourceTree = "<group>"; };
 		951CD1731A23C9FC0066C1A1 /* ASBuilder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ASBuilder.swift; sourceTree = "<group>"; };
 		951CD1761A2615000066C1A1 /* BuildProject */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; fileEncoding = 4; path = BuildProject; sourceTree = "<group>"; };
+		95388E5C1AB6882600061435 /* FileRevision */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; fileEncoding = 4; path = FileRevision; sourceTree = "<group>"; };
 		95468DDE1A228BE600668EE2 /* ASHardware.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ASHardware.swift; sourceTree = "<group>"; };
 		95468DE21A228E1300668EE2 /* Defaults.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Defaults.plist; sourceTree = "<group>"; };
 		95539B661A3E7EAF00D8595C /* ASSerial.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ASSerial.h; sourceTree = "<group>"; };
@@ -211,6 +213,7 @@
 				951CD1731A23C9FC0066C1A1 /* ASBuilder.swift */,
 				95A7C6451A3894C900EF1963 /* ASPreferences.swift */,
 				951CD1761A2615000066C1A1 /* BuildProject */,
+				95388E5C1AB6882600061435 /* FileRevision */,
 				95539B661A3E7EAF00D8595C /* ASSerial.h */,
 				95539B671A3E7EAF00D8595C /* ASSerial.mm */,
 				95DF20661A45A6090013D1B5 /* ASSketchBook.swift */,
@@ -305,6 +308,7 @@
 		9501D7F41A17025C0034C530 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
+				LastSwiftUpdateCheck = 0700;
 				LastUpgradeCheck = 0630;
 				ORGANIZATIONNAME = "Aere Perennius";
 				TargetAttributes = {
@@ -383,6 +387,7 @@
 				95CC3F071A6385B8003507AD /* CSrcIcon.icns in Resources */,
 				951CD1771A2615000066C1A1 /* BuildProject in Resources */,
 				95CC3F081A6385B8003507AD /* HSrcIcon.icns in Resources */,
+				95388E5D1AB6882600061435 /* FileRevision in Resources */,
 				95CC3F061A6385B8003507AD /* CppSrcIcon.icns in Resources */,
 				95CC3F051A6385B8003507AD /* AsmSrcIcon.icns in Resources */,
 			);

@@ -1,0 +1,33 @@
+#!/usr/bin/ruby
+#
+#  FileRevision FILE
+#
+#  AVRsack
+#
+#  Created by Matthias Neeracher on 03/16/15.
+#  Copyright © 2015 Aere Perennius. All rights reserved.
+#
+
+file = ARGV[0]
+if file =~ %r|(.*)/(.*)|
+    Dir.chdir($1)
+    file = $2
+end
+rev = ''
+IO.popen("git log -1 --pretty=oneline '#{file}'", 'r') do |io|
+    if line = io.gets
+        rev = line[0..7]
+    end
+end
+if $? == 0 && rev.size > 0
+    print rev
+else
+    IO.popen("svn info '#{file}'") do |io|
+        io.each_line do |line|
+            if line =~ /Last Changed Rev:\s+(\S+)/
+                print "r"+$1
+                exit 0
+            end
+        end
+    end
+end

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="7515.2" systemVersion="14C109" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="7519.1" systemVersion="14C109" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="7515.2"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="7519.1"/>
         <capability name="Constraints with non-1.0 multipliers" minToolsVersion="5.1"/>
     </dependencies>
     <objects>
@@ -11,6 +11,7 @@
                 <outlet property="editor" destination="Nhg-qn-6A8" id="eUR-Gk-IBw"/>
                 <outlet property="outline" destination="nij-C2-Fna" id="sVi-eL-hqZ"/>
                 <outlet property="portTool" destination="4rZ-U5-AH6" id="8Nb-iI-pJH"/>
+                <outlet property="printView" destination="HFe-2c-jeW" id="dh0-q5-QVW"/>
                 <outlet property="progTool" destination="08n-xg-fNl" id="959-as-OtP"/>
                 <outlet property="window" destination="xOd-HO-29H" id="JIz-fz-R2o"/>
             </connections>
@@ -278,6 +279,10 @@
             <point key="canvasLocation" x="408" y="438"/>
         </window>
         <userDefaultsController representsSharedInstance="YES" id="fpc-q0-yYy"/>
+        <customView id="HFe-2c-jeW" customClass="ACEView">
+            <rect key="frame" x="0.0" y="0.0" width="163" height="96"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+        </customView>
     </objects>
     <resources>
         <image name="BuildIcon" width="32" height="32"/>
