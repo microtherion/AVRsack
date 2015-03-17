@@ -56,13 +56,13 @@ class ASApplication: NSObject, NSApplicationDelegate, NSMenuDelegate {
     func applicationDidFinishLaunching(aNotification: NSNotification) {
         themeMenu.removeAllItems()
         for (index, theme) in enumerate(ACEThemeNames.humanThemeNames() as! [String]) {
-            let menuItem = themeMenu.addItemWithTitle(theme, action: "changeTheme:", keyEquivalent: "")
-            menuItem!.tag = index
+            let menuItem = themeMenu.addItemWithTitle(theme, action: "changeTheme:", keyEquivalent: "")!
+            menuItem.tag = index
         }
         keyboardMenu.removeAllItems()
         for (index, theme) in enumerate(ACEKeyboardHandlerNames.humanKeyboardHandlerNames() as! [String]) {
-            let menuItem = keyboardMenu.addItemWithTitle(theme, action: "changeKeyboardHandler:", keyEquivalent: "")
-            menuItem!.tag = index
+            let menuItem = keyboardMenu.addItemWithTitle(theme, action: "changeKeyboardHandler:", keyEquivalent: "")!
+            menuItem.tag = index
         }
     }
     func applicationShouldOpenUntitledFile(sender: NSApplication) -> Bool {
@@ -142,15 +142,17 @@ class ASApplication: NSObject, NSApplicationDelegate, NSMenuDelegate {
     }
     
     @IBAction func openSketch(item: NSMenuItem) {
-        let url = NSURL(fileURLWithPath: sketches[item.tag])!
-        let doc = NSDocumentController.sharedDocumentController() as! NSDocumentController
-        doc.openDocumentWithContentsOfURL(url, display: true) { (doc, alreadyOpen, error) -> Void in
+        if let url = NSURL(fileURLWithPath: sketches[item.tag]) {
+            let doc = NSDocumentController.sharedDocumentController() as! NSDocumentController
+            doc.openDocumentWithContentsOfURL(url, display: true) { (doc, alreadyOpen, error) -> Void in
+            }
         }
     }
     
     @IBAction func openExample(item: NSMenuItem) {
-        let url = NSURL(fileURLWithPath: examples[item.tag])!
-        openTemplate(url.URLByDeletingLastPathComponent!)
+        if let url = NSURL(fileURLWithPath: examples[item.tag]) {
+            openTemplate(url.URLByDeletingLastPathComponent!)
+        }
     }
 
     @IBAction func createSketch(AnyObject) {

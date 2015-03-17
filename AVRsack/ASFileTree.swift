@@ -252,7 +252,7 @@ class ASFileTree : NSObject, NSOutlineViewDataSource {
     func addFileURL(url: NSURL, omitUnknown: Bool = true) {
         let type = ASFileType.guessForURL(url)
         if !omitUnknown || type != .Unknown {
-            root.children.append(ASFileItem(url: url.standardizedURL!, type: type))
+            root.children.append(ASFileItem(url: url.URLByStandardizingPath!, type: type))
         }
     }
     func setProjectURL(url: NSURL) {

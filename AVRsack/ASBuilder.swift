@@ -56,6 +56,10 @@ class ASBuilder {
         let fileManager = NSFileManager.defaultManager()
         let libPath     = (ASLibraries.instance().directories as NSArray).componentsJoinedByString(":")
         var args        = [String]()
+        if ASHardware.instance().boards[board] == nil {
+            NSLog("Unable to find board %s\n", board);
+            return
+        }
         let boardProp   = ASHardware.instance().boards[board]!
         let library     = boardProp["library"]!
         var corePath    = library+"/cores/"+boardProp["build.core"]!
@@ -82,8 +86,8 @@ class ASBuilder {
         args.append("core="+boardProp["build.core"]!)
         args.append("libs="+libPath)
         args.append("core_path="+corePath)
-        if variantPath != nil {
-            args.append("variant_path="+variantPath!)
+        if let varPath = variantPath {
+            args.append("variant_path="+varPath)
         }
         args.append("usb_vid="+(boardProp["build.vid"] ?? "null"));
         args.append("usb_pid="+(boardProp["build.pid"] ?? "null"));
@@ -125,7 +129,11 @@ class ASBuilder {
             task!.standardOutput    = logOut
             task!.standardError     = logOut
         }
-        
+        if ASHardware.instance().boards[board] == nil {
+            NSLog("Unable to find board %s\n", board);
+            return
+        }
+
         let libPath         = (ASLibraries.instance().directories as NSArray).componentsJoinedByString(":")
         let boardProp       = ASHardware.instance().boards[board]!
         let progProp        = ASHardware.instance().programmers[programmer]

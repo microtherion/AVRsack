@@ -222,7 +222,7 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate, NSMenuDelegate, NSOpenSavePa
  
     func updateLog(AnyObject?) {
         if let logNode = mainEditor as? ASLogNode {
-            let url = fileURL!.URLByDeletingLastPathComponent?.URLByAppendingPathComponent(logNode.path)
+            let url = fileURL?.URLByDeletingLastPathComponent?.URLByAppendingPathComponent(logNode.path)
             if url == nil {
                 return
             }
