@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="6250" systemVersion="14C79" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="8052.1" systemVersion="14C1510" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="6250"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="8052.1"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="NSApplication">
@@ -449,6 +449,33 @@ CA
                                 <connections>
                                     <action selector="cleanProject:" target="-1" id="4hi-zQ-Zoi"/>
                                 </connections>
+                            </menuItem>
+                            <menuItem isSeparatorItem="YES" id="wCN-i4-dYR"/>
+                            <menuItem title="Import Standard Library" id="Wr9-mg-Y2Y">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <menu key="submenu" title="Import Standard Library" id="kn7-VM-hJE">
+                                    <items>
+                                        <menuItem title="Item" id="ih0-ik-T3d">
+                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                        </menuItem>
+                                    </items>
+                                    <connections>
+                                        <outlet property="delegate" destination="Voe-Tx-rLC" id="WVo-hX-ewO"/>
+                                    </connections>
+                                </menu>
+                            </menuItem>
+                            <menuItem title="Import Contributed Library" id="cdO-LF-UJz">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <menu key="submenu" title="Import Contributed Library" id="Rgy-03-GTO">
+                                    <items>
+                                        <menuItem title="Item" id="sK8-xk-24A">
+                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                        </menuItem>
+                                    </items>
+                                    <connections>
+                                        <outlet property="delegate" destination="Voe-Tx-rLC" id="I0y-YE-Ayo"/>
+                                    </connections>
+                                </menu>
                             </menuItem>
                         </items>
                         <connections>

@@ -134,7 +134,6 @@ class ASBuilder {
             return
         }
 
-        let libPath         = (ASLibraries.instance().directories as NSArray).componentsJoinedByString(":")
         let boardProp       = ASHardware.instance().boards[board]!
         let progProp        = ASHardware.instance().programmers[programmer]
         let hasBootloader   = !useProgrammer && boardProp["upload.protocol"] != nil

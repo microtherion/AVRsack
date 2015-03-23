@@ -143,31 +143,66 @@ class ASHardware {
 }
 
 private let librariesInstance = ASLibraries()
-class ASLibraries {
+class ASLibraries : NSObject {
     class func instance() -> ASLibraries { return librariesInstance }
     var directories = [String]()
     var libraries   = [String]()
-    init() {
+    var standardLib = [String]()
+    var contribLib  = [String]()
+    override init() {
         //
         // Gather hardware directories
         //
         let userDefaults    = NSUserDefaults.standardUserDefaults()
         let fileManager     = NSFileManager.defaultManager()
-        if let arduinoPath = userDefaults.stringForKey("Arduino") {
-            let arduinoLibrariesPath = arduinoPath + "/Contents/Resources/Java/libraries"
-            let dirs                 = subdirectories(arduinoLibrariesPath)
-            if dirs.count > 0 {
-                directories.append(arduinoLibrariesPath)
-                libraries   += dirs
-            }
-        }
         for sketchDir in userDefaults.objectForKey("Sketchbooks") as! [String] {
             let librariesPath = sketchDir + "/libraries"
             let dirs                 = subdirectories(librariesPath)
             if dirs.count > 0 {
                 directories.append(librariesPath)
                 libraries   += dirs
+                contribLib  += dirs
             }
         }
+        if let arduinoPath = userDefaults.stringForKey("Arduino") {
+            let arduinoLibrariesPath = arduinoPath + "/Contents/Resources/Java/libraries"
+            let dirs                 = subdirectories(arduinoLibrariesPath)
+            if dirs.count > 0 {
+                directories.append(arduinoLibrariesPath)
+                libraries   += dirs
+                standardLib += dirs
+            }
+        }
+    }
+    func addStandardLibrariesToMenu(menu: NSMenu) {
+        for (index,lib) in enumerate(standardLib) {
+            let menuItem        = menu.addItemWithTitle(lib.lastPathComponent, action: "importStandardLibrary:", keyEquivalent: "")
+            menuItem?.target    = self
+            menuItem?.tag       = index
+        }
+    }
+    func addContribLibrariesToMenu(menu: NSMenu) {
+        for (index,lib) in enumerate(contribLib) {
+            let menuItem        = menu.addItemWithTitle(lib.lastPathComponent, action: "importContribLibrary:", keyEquivalent: "")
+            menuItem?.target    = self
+            menuItem?.tag       = index
+        }
+    }
+    @IBAction func importStandardLibrary(menuItem: AnyObject) {
+        if let tag = (menuItem as? NSMenuItem)?.tag {
+            NSApplication.sharedApplication().sendAction("importLibrary:", to: nil, from: standardLib[tag])
+        }
+    }
+    @IBAction func importContribLibrary(menuItem: AnyObject) {
+        if let tag = (menuItem as? NSMenuItem)?.tag {
+            NSApplication.sharedApplication().sendAction("importLibrary:", to: nil, from: contribLib[tag])
+        }
+    }
+
+    func validateUserInterfaceItem(anItem: NSValidatedUserInterfaceItem) -> Bool {
+        if let validator = NSApplication.sharedApplication().targetForAction("importLibrary:") as? NSUserInterfaceValidations {
+            return validator.validateUserInterfaceItem(anItem)
+        }
+        return false
     }
 }

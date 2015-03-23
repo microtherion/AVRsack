@@ -605,6 +605,29 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate, NSMenuDelegate, NSOpenSavePa
         })
     }
 
+    func importLibrary(lib: String) {
+        var includes    = ""
+        let fileManager = NSFileManager.defaultManager()
+        for file in fileManager.contentsOfDirectoryAtPath(lib, error: nil) as! [String] {
+            if file.hasSuffix(".h") {
+                includes += "#include <\(file)>\n"
+            }
+        }
+        var text    = editor.string() as NSString
+        var insert  = NSMakeRange(text.length, 0)
+        let postHeaderComments = NSRegularExpression(pattern: "((?:\\s+|/\\*.*?\\*/|//.*?\\n)*)(.*?\\n)", options: .DotMatchesLineSeparators, error: nil)!
+        if let match = postHeaderComments.firstMatchInString(text as String, options:.Anchored, range:NSMakeRange(0, text.length)) {
+            let range       = match.rangeAtIndex(2)
+            insert.location = range.location
+            let content     = text.substringWithRange(range)
+            if !content.hasPrefix("#include") {
+                includes += "\n"
+            }
+        }
+
+        editor.setString(text.stringByReplacingCharactersInRange(insert, withString: includes))
+    }
+
     // MARK: Editor configuration
     
     @IBAction func changeTheme(item: NSMenuItem) {
@@ -633,6 +656,10 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate, NSMenuDelegate, NSOpenSavePa
                 menuItem.title = port
 
                 return true
+            } else if menuItem.action == "importStandardLibrary:" ||
+                menuItem.action == "importContribLibrary:"
+            {
+                return mainEditor is ASFileItem
             }
         }
         return super.validateUserInterfaceItem(anItem)

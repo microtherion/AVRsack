@@ -88,6 +88,12 @@ class ASApplication: NSObject, NSApplicationDelegate, NSMenuDelegate {
                 let examplePath = arduinoPath.stringByAppendingPathComponent("Contents/Resources/Java/examples")
                 ASSketchBook.addSketches(menu, target: self, action: "openExample:", path: examplePath, sketches: &examples)
             }
+        case "Import Standard Library":
+            menu.removeAllItems()
+            ASLibraries.instance().addStandardLibrariesToMenu(menu)
+        case "Import Contributed Library":
+            menu.removeAllItems()
+            ASLibraries.instance().addContribLibrariesToMenu(menu)
         case "Serial Monitor":
             menu.itemAtIndex(0)?.hidden = !hasDocument()
             while menu.numberOfItems > 2 {
