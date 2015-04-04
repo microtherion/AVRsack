@@ -155,7 +155,7 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate, NSMenuDelegate, NSOpenSavePa
             kProgrammerKey: programmer,
             kPortKey: port
         ]
-        return NSPropertyListSerialization.dataFromPropertyList(data, format: .XMLFormat_v1_0, errorDescription: nil)
+        return NSPropertyListSerialization.dataWithPropertyList(data, format:.XMLFormat_v1_0, options:0, error:nil)
     }
 
     func updateProjectURL() {
@@ -198,7 +198,8 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate, NSMenuDelegate, NSOpenSavePa
             return false
         }
         updateProjectURL()
-        let projectData : NSDictionary = NSPropertyListSerialization.propertyListFromData(data, mutabilityOption: .Immutable, format: nil, errorDescription: nil) as! NSDictionary
+        let projectData =
+            NSPropertyListSerialization.propertyListWithData(data, options:0, format:nil, error:nil) as! NSDictionary
         let projectVersion = projectData[kVersionKey] as! Double
         assert(projectVersion <= floor(kCurVersion+1.0), "Project version too new for this app")
         if let themeName = projectData[kThemeKey] as? String {

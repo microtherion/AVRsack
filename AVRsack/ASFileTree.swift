@@ -85,6 +85,7 @@ private let kNameKey            = "Name"
             return ASFileItem(prop, withRootURL:rootURL)
         default:
             assertionFailure("Undefined item type in file hierarchy")
+            abort()
         }
     }
     func paths(rootPath: String) -> [String] {
