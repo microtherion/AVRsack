@@ -194,7 +194,7 @@ class ASFileItem : ASFileNode {
     }
     
     func relativePath(relativeTo: String) -> String {
-        let path        = url.path!
+        let path        = url.path!.stringByResolvingSymlinksInPath
         let relComp     = relativeTo.componentsSeparatedByString("/") as [String]
         let pathComp    = path.componentsSeparatedByString("/") as [String]
         let relCount    = relComp.count
@@ -260,17 +260,20 @@ class ASFileTree : NSObject, NSOutlineViewDataSource {
         root.name = url.lastPathComponent!.stringByDeletingPathExtension
         dir       = url.URLByDeletingLastPathComponent!.URLByStandardizingPath!
     }
+    func projectPath() -> String {
+        return dir.path!.stringByResolvingSymlinksInPath
+    }
     func apply(closure: (ASFileNode) -> ()) {
         root.apply(closure)
     }
     func propertyList() -> AnyObject {
-        return root.propertyList(dir.path!)
+        return root.propertyList(projectPath())
     }
     func readPropertyList(prop: NSDictionary) {
         root = ASFileNode.readPropertyList(prop, rootURL:dir) as! ASProject
     }
     var paths : [String] {
-        return root.paths(dir.path!)
+        return root.paths(projectPath())
     }
     
     // MARK: Outline Data Source
