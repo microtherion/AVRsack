@@ -189,6 +189,7 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate, NSMenuDelegate, NSOpenSavePa
                 success = writeToURL(projectURL, ofType: "Project", forSaveOperation: .SaveAsOperation, originalContentsURL: nil, error: outError)
             }
         } else {
+            fileURL = url
             success = super.readFromURL(url, ofType: typeName, error: outError)
         }
         return success
@@ -220,7 +221,12 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate, NSMenuDelegate, NSOpenSavePa
         
         return true
     }
- 
+
+    override func duplicateDocument(sender: AnyObject?) {
+        let app = NSApplication.sharedApplication().delegate as! ASApplication
+        app.openTemplate(fileURL!.URLByDeletingLastPathComponent!)
+    }
+
     func updateLog(AnyObject?) {
         if let logNode = mainEditor as? ASLogNode {
             let url = fileURL?.URLByDeletingLastPathComponent?.URLByAppendingPathComponent(logNode.path)
@@ -238,8 +244,8 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate, NSMenuDelegate, NSOpenSavePa
             
             if (modified as! NSDate).compare(logModified) == .OrderedDescending || (size as! Int) != logSize {
                 var enc : UInt  = 0
-                let newText     = NSString(contentsOfURL:url!, usedEncoding:&enc, error:nil) as! String
-                editor.setString(newText)
+                let newText     = NSString(contentsOfURL:url!, usedEncoding:&enc, error:nil)
+                editor.setString((newText as? String) ?? "")
                 editor.gotoLine(1000000000, column: 0, animated: true)
                 logModified = modified as! NSDate
                 logSize     = size as! Int

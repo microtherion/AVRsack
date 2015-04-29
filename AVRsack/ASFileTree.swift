@@ -163,6 +163,13 @@ class ASFileGroup : ASFileNode {
 class ASProject : ASFileGroup {
     override private var kNodeType : String { return kNodeTypeProject }
     
+    override init(name: String = "") {
+        super.init(name: name)
+    }
+    override init(_ prop: NSDictionary, withRootURL rootURL: NSURL) {
+        super.init(prop, withRootURL:rootURL)
+        name = rootURL.lastPathComponent!
+    }
     override func nodeName() -> String {
         return "📘 "+name
     }
@@ -186,6 +193,18 @@ class ASFileItem : ASFileNode {
             url  = relativeURL.URLByStandardizingPath!
         } else {
             url = NSURL(fileURLWithPath:(prop[kPathKey] as! String))!.URLByStandardizingPath!
+        }
+        if !url.checkResourceIsReachableAndReturnError(nil) {
+            //
+            // When projects get moved, .ino files get renamed but that fact is not 
+            // yet reflected in the project file.
+            //
+            let urlDir  = url.URLByDeletingLastPathComponent
+            let newName = rootURL.lastPathComponent!.stringByAppendingPathExtension(url.pathExtension!)!
+            let altURL  = urlDir?.URLByAppendingPathComponent(newName)
+            if altURL != nil && altURL!.checkResourceIsReachableAndReturnError(nil) {
+                url = altURL!
+            }
         }
         super.init(name:url.lastPathComponent!)
     }
