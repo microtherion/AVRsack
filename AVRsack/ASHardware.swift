@@ -106,6 +106,7 @@ class ASHardware {
     
     func buildMenu(menu:NSMenu, choices:ASProperties, recentChoices:[String], target: AnyObject, selector: Selector) {
         menu.removeAllItems()
+        menu.addItemWithTitle("Title", action: "", keyEquivalent: "")
         if choices.count <= 10 {
             menu.addSortedChoices([ASPropertyEntry](choices.values), target: target, selector: selector)
         } else {
