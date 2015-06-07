@@ -82,7 +82,7 @@ class ASBuilder {
         args.append("board="+board)
         args.append("mcu="+boardProp["build.mcu"]!)
         args.append("f_cpu="+boardProp["build.f_cpu"]!)
-        args.append("max_size"+boardProp["upload.maximum_size"]!)
+        args.append("max_size="+boardProp["upload.maximum_size"]!)
         args.append("core="+boardProp["build.core"]!)
         args.append("libs="+libPath)
         args.append("core_path="+corePath)
