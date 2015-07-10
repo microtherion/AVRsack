@@ -1,0 +1,13 @@
+div.sidebar {
+	margin-bottom: 5mm;
+	margin-top: 5mm;
+	margin-right: 15%;
+	margin-left: 15%;
+	background-color: #eeeeee;
+	width: 70%;
+	padding: 3mm 3mm 3mm 3mm;
+}
+span.logo {
+	font-size: smaller;
+	font-family: "Lucida Grande", Verdana, Arial, sans-serif;
+}

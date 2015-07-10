@@ -3,10 +3,11 @@
 //  AVRsack
 //
 //  Created by Matthias Neeracher on 11/15/14.
-//  Copyright (c) 2014 Aere Perennius. All rights reserved.
+//  Copyright (c) 2014-2015 Aere Perennius. All rights reserved.
 //
 
 import Cocoa
+import Carbon
 
 @NSApplicationMain
 class ASApplication: NSObject, NSApplicationDelegate, NSMenuDelegate {
@@ -195,6 +196,29 @@ class ASApplication: NSObject, NSApplicationDelegate, NSMenuDelegate {
                 }
             })
         }
+    }
+
+    @IBAction func goToHelpPage(sender: AnyObject) {
+        let helpString: String
+        switch sender.tag() {
+        case 0:
+            helpString = "license.html"
+        default:
+            abort()
+        }
+        let locBookName = NSBundle.mainBundle().objectForInfoDictionaryKey("CFBundleHelpBookName") as! String
+        AHGotoPage(locBookName, helpString, nil)
+    }
+
+    @IBAction func goToHelpURL(sender: AnyObject) {
+        let helpString: String
+        switch sender.tag() {
+        case 0:
+            helpString = "https://github.com/microtherion/AVRsack/issues"
+        default:
+            abort()
+        }
+        NSWorkspace.sharedWorkspace().openURL(NSURL(string: helpString)!)
     }
 }
 

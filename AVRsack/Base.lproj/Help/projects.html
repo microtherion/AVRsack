@@ -1,0 +1,57 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 TRANSITIONAL//EN">
+<html>
+<head>
+<title>Working with AVRsack Sketches</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<link href="help.css" rel="stylesheet" type="text/css">
+</head>
+<body>
+<center><h1>Creating and Editing <span class="logo">AVRsack</span> Sketches</h1></center>
+
+<p>Like many integrated development environments, <span class="logo">AVRsack</span> keeps information about your projects (called <i>sketches</i> to follow Arduino practice) in a project file. This file always should have the same name as the directory it resides in, and for compatibility with the Arduino IDE, <span class="logo">AVRsack</span> will automatically create missing project files.</p>
+
+<h2>Creating a New Sketch</h2>
+
+<p>From the <code>File</code> menu, select <code>New</code>&rarr;<code>Sketch…</code>. You will be prompted for a project name, and <span class="logo">AVRsack</span> will then proceed to create</p>
+
+<ul type=circle>
+<li>A directory by that <code>NAME</code></li>
+<li>A project file <code>NAME/NAME.avrsackproj</code></li>
+<li>An Arduino code file <code>NAME/NAME.ino</code></li>
+</ul>
+
+<h2>Adding a New File to a Sketch</h2>
+
+<p>From the <code>File</code> menu, select <code>New</code>&rarr;<code>File…</code>. You will be prompted for a file name, and <span class="logo">AVRsack</span> will create the file and add it to the frontmost open sketch. Preferably, the file should be placed in the sketch directory.</p>
+
+<p>Currently, <span class="logo">AVRsack</span> understands the following file extensions:</p>
+
+<dl>
+<dt><code>.h (.hpp, .hh)</code></dt>
+<dd>C/C++ header file</dd>
+<dt><code>.c</code></dt>
+<dd>C source file</dd>
+<dt><code>.cpp (.cxx, .c++, .cc)</code></dt>
+<dd>C++ source file</dd>
+<dt><code>.S</code></dt>
+<dd>Assembly source file</dd>
+<dt><code>.md</code></dt>
+<dd>Markdown file</dd>
+</dl>
+
+<p>Be aware that the Arduino IDE will only understand a subset of these file types and extensions.</p>
+
+<h2>Adding an Existing File to a Sketch</h2>
+
+<p>Click the <code>+</code> button in the sketch window. You will be prompted for an existing file, which will be added to the sketch. Note that the file is <b>NOT</b> copied to the sketch directory, it should already reside there.</p>
+
+<h2>Deleting a File or Removing it From a Sketch</h2>
+
+<p>Select the file name and click the <code>-</code> button in the sketch window. You will be asked whether you want to move the file to the trash, or merely remove it from its sketch.</p>
+
+<h2>Using Libraries</h2>
+
+<p>The Arduino IDE ships with a selection of standard libraries, and many third party libraries exist on the web. In the <code>Sketch</code> menu, select the library you want to se from the <code>Import Standard Library</code> or <code>Import Contributed Library</code> submenus.</p>
+</body>
+</html>

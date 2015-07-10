@@ -23,6 +23,7 @@
 		95468DE31A228E1300668EE2 /* Defaults.plist in Resources */ = {isa = PBXBuildFile; fileRef = 95468DE21A228E1300668EE2 /* Defaults.plist */; };
 		9548A7CA1AED51530090FB0B /* ASSerialWin.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9548A7CC1AED51530090FB0B /* ASSerialWin.xib */; };
 		95539B681A3E7EAF00D8595C /* ASSerial.mm in Sources */ = {isa = PBXBuildFile; fileRef = 95539B671A3E7EAF00D8595C /* ASSerial.mm */; };
+		955EFECB1AFF1A8400D34967 /* Help in Resources */ = {isa = PBXBuildFile; fileRef = 955EFEC91AFF1A8400D34967 /* Help */; };
 		956005F41A4EF79D00327007 /* ASSerialWin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 956005F21A4EF79D00327007 /* ASSerialWin.swift */; };
 		95A7C6401A38914300EF1963 /* ASPreferences.xib in Resources */ = {isa = PBXBuildFile; fileRef = 95A7C63E1A38914300EF1963 /* ASPreferences.xib */; };
 		95A7C6461A3894C900EF1963 /* ASPreferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95A7C6451A3894C900EF1963 /* ASPreferences.swift */; };
@@ -112,6 +113,7 @@
 		9548A7CB1AED51530090FB0B /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/ASSerialWin.xib; sourceTree = "<group>"; };
 		95539B661A3E7EAF00D8595C /* ASSerial.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ASSerial.h; sourceTree = "<group>"; };
 		95539B671A3E7EAF00D8595C /* ASSerial.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = ASSerial.mm; sourceTree = "<group>"; };
+		955EFECA1AFF1A8400D34967 /* Base */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Base; path = Base.lproj/Help; sourceTree = "<group>"; };
 		956005F21A4EF79D00327007 /* ASSerialWin.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ASSerialWin.swift; sourceTree = "<group>"; };
 		958D76811A17DA1C00917D96 /* AVRsack-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "AVRsack-Bridging-Header.h"; sourceTree = "<group>"; };
 		95A7C63F1A38914300EF1963 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/ASPreferences.xib; sourceTree = "<group>"; };
@@ -231,6 +233,7 @@
 		95BF80EC1A185CD90004A693 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				955EFEC91AFF1A8400D34967 /* Help */,
 				9501D8081A17025C0034C530 /* Images.xcassets */,
 				950AB9261A296A160033A9DA /* ProjIcon.icns */,
 				95CC3EFF1A6385B8003507AD /* AsmSrcIcon.icns */,
@@ -393,6 +396,7 @@
 				951CD1771A2615000066C1A1 /* BuildProject in Resources */,
 				95CC3F081A6385B8003507AD /* HSrcIcon.icns in Resources */,
 				95388E5D1AB6882600061435 /* FileRevision in Resources */,
+				955EFECB1AFF1A8400D34967 /* Help in Resources */,
 				95CC3F061A6385B8003507AD /* CppSrcIcon.icns in Resources */,
 				95CC3F051A6385B8003507AD /* AsmSrcIcon.icns in Resources */,
 			);
@@ -472,6 +476,14 @@
 				9548A7CB1AED51530090FB0B /* Base */,
 			);
 			name = ASSerialWin.xib;
+			sourceTree = "<group>";
+		};
+		955EFEC91AFF1A8400D34967 /* Help */ = {
+			isa = PBXVariantGroup;
+			children = (
+				955EFECA1AFF1A8400D34967 /* Base */,
+			);
+			name = Help;
 			sourceTree = "<group>";
 		};
 		95A7C63E1A38914300EF1963 /* ASPreferences.xib */ = {

@@ -1,0 +1,44 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 TRANSITIONAL//EN">
+<html>
+<head>
+<title>Working with AVRsack Sketches</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<link href="help.css" rel="stylesheet" type="text/css">
+</head>
+<body>
+<center><h1>Compiling and Running <span class="logo">AVRsack</span> Sketches</h1></center>
+
+<p>Once you've written your code, it's time to get to the fun part&#8212;actually running it on your hardware.</p> 
+
+<h2>Selecting Your Execution Target</h2>
+
+<p>First, you have to let <span class="logo">AVRsack</span> know what hardware you want to target. You do this with three popup buttons in the window toolbar:</p>
+
+<ul>
+<li>The <code>Board</code> menu specifies the hardware you want to use (Typically either an Arduino or compatible board, or a "raw" microcontroller).</li>
+<li>The <code>Programmer</code> menu specifies what protocol you want to use to program the board. Most Arduino-style boards come with a bootloader and use a fixed protocol, so this setting is ignored for regular programming and only is used when burning a new bootloader. When programming raw microcontrollers, on the other hand, this setting is always used.</li>
+<li>The <code>Port</code> menu lists available serial ports. Ports used in the past, but not currently available, are listed in italics, while available ports are listed in a regular font.</li>
+</ul>
+
+<div class=sidebar>
+<p>💡While these settings are similar to those in the Arduino IDE, in <span class="logo">AVRsack</span>, the settings are stored separately for each project, so you can simultaneously develop projects for different boards.</p>
+</div>
+
+<h2>Compiling and Uploading Your Program</h2>
+
+<p>If all the necessary target information is selected (and the selected port exists), the <code>Upload</code> button in the toolbar becomes active. Clicking the button will compile your program (and, if necessary, the selected Arduino core and libraries) and then upload it to your board.</p>
+
+<p>If you need more (or less) information for your upload, you can adjust the verbosity in the <b>Preferences</b> dialog.</p>
+
+<h2>Serial Communication With Your Program</h2>
+
+<p>In typical Arduino boards, the running program conducts its serial communication on the same port used for uploading the program. To interact with the serial port, click the <code>Connect</code> button in the toolbar.</p>
+
+<p>However, <span class="logo">AVRsack</span> also supports connecting to arbitrary serial ports (and an unlimited number of them) through the <code>Sketch</code>&rarr;<code>Serial Monitor</code> submenu.</p>
+
+<h2>Disassembling Your Program</h2>
+
+<p>If you would like to see what machine instructions are produced for your program, click the <code>Disasm</code> toolbar button. The <b>Disassembly</b> window will then show an assembler listing of the machine code, interspersed with your original source code (If you prefer, you can turn off the source code display in the <b>Preferences</b> dialog.</p>
+
+</body>

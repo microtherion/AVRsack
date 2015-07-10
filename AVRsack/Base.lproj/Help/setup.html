@@ -1,0 +1,53 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 TRANSITIONAL//EN">
+<html>
+<head>
+<title>Setting up AVRsack</title>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<link href="help.css" rel="stylesheet" type="text/css">
+</head>
+<body>
+<center><h1>Setting up AVRsack</h1></center>
+
+<h2>Additional Installs</h2>
+
+<h3>Arduino (required)</h3>
+
+<p><span class="logo">AVRsack</span> is designed to borrow the examples, libraries, and, optionally, the 
+toolchain of an Arduino IDE. Get the 
+<a href="http://arduino.googlecode.com/files/arduino-1.0.5-macosx.zip">Arduino 1.0.5</a> 
+IDE, unpack it, and run it once (After that, keep it installed, but you don't 
+need to run it anymore). At this point, <span class="logo">AVRsack</span> does not yet support the newer Arduino 1.5.x and 1.6.x IDEs.
+</p> 
+
+<p>Once you've done this, <span class="logo">AVRsack</span> will automatically find your installation.</p>
+
+<h3>Crosspack-AVR (optional)</h3>
+
+<p>The Arduino IDE contains a toolchain (compiler, linker, etc) which is suitable for the microcontrollers used on standard Arduino boards, i.e. the ATmega328p (Arduino Uno and many more) and the ATmega32u4 (Arduino Leonardo, Micro, and others).</p>
+
+<p>If you're working with other AVR microcontrollers, however, e.g. the ATtiny1634, you will find that they are either not supported by the Arduino toolchain at all, or that there are significant bugs. It is therefore often useful to replace the Arduino toolchain with a more up to date version. One such toolchain is conveniently packaged as Crosspack-AVR.</p>
+
+<p>Download the latest version from <a href="https://www.obdev.at/products/crosspack/index.html">here</a> and install it. Once you've done this, <span class="logo">AVRsack</span> will automatically use this toolchain.</p>
+
+<h3>ATtiny Arduino Cores (optional)</h3>
+
+<p>Many Arduino programmers prefer to keep using the same APIs when programming ATtiny microcontrollers, so a number of projects exist to offer Arduino APIs for ATtinys. One such project, to which I've contributed some code, is <a href="https://github.com/microtherion/arduino-tiny1634-43u">arduino-tiny</a>, so I recommend that for ATtiny development. Clone or  download this project from github and install it.</p>
+
+<p>At this point, arduino-tiny supports the following microcontrollers:</p>
+
+<ul type=circle>
+	<li>ATtiny85/45/25 (8 pin, 8/4/2K flash)</li>
+	<li>ATtiny84/44/24 (14 pin, 8/4/2K flash)</li>
+	<li>ATtiny4313/2313 (20 pin, 4/2K flash)</li>
+	<li>ATtiny43u (20 pin, 4K flash)</li>
+	<li>ATtiny1634 (20 pin, 16K flash)</li>
+</ul>
+
+<p>Other ATtiny cores will work as well, but not all of them use the same mapping of Arduino pin numbers to hardware pins, so make sure the core you're using is compatible with your code!</p>
+
+<h2>Project Locations</h2>
+
+<p>By default, <span class="logo">AVRsack</span> will look for projects (and custom cores) in the Arduino sketchbook directory, <code>~/Documents/Arduino</code>, but if you prefer, you can store projects and cores in <code>~/Documents/AVRsack</code> instead.</p>
+</body>
+</html>
