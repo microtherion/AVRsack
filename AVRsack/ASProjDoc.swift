@@ -91,10 +91,12 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate, NSMenuDelegate, NSOpenSavePa
         
         var nc          = NSNotificationCenter.defaultCenter()
         themeObserver   = nc.addObserverForName(kBindingsKey, object: nil, queue: nil, usingBlock: { (NSNotification) in
-            self.editor.setKeyboardHandler(keyboardHandler)
+            self.editor?.setKeyboardHandler(keyboardHandler)
         })
         serialObserver  = nc.addObserverForName(kASSerialPortsChanged, object: nil, queue: nil, usingBlock: { (NSNotification) in
-            self.rebuildPortMenu()
+            if self.portTool != nil {
+                self.rebuildPortMenu()
+            }
         })
         updateLogTimer  =
             NSTimer.scheduledTimerWithTimeInterval(1.0, target: self, selector: "updateLog:", userInfo: nil, repeats: true)
@@ -153,7 +155,9 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate, NSMenuDelegate, NSOpenSavePa
             kFilesKey: files.propertyList(),
             kBoardKey: board,
             kProgrammerKey: programmer,
-            kPortKey: port
+            kPortKey: port,
+            kRecentBoardsKey: recentBoards,
+            kRecentProgrammersKey: recentProgrammers
         ]
         return NSPropertyListSerialization.dataWithPropertyList(data, format:.XMLFormat_v1_0, options:0, error:nil)
     }
