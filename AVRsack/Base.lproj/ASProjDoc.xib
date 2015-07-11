@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="7702" systemVersion="14D136" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="7702" systemVersion="14F4" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
     <dependencies>
         <development version="6200" identifier="xcode"/>
         <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="7702"/>
-        <capability name="Constraints with non-1.0 multipliers" minToolsVersion="5.1"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="ASProjDoc" customModule="AVRsack">
             <connections>
+                <outlet property="auxEdit" destination="Kfh-Ag-J3X" id="D7H-fk-9rL"/>
                 <outlet property="boardTool" destination="xO5-xB-HHj" id="xzX-eY-Ofe"/>
-                <outlet property="editor" destination="Nhg-qn-6A8" id="eUR-Gk-IBw"/>
+                <outlet property="editor" destination="Nhg-qn-6A8" id="gcr-ED-Eil"/>
+                <outlet property="editors" destination="M6t-Fu-HMa" id="Bpq-O7-xMr"/>
                 <outlet property="outline" destination="nij-C2-Fna" id="sVi-eL-hqZ"/>
                 <outlet property="portTool" destination="4rZ-U5-AH6" id="8Nb-iI-pJH"/>
-                <outlet property="printView" destination="HFe-2c-jeW" id="dh0-q5-QVW"/>
                 <outlet property="progTool" destination="08n-xg-fNl" id="959-as-OtP"/>
                 <outlet property="window" destination="xOd-HO-29H" id="JIz-fz-R2o"/>
             </connections>
@@ -33,10 +33,10 @@
                         <rect key="frame" x="0.0" y="0.0" width="1001" height="500"/>
                         <subviews>
                             <box autoresizesSubviews="NO" title="Box" boxType="custom" borderType="none" titlePosition="noTitle" id="0X4-Im-JAh">
-                                <rect key="frame" x="0.0" y="0.0" width="229" height="500"/>
+                                <rect key="frame" x="0.0" y="0.0" width="228.5" height="500"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                 <view key="contentView">
-                                    <rect key="frame" x="0.0" y="0.0" width="229" height="500"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="228.5" height="500"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
                                         <scrollView misplaced="YES" autohidesScrollers="YES" horizontalLineScroll="19" horizontalPageScroll="10" verticalLineScroll="19" verticalPageScroll="10" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ObX-J0-NIB">
@@ -125,17 +125,11 @@
                                 <color key="borderColor" white="0.0" alpha="0.41999999999999998" colorSpace="calibratedWhite"/>
                                 <color key="fillColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                             </box>
-                            <customView id="Nhg-qn-6A8" customClass="ACEView">
-                                <rect key="frame" x="230" y="0.0" width="771" height="500"/>
-                                <autoresizingMask key="autoresizingMask"/>
-                                <constraints>
-                                    <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="100" id="dHZ-ac-XrM"/>
-                                </constraints>
-                            </customView>
+                            <stackView orientation="vertical" alignment="centerX" spacing="2" horizontalHuggingPriority="249" verticalHuggingPriority="249" fixedFrame="YES" id="M6t-Fu-HMa">
+                                <rect key="frame" x="229.5" y="0.0" width="771.5" height="500"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                            </stackView>
                         </subviews>
-                        <constraints>
-                            <constraint firstItem="0X4-Im-JAh" firstAttribute="width" relation="lessThanOrEqual" secondItem="Nhg-qn-6A8" secondAttribute="width" multiplier="0.25" constant="50" id="A29-q0-dcn"/>
-                        </constraints>
                         <holdingPriorities>
                             <real value="250"/>
                             <real value="250"/>
@@ -280,9 +274,16 @@
             <point key="canvasLocation" x="408" y="438"/>
         </window>
         <userDefaultsController representsSharedInstance="YES" id="fpc-q0-yYy"/>
-        <customView id="HFe-2c-jeW" customClass="ACEView">
-            <rect key="frame" x="0.0" y="0.0" width="163" height="96"/>
-            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+        <customView misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Nhg-qn-6A8" customClass="ACEView">
+            <constraints>
+                <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="100" id="dHZ-ac-XrM"/>
+            </constraints>
+        </customView>
+        <customView misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Kfh-Ag-J3X" customClass="ACEView">
+            <constraints>
+                <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="100" id="bnV-eX-5lg"/>
+                <constraint firstAttribute="height" constant="100" id="s9M-vL-e15"/>
+            </constraints>
         </customView>
     </objects>
     <resources>

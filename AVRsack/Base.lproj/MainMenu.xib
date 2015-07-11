@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="7702" systemVersion="14D136" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="7702" systemVersion="14F4" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
     <dependencies>
         <development version="6200" identifier="xcode"/>
         <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="7702"/>
@@ -375,6 +375,17 @@ CA
                                 </connections>
                             </menuItem>
                             <menuItem isSeparatorItem="YES" id="qYd-6T-XvV"/>
+                            <menuItem title="Jump to Next Issue" tag="1" keyEquivalent="'" id="7s3-uG-LWo">
+                                <connections>
+                                    <action selector="jumpToIssue:" target="-1" id="0Ql-DF-4Yw"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Jump to Previous Issue" tag="-1" keyEquivalent="&quot;" id="qEF-oa-KMu">
+                                <connections>
+                                    <action selector="jumpToIssue:" target="-1" id="hlw-Mu-L20"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem isSeparatorItem="YES" id="qtx-oJ-5yi"/>
                             <menuItem title="Show Toolbar" keyEquivalent="t" id="snW-S8-Cw5">
                                 <modifierMask key="keyEquivalentModifierMask" option="YES" command="YES"/>
                                 <connections>

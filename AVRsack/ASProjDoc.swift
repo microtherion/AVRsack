@@ -28,6 +28,8 @@ func pushToFront(inout list: [String], front: String) {
 
 class ASProjDoc: NSDocument, NSOutlineViewDelegate, NSMenuDelegate, NSOpenSavePanelDelegate, ACEViewDelegate {
     @IBOutlet weak var editor   : ACEView!
+    @IBOutlet weak var auxEdit  : ACEView!
+    @IBOutlet weak var editors  : NSStackView!
     @IBOutlet weak var outline  : NSOutlineView!
     @IBOutlet weak var boardTool: NSPopUpButton!
     @IBOutlet weak var progTool : NSPopUpButton!
@@ -53,6 +55,8 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate, NSMenuDelegate, NSOpenSavePa
     var printModDate            : NSDate?
     var printRevision           : String?
     var printShowPanel          = false
+    var jumpingToIssue          = false
+    var currentIssueLine        = -1
 
     let kVersionKey             = "Version"
     let kCurVersion             = 1.0
@@ -114,6 +118,13 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate, NSMenuDelegate, NSOpenSavePa
         editor.setKeyboardHandler(keyboardHandler)
         editor.setFontSize(fontSize)
         editor.delegate = self
+
+        auxEdit.setShowPrintMargin(false)
+        auxEdit.setTheme(currentTheme)
+        auxEdit.setKeyboardHandler(keyboardHandler)
+        auxEdit.setFontSize(fontSize)
+
+        editors.setViews([editor], inGravity: .Top)
 
         outline.setDataSource(files)
         files.apply() { node in
@@ -251,8 +262,9 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate, NSMenuDelegate, NSOpenSavePa
                 let newText     = NSString(contentsOfURL:url!, usedEncoding:&enc, error:nil)
                 editor.setString((newText as? String) ?? "")
                 editor.gotoLine(1000000000, column: 0, animated: true)
-                logModified = modified as! NSDate
-                logSize     = size as! Int
+                logModified         = modified as! NSDate
+                logSize             = size as! Int
+                currentIssueLine    = -1
             }
         }
     }
@@ -448,6 +460,9 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate, NSMenuDelegate, NSOpenSavePa
 
     func outlineViewSelectionDidChange(notification: NSNotification) {
         willChangeValueForKey("hasSelection")
+        if !jumpingToIssue {
+            editors.setViews([], inGravity: .Bottom)
+        }
         if outline.numberOfSelectedRows < 2 {
             selectNode(outline.itemAtRow(outline.selectedRow) as! ASFileNode?)
         }
@@ -686,6 +701,64 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate, NSMenuDelegate, NSOpenSavePa
             fontSize -= 1
             editor.setFontSize(fontSize)
             updateChangeCount(.ChangeDone)
+        }
+    }
+
+    // MARK: Issues
+    @IBAction func jumpToIssue(sender: AnyObject) {
+        let direction : Int = (sender as! NSMenuItem).tag
+        if editors.viewsInGravity(.Bottom).count == 0 {
+            editors.addView(auxEdit, inGravity: .Bottom)
+
+            let url = fileURL?.URLByDeletingLastPathComponent?.URLByAppendingPathComponent(files.buildLog.path)
+            if url == nil {
+                return
+            }
+            var enc : UInt = 0
+            auxEdit.setString(NSString(contentsOfURL:url!, usedEncoding:&enc, error:nil) as? String ?? "")
+            editor.setMode(.Text)
+            editor.alphaValue = 1.0
+        }
+        let buildLog = auxEdit.string().componentsSeparatedByString("\n")
+        let issueRe  = NSRegularExpression(pattern: "(\\S+?):(\\d+):.*", options: nil, error: nil)!
+
+        currentIssueLine += direction
+        while currentIssueLine > -1 && currentIssueLine < buildLog.count {
+            let line    = buildLog[currentIssueLine]
+            let range   = NSMakeRange(0, count(line.utf16))
+            if let match = issueRe.firstMatchInString(line, options:.Anchored, range:range) {
+                let file        = match.rangeAtIndex(1)
+                let lineTxt     = match.rangeAtIndex(2)
+                let nsline      = line as NSString
+                let lineNo      = nsline.substringWithRange(lineTxt).toInt()!
+                let fileName    = nsline.substringWithRange(file) as NSString
+                let fileURL : NSURL
+
+                if fileName.hasPrefix("../../") {
+                    fileURL = files.dir.URLByAppendingPathComponent(fileName.substringFromIndex(6))
+                } else {
+                    fileURL = NSURL(fileURLWithPath:fileName as String)!.URLByStandardizingPath!
+                }
+
+                jumpingToIssue = true
+                var resourceID : AnyObject?
+                fileURL.getResourceValue(&resourceID, forKey:NSURLFileResourceIdentifierKey, error:nil)
+                files.apply {(node) in
+                    if let file = node as? ASFileItem {
+                        var thisID : AnyObject?
+                        file.url.getResourceValue(&thisID, forKey:NSURLFileResourceIdentifierKey, error:nil)
+                        if thisID != nil && resourceID!.isEqual(thisID!) {
+                            self.selectNodeInOutline(node)
+                            self.editor.gotoLine(lineNo, column:0, animated:true)
+                        }
+                    }
+                }
+                jumpingToIssue = false
+
+                auxEdit.gotoLine(currentIssueLine+1, column:0, animated: true)
+                break
+            }
+            currentIssueLine += direction
         }
     }
     
