@@ -54,12 +54,7 @@ private let kNodeTypeGroup      = "Group"
 private let kNodeTypeFile       = "File"
 private let kNameKey            = "Name"
 
-//
-// <rdar://problem/19787270> At the moment, Swift crashes at link time with an assertion 
-//      if anything other than a value type or an @objc class is put into a container
-//      exposed to ObjC APIs. As a workaround, we declare this hierarchy @objc
-//
-@objc class ASFileNode {
+class ASFileNode {
     var name        : String
 
     init(name: String) {
@@ -192,7 +187,7 @@ class ASFileItem : ASFileNode {
         if let relativeURL = NSURL(string: prop[kPathKey] as! String, relativeToURL: rootURL) {
             url  = relativeURL.URLByStandardizingPath!
         } else {
-            url = NSURL(fileURLWithPath:(prop[kPathKey] as! String))!.URLByStandardizingPath!
+            url = NSURL(fileURLWithPath:(prop[kPathKey] as! String)).URLByStandardizingPath!
         }
         if !url.checkResourceIsReachableAndReturnError(nil) {
             //
@@ -200,10 +195,11 @@ class ASFileItem : ASFileNode {
             // yet reflected in the project file.
             //
             let urlDir  = url.URLByDeletingLastPathComponent
-            let newName = rootURL.lastPathComponent!.stringByAppendingPathExtension(url.pathExtension!)!
-            let altURL  = urlDir?.URLByAppendingPathComponent(newName)
-            if altURL != nil && altURL!.checkResourceIsReachableAndReturnError(nil) {
-                url = altURL!
+            let newName = rootURL.URLByAppendingPathExtension(url.pathExtension!).lastPathComponent!
+            if let altURL = urlDir?.URLByAppendingPathComponent(newName) {
+                if altURL.checkResourceIsReachableAndReturnError(nil) {
+                    url = altURL
+                }
             }
         }
         super.init(name:url.lastPathComponent!)
@@ -213,7 +209,7 @@ class ASFileItem : ASFileNode {
     }
     
     func relativePath(relativeTo: String) -> String {
-        let path        = url.path!.stringByResolvingSymlinksInPath
+        let path        = (url.path! as NSString).stringByResolvingSymlinksInPath
         let relComp     = relativeTo.componentsSeparatedByString("/") as [String]
         let pathComp    = path.componentsSeparatedByString("/") as [String]
         let relCount    = relComp.count
@@ -232,7 +228,7 @@ class ASFileItem : ASFileNode {
         }
         
         let resComp = Array(count: relCount-matchComp, repeatedValue: "..")+pathComp[matchComp..<pathCount]
-        return "/".join(resComp)
+        return resComp.joinWithSeparator("/")
     }
     override func propertyList(rootPath: String) -> AnyObject {
         return [kTypeKey: kNodeTypeFile, kKindKey: type.rawValue, kPathKey: relativePath(rootPath)]
@@ -245,8 +241,12 @@ class ASFileItem : ASFileNode {
     }
     override func modDate() -> NSDate? {
         var date: AnyObject?
-        url.getResourceValue(&date, forKey: NSURLContentModificationDateKey, error: nil)
-        return date as? NSDate
+        do {
+            try url.getResourceValue(&date, forKey: NSURLContentModificationDateKey)
+            return date as? NSDate
+        } catch _ {
+            return nil
+        }
     }
     override func revision() -> String? {
         let task            = NSTask()
@@ -276,11 +276,11 @@ class ASFileTree : NSObject, NSOutlineViewDataSource {
         }
     }
     func setProjectURL(url: NSURL) {
-        root.name = url.lastPathComponent!.stringByDeletingPathExtension
+        root.name = url.URLByDeletingPathExtension!.lastPathComponent!
         dir       = url.URLByDeletingLastPathComponent!.URLByStandardizingPath!
     }
     func projectPath() -> String {
-        return dir.path!.stringByResolvingSymlinksInPath
+        return (dir.path! as NSString).stringByResolvingSymlinksInPath
     }
     func apply(closure: (ASFileNode) -> ()) {
         root.apply(closure)

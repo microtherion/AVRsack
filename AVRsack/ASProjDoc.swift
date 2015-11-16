@@ -14,7 +14,7 @@ private var keyboardHandler   : ACEKeyboardHandler = .Ace
 func pushToFront(inout list: [String], front: String) {
     let kMaxRecents = 8
     
-    if let existing = find(list, front) {
+    if let existing = list.indexOf(front) {
         if existing == 0 {
             return
         } else {
@@ -48,7 +48,7 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate, NSMenuDelegate, NSOpenSavePa
     dynamic var port            : String = ""
     var recentBoards            = [String]()
     var recentProgrammers       = [String]()
-    var logModified             = NSDate.distantPast() as! NSDate
+    var logModified             = NSDate.distantPast() 
     var logSize                 = 0
     var updateLogTimer          : NSTimer?
     var printingDone            : () -> () = {}
@@ -93,7 +93,7 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate, NSMenuDelegate, NSOpenSavePa
         recentBoards        = userDefaults.objectForKey(kRecentBoardsKey) as! [String]
         recentProgrammers   = userDefaults.objectForKey(kRecentProgrammersKey) as! [String]
         
-        var nc          = NSNotificationCenter.defaultCenter()
+        let nc          = NSNotificationCenter.defaultCenter()
         themeObserver   = nc.addObserverForName(kBindingsKey, object: nil, queue: nil, usingBlock: { (NSNotification) in
             self.editor?.setKeyboardHandler(keyboardHandler)
         })
@@ -155,11 +155,14 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate, NSMenuDelegate, NSOpenSavePa
     
     func saveCurEditor() {
         if let file = (mainEditor as? ASFileItem) {
-            editor.string().writeToURL(file.url, atomically: true, encoding: NSUTF8StringEncoding, error: nil)
+            do {
+                try editor.string().writeToURL(file.url, atomically: true, encoding: NSUTF8StringEncoding)
+            } catch _ {
+            }
         }
     }
     
-    override func dataOfType(typeName: String, error outError: NSErrorPointer) -> NSData? {
+    override func dataOfType(typeName: String) throws -> NSData {
         let data = [kVersionKey: kCurVersion,
             kThemeKey: ACEThemeNames.nameForTheme(currentTheme),
             kFontSizeKey: fontSize,
@@ -170,7 +173,7 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate, NSMenuDelegate, NSOpenSavePa
             kRecentBoardsKey: recentBoards,
             kRecentProgrammersKey: recentProgrammers
         ]
-        return NSPropertyListSerialization.dataWithPropertyList(data, format:.XMLFormat_v1_0, options:0, error:nil)
+        return try NSPropertyListSerialization.dataWithPropertyList(data, format:.XMLFormat_v1_0, options:0)
     }
 
     func updateProjectURL() {
@@ -178,44 +181,40 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate, NSMenuDelegate, NSOpenSavePa
         builder.setProjectURL(fileURL!)
     }
 
-    func importProject(url: NSURL, error outError: NSErrorPointer) -> Bool {
+    func importProject(url: NSURL) throws {
         let existingProject = url.URLByAppendingPathComponent(url.lastPathComponent!+".avrsackproj")
         if existingProject.checkResourceIsReachableAndReturnError(nil) {
             fileURL = existingProject
-            return readFromURL(existingProject, ofType:"Project", error:outError)
+            try readFromURL(existingProject, ofType:"Project")
+            return
         }
         let filesInProject =
-            NSFileManager.defaultManager().contentsOfDirectoryAtURL(url, includingPropertiesForKeys: nil,
-                options: .SkipsHiddenFiles, error: nil) as! [NSURL]
+            (try NSFileManager.defaultManager().contentsOfDirectoryAtURL(url, includingPropertiesForKeys: nil,
+                options: .SkipsHiddenFiles)) 
         updateProjectURL()
         for file in filesInProject {
             files.addFileURL(file)
         }
-        return true
     }
     
-    override func readFromURL(url: NSURL, ofType typeName: String, error outError: NSErrorPointer) -> Bool {
-        var success : Bool = false
+    override func readFromURL(url: NSURL, ofType typeName: String) throws {
         if typeName == "Arduino Source File" {
             let projectURL = url.URLByDeletingPathExtension!.URLByAppendingPathExtension("avrsackproj")
-            success = importProject(url.URLByDeletingLastPathComponent!, error: outError)
-            if success {
-                fileURL = projectURL
-                success = writeToURL(projectURL, ofType: "Project", forSaveOperation: .SaveAsOperation, originalContentsURL: nil, error: outError)
-            }
-        } else {
+            try importProject(url.URLByDeletingLastPathComponent!)
+            fileURL = projectURL
+            try writeToURL(projectURL, ofType: "Project", forSaveOperation: .SaveAsOperation, originalContentsURL: nil)
+         } else {
             fileURL = url
-            success = super.readFromURL(url, ofType: typeName, error: outError)
+            try super.readFromURL(url, ofType: typeName)
         }
-        return success
     }
-    override func readFromData(data: NSData, ofType typeName: String, error outError: NSErrorPointer) -> Bool {
+    override func readFromData(data: NSData, ofType typeName: String) throws {
         if typeName != ("Project" as String) {
-            return false
+            throw NSError(domain: "AVRSack", code: 0, userInfo: nil)
         }
         updateProjectURL()
         let projectData =
-            NSPropertyListSerialization.propertyListWithData(data, options:0, format:nil, error:nil) as! NSDictionary
+            (try NSPropertyListSerialization.propertyListWithData(data, options:[], format:nil)) as! NSDictionary
         let projectVersion = projectData[kVersionKey] as! Double
         assert(projectVersion <= floor(kCurVersion+1.0), "Project version too new for this app")
         if let themeName = projectData[kThemeKey] as? String {
@@ -233,8 +232,6 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate, NSMenuDelegate, NSOpenSavePa
         recentBoards        = (projectData[kRecentBoardsKey] as? [String]) ?? recentBoards
         recentProgrammers   = (projectData[kRecentProgrammersKey] as? [String]) ?? recentProgrammers
         updateChangeCount(.ChangeCleared)
-        
-        return true
     }
 
     override func duplicateDocument(sender: AnyObject?) {
@@ -242,7 +239,7 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate, NSMenuDelegate, NSOpenSavePa
         app.openTemplate(fileURL!.URLByDeletingLastPathComponent!)
     }
 
-    func updateLog(AnyObject?) {
+    func updateLog(_: AnyObject?) {
         if let logNode = mainEditor as? ASLogNode {
             let url = fileURL?.URLByDeletingLastPathComponent?.URLByAppendingPathComponent(logNode.path)
             if url == nil {
@@ -250,16 +247,16 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate, NSMenuDelegate, NSOpenSavePa
             }
             var modified : AnyObject?
             var size     : AnyObject?
-            if (!url!.getResourceValue(&modified, forKey:NSURLAttributeModificationDateKey, error:nil)) {
+            do {
+                try url!.getResourceValue(&modified, forKey:NSURLAttributeModificationDateKey)
+                try url!.getResourceValue(&size, forKey:NSURLFileSizeKey)
+            } catch (_) {
                 return
             }
-            if (!url!.getResourceValue(&size, forKey:NSURLFileSizeKey, error:nil)) {
-                return
-            }
-            
+
             if (modified as! NSDate).compare(logModified) == .OrderedDescending || (size as! Int) != logSize {
                 var enc : UInt  = 0
-                let newText     = NSString(contentsOfURL:url!, usedEncoding:&enc, error:nil)
+                let newText     = try? NSString(contentsOfURL:url!, usedEncoding:&enc)
                 editor.setString((newText as? String) ?? "")
                 editor.gotoLine(1000000000, column: 0, animated: true)
                 logModified         = modified as! NSDate
@@ -274,15 +271,16 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate, NSMenuDelegate, NSOpenSavePa
         }
         if let file = (selection as? ASFileItem) {
             var enc : UInt = 0
-            editor.setString(NSString(contentsOfURL:file.url, usedEncoding:&enc, error:nil) as? String ?? "")
+            let contents = try? NSString(contentsOfURL:file.url, usedEncoding:&enc)
+            editor.setString(contents as? String ?? "")
             editor.setMode(file.type.aceMode)
             editor.alphaValue = 1.0
             mainEditor = selection
-        } else if let log = (selection as? ASLogNode) {
+        } else if selection is ASLogNode {
             editor.setString("")
             editor.setMode(.Text)
             editor.alphaValue = 0.8
-            logModified = NSDate.distantPast() as! NSDate
+            logModified = NSDate.distantPast() 
             logSize     = -1
             mainEditor  = selection
             updateLog(nil)
@@ -306,18 +304,20 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate, NSMenuDelegate, NSOpenSavePa
 
     // MARK: Printing
 
-    override func printDocumentWithSettings(printSettings: [NSObject : AnyObject], showPrintPanel: Bool, delegate: AnyObject?, didPrintSelector: Selector, contextInfo: UnsafeMutablePointer<Void>) {
+    override func printDocumentWithSettings(printSettings: [String : AnyObject], showPrintPanel: Bool, delegate: AnyObject?, didPrintSelector: Selector, contextInfo: UnsafeMutablePointer<Void>) {
         printingDone =
             { () -> () in
                 InvokeCallback(delegate, didPrintSelector, contextInfo);
             }
         if let logNode = mainEditor as? ASLogNode {
-            let url = fileURL!.URLByDeletingLastPathComponent?.URLByAppendingPathComponent(logNode.path)
-            var modified : AnyObject?
-            if url?.getResourceValue(&modified, forKey:NSURLAttributeModificationDateKey, error:nil) != nil {
-                printModDate = modified as? NSDate
-            } else {
-                printModDate = nil
+            printModDate = nil
+            if let url = fileURL?.URLByDeletingLastPathComponent?.URLByAppendingPathComponent(logNode.path) {
+                do {
+                    var modified : AnyObject?
+                    try url.getResourceValue(&modified, forKey:NSURLAttributeModificationDateKey)
+                    printModDate = modified as? NSDate
+                } catch (_) {
+                }
             }
         } else {
             printModDate    = mainEditor?.modDate()
@@ -329,7 +329,7 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate, NSMenuDelegate, NSOpenSavePa
     }
 
     func printInformation() -> NSPrintInfo! {
-        var info = printInfo.copy() as! NSPrintInfo
+        let info = printInfo.copy() as! NSPrintInfo
 
         //
         // Minimize margins
@@ -358,9 +358,13 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate, NSMenuDelegate, NSOpenSavePa
     }
 
     func startPrintOperation(printOp: NSPrintOperation) {
-        printOp.jobTitle = mainEditor?.name ??
-            fileURL?.lastPathComponent?.stringByDeletingPathExtension ??
-            "Untitled"
+        if let editorName = mainEditor?.name {
+            printOp.jobTitle = editorName
+        } else if let fileName = fileURL?.lastPathComponent {
+            printOp.jobTitle = (fileName as NSString).stringByDeletingLastPathComponent
+        } else {
+            printOp.jobTitle = "Untitled"
+        }
         printOp.showsPrintPanel = printShowPanel
     }
 
@@ -414,10 +418,11 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate, NSMenuDelegate, NSOpenSavePa
         if let fileNameStr = mainEditor?.name {
             fileNameStr.drawAtPoint(titleAt, withAttributes:titleAttr)
         }
-        if let projectNameStr = fileURL?.lastPathComponent?.stringByDeletingPathExtension {
-            let projectNameSize = projectNameStr.sizeWithAttributes(titleAttr)
+        if let projectNameStr = fileURL?.lastPathComponent {
+            let projectNameTrimmed = (projectNameStr as NSString).stringByDeletingPathExtension
+            let projectNameSize = projectNameTrimmed.sizeWithAttributes(titleAttr)
             titleAt.x = wideBox.origin.x+wideBox.size.width-projectNameSize.width-kXOffset
-            projectNameStr.drawAtPoint(titleAt, withAttributes:titleAttr)
+            projectNameTrimmed.drawAtPoint(titleAt, withAttributes:titleAttr)
         }
     }
 
@@ -494,7 +499,7 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate, NSMenuDelegate, NSOpenSavePa
 
     // MARK: File manipulation
 
-    @IBAction func delete(AnyObject) {
+    @IBAction func delete(_: AnyObject) {
         let selection  = selectedFiles()
         var name       : String
         var ref        : String
@@ -511,8 +516,8 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate, NSMenuDelegate, NSOpenSavePa
         alert.addButtonWithTitle("Move to Trash")
         alert.addButtonWithTitle(selection.count == 1 ? "Remove Reference" : "Remove References")
         alert.addButtonWithTitle("Cancel")
-        (alert.buttons[0] as! NSButton).keyEquivalent = ""
-        (alert.buttons[1] as! NSButton).keyEquivalent = "\r"
+        alert.buttons[0].keyEquivalent = ""
+        alert.buttons[1].keyEquivalent = "\r"
         alert.beginSheetModalForWindow(outline.window!) { (response) in
             if response != NSAlertThirdButtonReturn {
                 if response == NSAlertFirstButtonReturn {
@@ -521,7 +526,7 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate, NSMenuDelegate, NSOpenSavePa
                 self.files.apply { (node) in
                     if let group = node as? ASFileGroup {
                         for file in selection {
-                            for (groupIdx, groupItem) in enumerate(group.children) {
+                            for (groupIdx, groupItem) in group.children.enumerate() {
                                 if file as ASFileNode === groupItem {
                                     group.children.removeAtIndex(groupIdx)
                                     break
@@ -537,7 +542,7 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate, NSMenuDelegate, NSOpenSavePa
         }
     }
 
-    @IBAction func add(AnyObject) {
+    @IBAction func add(_: AnyObject) {
         let panel = NSOpenPanel()
         panel.canChooseFiles            = true
         panel.canChooseDirectories      = false
@@ -546,7 +551,7 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate, NSMenuDelegate, NSOpenSavePa
         panel.delegate                  = self
         panel.beginSheetModalForWindow(outline.window!, completionHandler: { (returnCode: Int) -> Void in
             if returnCode == NSFileHandlingPanelOKButton {
-                for url in panel.URLs as! [NSURL] {
+                for url in panel.URLs {
                     self.files.addFileURL(url)
                 }
                 self.outline.deselectAll(self)
@@ -560,13 +565,16 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate, NSMenuDelegate, NSOpenSavePa
     func panel(panel:AnyObject, shouldEnableURL url:NSURL) -> Bool {
         var shouldEnable = true
         var resourceID   : AnyObject?
-        url.getResourceValue(&resourceID, forKey:NSURLFileResourceIdentifierKey, error:nil)
+        guard ((try? url.getResourceValue(&resourceID, forKey:NSURLFileResourceIdentifierKey)) != nil) else {
+            return true;
+        }
         files.apply {(node) in
             if let file = node as? ASFileItem {
                 var thisID : AnyObject?
-                file.url.getResourceValue(&thisID, forKey:NSURLFileResourceIdentifierKey, error:nil)
-                if thisID != nil && resourceID!.isEqual(thisID!) {
-                    shouldEnable = false
+                if (try? file.url.getResourceValue(&thisID, forKey:NSURLFileResourceIdentifierKey)) != nil {
+                    if thisID != nil && resourceID!.isEqual(thisID!) {
+                        shouldEnable = false
+                    }
                 }
             }
         }
@@ -614,15 +622,18 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate, NSMenuDelegate, NSOpenSavePa
                 prefix + " Created: " + dateFmt.stringFromDate(NSDate()) + "\n" +
                 lastPfx + "\n\n"
         }
-        header.writeToURL(url, atomically: true, encoding: NSUTF8StringEncoding, error: nil)
+        do {
+            try header.writeToURL(url, atomically: true, encoding: NSUTF8StringEncoding)
+        } catch _ {
+        }
         files.addFileURL(url)
         outline.reloadData()
     }
 
-    @IBAction func createFile(AnyObject) {
+    @IBAction func createFile(_: AnyObject) {
         let savePanel                       = NSSavePanel()
         savePanel.allowedFileTypes          =
-            [kUTTypeCSource, kUTTypeCHeader, kUTTypeCPlusPlusSource, kUTTypeCSource,
+            [kUTTypeCSource as String, kUTTypeCHeader as String, kUTTypeCPlusPlusSource as String, kUTTypeAssemblyLanguageSource as String,
              "public.assembly-source", "net.daringfireball.markdown"]
         savePanel.beginSheetModalForWindow(outline.window!, completionHandler: { (returnCode) -> Void in
             if returnCode == NSFileHandlingPanelOKButton {
@@ -634,14 +645,16 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate, NSMenuDelegate, NSOpenSavePa
     func importLibrary(lib: String) {
         var includes    = ""
         let fileManager = NSFileManager.defaultManager()
-        for file in fileManager.contentsOfDirectoryAtPath(lib, error: nil) as! [String] {
-            if file.hasSuffix(".h") {
-                includes += "#include <\(file)>\n"
+        if let files = try? fileManager.contentsOfDirectoryAtPath(lib) {
+            for file in files {
+                if file.hasSuffix(".h") {
+                    includes += "#include <\(file)>\n"
+                }
             }
         }
-        var text    = editor.string() as NSString
+        let text    = editor.string() as NSString
         var insert  = NSMakeRange(text.length, 0)
-        let postHeaderComments = NSRegularExpression(pattern: "((?:\\s+|/\\*.*?\\*/|//.*?\\n)*)(.*?\\n)", options: .DotMatchesLineSeparators, error: nil)!
+        let postHeaderComments = try! NSRegularExpression(pattern: "((?:\\s+|/\\*.*?\\*/|//.*?\\n)*)(.*?\\n)", options: .DotMatchesLineSeparators)
         if let match = postHeaderComments.firstMatchInString(text as String, options:.Anchored, range:NSMakeRange(0, text.length)) {
             let range       = match.rangeAtIndex(2)
             insert.location = range.location
@@ -691,12 +704,12 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate, NSMenuDelegate, NSOpenSavePa
         return super.validateUserInterfaceItem(anItem)
     }
     
-    @IBAction func makeTextLarger(AnyObject) {
+    @IBAction func makeTextLarger(_: AnyObject) {
         fontSize += 1
         editor.setFontSize(fontSize)
         updateChangeCount(.ChangeDone)
     }
-    @IBAction func makeTextSmaller(AnyObject) {
+    @IBAction func makeTextSmaller(_: AnyObject) {
         if fontSize > 6 {
             fontSize -= 1
             editor.setFontSize(fontSize)
@@ -715,41 +728,44 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate, NSMenuDelegate, NSOpenSavePa
                 return
             }
             var enc : UInt = 0
-            auxEdit.setString(NSString(contentsOfURL:url!, usedEncoding:&enc, error:nil) as? String ?? "")
+            let contents = try? NSString(contentsOfURL:url!, usedEncoding:&enc)
+            auxEdit.setString(contents as? String ?? "")
             editor.setMode(.Text)
             editor.alphaValue = 1.0
         }
         let buildLog = auxEdit.string().componentsSeparatedByString("\n")
-        let issueRe  = NSRegularExpression(pattern: "(\\S+?):(\\d+):.*", options: nil, error: nil)!
+        let issueRe  = try! NSRegularExpression(pattern: "(\\S+?):(\\d+):.*", options: [])
 
         currentIssueLine += direction
         while currentIssueLine > -1 && currentIssueLine < buildLog.count {
             let line    = buildLog[currentIssueLine]
-            let range   = NSMakeRange(0, count(line.utf16))
+            let range   = NSMakeRange(0, line.utf16.count)
             if let match = issueRe.firstMatchInString(line, options:.Anchored, range:range) {
                 let file        = match.rangeAtIndex(1)
                 let lineTxt     = match.rangeAtIndex(2)
                 let nsline      = line as NSString
-                let lineNo      = nsline.substringWithRange(lineTxt).toInt()!
+                let lineNo      = Int(nsline.substringWithRange(lineTxt))!
                 let fileName    = nsline.substringWithRange(file) as NSString
                 let fileURL : NSURL
 
                 if fileName.hasPrefix("../../") {
                     fileURL = files.dir.URLByAppendingPathComponent(fileName.substringFromIndex(6))
                 } else {
-                    fileURL = NSURL(fileURLWithPath:fileName as String)!.URLByStandardizingPath!
+                    fileURL = NSURL(fileURLWithPath:fileName as String).URLByStandardizingPath!
                 }
 
                 jumpingToIssue = true
                 var resourceID : AnyObject?
-                fileURL.getResourceValue(&resourceID, forKey:NSURLFileResourceIdentifierKey, error:nil)
-                files.apply {(node) in
-                    if let file = node as? ASFileItem {
-                        var thisID : AnyObject?
-                        file.url.getResourceValue(&thisID, forKey:NSURLFileResourceIdentifierKey, error:nil)
-                        if thisID != nil && resourceID!.isEqual(thisID!) {
-                            self.selectNodeInOutline(node)
-                            self.editor.gotoLine(lineNo, column:0, animated:true)
+                if (try? fileURL.getResourceValue(&resourceID, forKey:NSURLFileResourceIdentifierKey)) != nil && resourceID != nil {
+                    files.apply {(node) in
+                        if let file = node as? ASFileItem {
+                            var thisID : AnyObject?
+                            if (try? file.url.getResourceValue(&thisID, forKey:NSURLFileResourceIdentifierKey)) != nil {
+                                if thisID != nil && resourceID!.isEqual(thisID!) {
+                                    self.selectNodeInOutline(node)
+                                    self.editor.gotoLine(lineNo, column:0, animated:true)
+                                }
+                            }
                         }
                     }
                 }
@@ -764,12 +780,12 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate, NSMenuDelegate, NSOpenSavePa
     
     // MARK: Build / Upload
     
-    @IBAction func buildProject(AnyObject) {
+    @IBAction func buildProject(_: AnyObject) {
         selectNodeInOutline(files.buildLog)
         builder.buildProject(board, files: files)
     }
     
-    @IBAction func cleanProject(AnyObject) {
+    @IBAction func cleanProject(_: AnyObject) {
         builder.cleanProject()
         selectNodeInOutline(files.buildLog)
     }
@@ -808,11 +824,11 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate, NSMenuDelegate, NSOpenSavePa
                 if prop["name"] == newBoard {
                     board = ident
 
-                    pushToFront(&recentBoards, board)
+                    pushToFront(&recentBoards, front: board)
                     
                     let userDefaults = NSUserDefaults.standardUserDefaults()
                     var globalBoards = userDefaults.objectForKey(kRecentBoardsKey) as! [String]
-                    pushToFront(&globalBoards, board)
+                    pushToFront(&globalBoards, front: board)
                     userDefaults.setObject(globalBoards, forKey: kRecentBoardsKey)
 
                     updateChangeCount(.ChangeDone)
@@ -838,11 +854,11 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate, NSMenuDelegate, NSOpenSavePa
                 if prop["name"] == newProg {
                     programmer = ident
                     
-                    pushToFront(&recentProgrammers, programmer)
+                    pushToFront(&recentProgrammers, front: programmer)
                     
                     let userDefaults = NSUserDefaults.standardUserDefaults()
                     var globalProgs = userDefaults.objectForKey(kRecentProgrammersKey) as! [String]
-                    pushToFront(&globalProgs, programmer)
+                    pushToFront(&globalProgs, front: programmer)
                     userDefaults.setObject(globalProgs, forKey: kRecentProgrammersKey)
                     
                     updateChangeCount(.ChangeDone)
@@ -879,7 +895,7 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate, NSMenuDelegate, NSOpenSavePa
     
     var hasValidPort : Bool {
         get {
-            return contains(ASSerial.ports() as! [String], port)
+            return ASSerial.ports().contains(port)
         }
     }
     class func keyPathsForValuesAffectingHasValidPort() -> NSSet {

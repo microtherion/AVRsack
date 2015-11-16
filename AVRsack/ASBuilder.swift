@@ -17,7 +17,7 @@ class ASBuilder {
     init() {
         termination = NSNotificationCenter.defaultCenter().addObserverForName(NSTaskDidTerminateNotification,
             object: nil, queue: nil, usingBlock:
-        { (notification: NSNotification!) in
+        { (notification: NSNotification) in
             if notification.object as? NSTask == self.task {
                 if self.task!.terminationStatus == 0 {
                     if let cont = self.continuation {
@@ -44,7 +44,10 @@ class ASBuilder {
     }
     
     func cleanProject() {
-        NSFileManager.defaultManager().removeItemAtURL(dir.URLByAppendingPathComponent("build"), error: nil)
+        do {
+            try NSFileManager.defaultManager().removeItemAtURL(dir.URLByAppendingPathComponent("build"))
+        } catch _ {
+        }
     }
     
     func buildProject(board: String, files: ASFileTree) {
@@ -62,7 +65,7 @@ class ASBuilder {
         }
         let boardProp   = ASHardware.instance().boards[board]!
         let library     = boardProp["library"]!
-        var corePath    = library+"/cores/"+boardProp["build.core"]!
+        let corePath    = library+"/cores/"+boardProp["build.core"]!
         var variantPath : String?
         if fileManager.fileExistsAtPath(corePath) {
             if let variantName = boardProp["build.variant"] {
@@ -186,7 +189,7 @@ class ASBuilder {
                 task2.standardOutput       = logOut
                 task2.standardError        = logOut
                 continuation                = {
-                    let cmdLine = task2.launchPath+" "+(loaderArgs as NSArray).componentsJoinedByString(" ")+"\n"
+                    let cmdLine = task2.launchPath!+" "+(loaderArgs as NSArray).componentsJoinedByString(" ")+"\n"
                     logOut.writeData(cmdLine.dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: true)!)
                     task2.launch()
                     self.continuation = {
@@ -226,12 +229,12 @@ class ASBuilder {
                 }
             }
         }
-        let cmdLine = task!.launchPath+" "+(args as NSArray).componentsJoinedByString(" ")+"\n"
+        let cmdLine = task!.launchPath!+" "+(args as NSArray).componentsJoinedByString(" ")+"\n"
         logOut.writeData(cmdLine.dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: true)!)
         task!.arguments         =   args;
         task!.launch()
         if interactive {
-            let intSpeed = speed?.toInt() ?? 19200
+            let intSpeed = (speed != nil) ? Int(speed!) ?? 19200 : 19200
             ASSerialWin.showWindowWithPort(port, task:task!, speed:intSpeed)
             task = nil
         }
@@ -253,7 +256,7 @@ class ASBuilder {
         let showSource  = NSUserDefaults.standardUserDefaults().boolForKey("ShowSourceInDisassembly")
         var args        = showSource ? ["-S"] : []
         args           += ["-d", "build/"+board+"/"+dir.lastPathComponent!+".elf"]
-        let cmdLine     = task!.launchPath+" "+(args as NSArray).componentsJoinedByString(" ")+"\n"
+        let cmdLine     = task!.launchPath!+" "+(args as NSArray).componentsJoinedByString(" ")+"\n"
         logOut.writeData(cmdLine.dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: true)!)
         task!.arguments         =   args;
         task!.launch()

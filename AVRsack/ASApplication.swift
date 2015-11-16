@@ -18,11 +18,7 @@ class ASApplication: NSObject, NSApplicationDelegate, NSMenuDelegate {
     var examples = [String]()
 
     func hasDocument() -> Bool {
-        if let doc = NSDocumentController.sharedDocumentController().currentDocument as? NSDocument {
-            return true
-        } else {
-            return false
-        }
+        return NSDocumentController.sharedDocumentController().currentDocument != nil
     }
 
     func applicationWillFinishLaunching(notification: NSNotification) {
@@ -56,12 +52,12 @@ class ASApplication: NSObject, NSApplicationDelegate, NSMenuDelegate {
     }
     func applicationDidFinishLaunching(aNotification: NSNotification) {
         themeMenu.removeAllItems()
-        for (index, theme) in enumerate(ACEThemeNames.humanThemeNames() as! [String]) {
+        for (index, theme) in (ACEThemeNames.humanThemeNames() as! [String]).enumerate() {
             let menuItem = themeMenu.addItemWithTitle(theme, action: "changeTheme:", keyEquivalent: "")!
             menuItem.tag = index
         }
         keyboardMenu.removeAllItems()
-        for (index, theme) in enumerate(ACEKeyboardHandlerNames.humanKeyboardHandlerNames() as! [String]) {
+        for (index, theme) in (ACEKeyboardHandlerNames.humanKeyboardHandlerNames() as! [String]).enumerate() {
             let menuItem = keyboardMenu.addItemWithTitle(theme, action: "changeKeyboardHandler:", keyEquivalent: "")!
             menuItem.tag = index
         }
@@ -85,8 +81,8 @@ class ASApplication: NSObject, NSApplicationDelegate, NSMenuDelegate {
         case "Examples":
             menu.removeAllItems()
             examples = [String]()
-            if let arduinoPath = NSWorkspace.sharedWorkspace().URLForApplicationWithBundleIdentifier("cc.arduino.Arduino")?.path {
-                let examplePath = arduinoPath.stringByAppendingPathComponent("Contents/Resources/Java/examples")
+            if let arduinoURL = NSWorkspace.sharedWorkspace().URLForApplicationWithBundleIdentifier("cc.arduino.Arduino") {
+                let examplePath = arduinoURL.URLByAppendingPathComponent("Contents/Resources/Java/examples", isDirectory:true).path!
                 ASSketchBook.addSketches(menu, target: self, action: "openExample:", path: examplePath, sketches: &examples)
             }
         case "Import Standard Library":
@@ -100,7 +96,7 @@ class ASApplication: NSObject, NSApplicationDelegate, NSMenuDelegate {
             while menu.numberOfItems > 2 {
                 menu.removeItemAtIndex(2)
             }
-            for port in ASSerial.ports() as! [String] {
+            for port in ASSerial.ports() {
                 menu.addItemWithTitle(port, action:"serialConnectMenu:", keyEquivalent:"")
             }
         default:
@@ -119,28 +115,26 @@ class ASApplication: NSObject, NSApplicationDelegate, NSMenuDelegate {
             let oldName     = template.lastPathComponent!
             let newName     = saveTo.lastPathComponent!
             let fileManager = NSFileManager.defaultManager()
-            fileManager.copyItemAtURL(template, toURL: saveTo, error: nil)
-            let contents = fileManager.enumeratorAtURL(saveTo,
-                includingPropertiesForKeys: [NSURLNameKey, NSURLPathKey],
-                options: .SkipsHiddenFiles, errorHandler: nil)
-            while let item = contents?.nextObject() as? NSURL {
-                var renameItem = false
-                var itemName   = item.lastPathComponent!
-                if itemName.stringByDeletingPathExtension == oldName {
-                    renameItem = true
-                    itemName   = newName.stringByAppendingPathExtension(itemName.pathExtension)!
+            do {
+                try fileManager.copyItemAtURL(template, toURL: saveTo)
+                let contents = fileManager.enumeratorAtURL(saveTo,
+                    includingPropertiesForKeys: [NSURLNameKey, NSURLPathKey],
+                    options: .SkipsHiddenFiles, errorHandler: nil)
+                while let item = contents?.nextObject() as? NSURL {
+                    let itemBase   = item.URLByDeletingPathExtension?.lastPathComponent!
+                    if itemBase == oldName {
+                        let newItem = item.URLByDeletingLastPathComponent!.URLByAppendingPathComponent(
+                            newName).URLByAppendingPathExtension(item.pathExtension!)
+                        try fileManager.moveItemAtURL(item, toURL: newItem)
+                    }
                 }
-                if renameItem {
-                    fileManager.moveItemAtURL(item,
-                        toURL: item.URLByDeletingLastPathComponent!.URLByAppendingPathComponent(itemName),
-                        error: nil)
-                }
+            } catch (_) {
             }
             let sketch = ASSketchBook.findSketch(saveTo.path!)
             switch sketch {
             case .Sketch(_, let path):
-                let doc = NSDocumentController.sharedDocumentController() as! NSDocumentController
-                doc.openDocumentWithContentsOfURL(NSURL(fileURLWithPath: path)!, display: true) { (doc, alreadyOpen, error) -> Void in
+                let doc = NSDocumentController.sharedDocumentController() 
+                doc.openDocumentWithContentsOfURL(NSURL(fileURLWithPath: path), display: true) { (doc, alreadyOpen, error) -> Void in
                 }
             default:
                 break
@@ -149,39 +143,40 @@ class ASApplication: NSObject, NSApplicationDelegate, NSMenuDelegate {
     }
     
     @IBAction func openSketch(item: NSMenuItem) {
-        if let url = NSURL(fileURLWithPath: sketches[item.tag]) {
-            let doc = NSDocumentController.sharedDocumentController() as! NSDocumentController
-            doc.openDocumentWithContentsOfURL(url, display: true) { (doc, alreadyOpen, error) -> Void in
-            }
+        let url = NSURL(fileURLWithPath: sketches[item.tag])
+        let doc = NSDocumentController.sharedDocumentController()
+        doc.openDocumentWithContentsOfURL(url, display: true) { (doc, alreadyOpen, error) -> Void in
         }
     }
     
     @IBAction func openExample(item: NSMenuItem) {
-        if let url = NSURL(fileURLWithPath: examples[item.tag]) {
-            openTemplate(url.URLByDeletingLastPathComponent!)
-        }
+        let url = NSURL(fileURLWithPath: examples[item.tag])
+        openTemplate(url.URLByDeletingLastPathComponent!)
     }
 
-    @IBAction func createSketch(AnyObject) {
+    @IBAction func createSketch(_: AnyObject) {
         ASApplication.newProjectLocation(nil,
             message: "Create Project")
         { (saveTo) -> Void in
             let fileManager = NSFileManager.defaultManager()
-            fileManager.createDirectoryAtURL(saveTo, withIntermediateDirectories:false, attributes:nil, error:nil)
-            let proj            = saveTo.URLByAppendingPathComponent(saveTo.lastPathComponent!+".avrsackproj")
-            let docController   = NSDocumentController.sharedDocumentController() as! NSDocumentController
-            if let doc = docController.openUntitledDocumentAndDisplay(true, error:nil) as? ASProjDoc {
-                doc.fileURL = proj
-                doc.updateProjectURL()
-                doc.createFileAtURL(saveTo.URLByAppendingPathComponent(saveTo.lastPathComponent!+".ino"))
-                doc.writeToURL(proj, ofType: "Project", forSaveOperation: .SaveAsOperation, originalContentsURL: nil, error: nil)
+            do {
+                try fileManager.createDirectoryAtURL(saveTo, withIntermediateDirectories:false, attributes:nil)
+                let proj            = saveTo.URLByAppendingPathComponent(saveTo.lastPathComponent!+".avrsackproj")
+                let docController   = NSDocumentController.sharedDocumentController()
+                if let doc = try docController.openUntitledDocumentAndDisplay(true) as? ASProjDoc {
+                    doc.fileURL = proj
+                    doc.updateProjectURL()
+                    doc.createFileAtURL(saveTo.URLByAppendingPathComponent(saveTo.lastPathComponent!+".ino"))
+                    try doc.writeToURL(proj, ofType: "Project", forSaveOperation: .SaveAsOperation, originalContentsURL: nil)
+                }
+            } catch _ {
             }
         }
     }
     
     class func newProjectLocation(documentWindow: NSWindow?, message: String, completion: (NSURL) -> ()) {
         let savePanel                       = NSSavePanel()
-        savePanel.allowedFileTypes          = [kUTTypeFolder]
+        savePanel.allowedFileTypes          = [kUTTypeFolder as String]
         savePanel.message                   = message
         if let window = documentWindow {
             savePanel.beginSheetModalForWindow(window, completionHandler: { (returnCode) -> Void in

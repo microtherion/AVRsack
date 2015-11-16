@@ -42,7 +42,7 @@ NSString * kASSerialPortsChanged = @"PortsChanged";
     dispatch_resume(watchSlashDev);
 }
 
-+ (NSArray *)ports {
++ (NSArray<NSString *> *)ports {
     NSMutableArray * cuPorts = [NSMutableArray array];
     for (NSString * port in [[NSFileManager defaultManager] contentsOfDirectoryAtPath:@"/dev" error: nil]) {
         if ([[port substringToIndex:2] isEqualToString:@"cu"])

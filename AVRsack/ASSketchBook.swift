@@ -18,13 +18,14 @@ class ASSketchBook {
     class func findSketch(path: String) -> SketchBookItem {
         let fileManager = NSFileManager.defaultManager()
         var inoSketch   = SketchBookItem.Nothing
-        let contents    = fileManager.contentsOfDirectoryAtPath(path, error: nil) as! [String]
+        let contents    = (try! fileManager.contentsOfDirectoryAtPath(path))
+        let nspath      = path as NSString
         for item in contents {
-            switch item.pathExtension {
+            switch (item as NSString).pathExtension {
             case "avrsackproj":
-                return .Sketch(path.lastPathComponent, path.stringByAppendingPathComponent(item))
+                return .Sketch(nspath.lastPathComponent, nspath.stringByAppendingPathComponent(item))
             case "ino":
-                inoSketch = .Sketch(path.lastPathComponent, path.stringByAppendingPathComponent(item))
+                inoSketch = .Sketch(nspath.lastPathComponent, nspath.stringByAppendingPathComponent(item))
             default:
                 break
             }
@@ -34,7 +35,8 @@ class ASSketchBook {
     
     private class func enumerateSketches(path: String) -> SketchBookItem {
         let fileManager = NSFileManager.defaultManager()
-        let contents    = fileManager.contentsOfDirectoryAtPath(path, error: nil) as! [String]
+        let contents    = (try! fileManager.contentsOfDirectoryAtPath(path)) 
+        let nspath      = path as NSString
         let sketch = findSketch(path)
         switch sketch {
         case .Sketch:
@@ -44,7 +46,7 @@ class ASSketchBook {
         }
         var sketches = [SketchBookItem]()
         for item in contents {
-            let subpath = path.stringByAppendingPathComponent(item)
+            let subpath = nspath.stringByAppendingPathComponent(item)
             var isDir   : ObjCBool = false
             if fileManager.fileExistsAtPath(subpath, isDirectory: &isDir) && isDir {
                 let subEnum = enumerateSketches(subpath)
@@ -56,7 +58,7 @@ class ASSketchBook {
                 }
             }
         }
-        sketches.sort({ (a: SketchBookItem, b: SketchBookItem) -> Bool in
+        sketches.sortInPlace({ (a: SketchBookItem, b: SketchBookItem) -> Bool in
             var itemA : String = ""
             switch a {
             case .Sketch(let item, _):
@@ -75,7 +77,7 @@ class ASSketchBook {
                 return itemA < ""
             }
         })
-        return sketches.count > 0 ? .SketchDir(path.lastPathComponent, sketches) : .Nothing
+        return sketches.count > 0 ? .SketchDir(nspath.lastPathComponent, sketches) : .Nothing
     }
     
     class func appendSketchesToMenu(menu: NSMenu, target: AnyObject, action: Selector, sketchList: [SketchBookItem], inout sketches: [String]) {
@@ -100,7 +102,7 @@ class ASSketchBook {
     
     class func addSketches(menu: NSMenu, target: AnyObject, action: Selector, path: String, inout sketches: [String]) {
         switch enumerateSketches(path) {
-        case .SketchDir(let item, let sketchList):
+        case .SketchDir(_, let sketchList):
             appendSketchesToMenu(menu, target: target, action: action, sketchList: sketchList, sketches: &sketches)
         default:
             break

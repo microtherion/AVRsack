@@ -103,7 +103,7 @@ class ASSerialWin: NSWindowController {
             }
         }
 
-        var nc          = NSNotificationCenter.defaultCenter()
+        let nc          = NSNotificationCenter.defaultCenter()
         serialObserver  = nc.addObserverForName(kASSerialPortsChanged, object: nil, queue: nil, usingBlock: { (NSNotification) in
             self.willChangeValueForKey("hasValidPort")
             self.didChangeValueForKey("hasValidPort")
@@ -118,7 +118,7 @@ class ASSerialWin: NSWindowController {
         })
         termination = NSNotificationCenter.defaultCenter().addObserverForName(NSTaskDidTerminateNotification,
             object: nil, queue: nil, usingBlock:
-            { (notification: NSNotification!) in
+            { (notification: NSNotification) in
                 if notification.object as? NSTask == self.task {
                     self.task        = nil
                     self.portHandle  = nil
@@ -174,7 +174,7 @@ class ASSerialWin: NSWindowController {
         }
     }
 
-    @IBAction func sendInput(AnyObject) {
+    @IBAction func sendInput(_: AnyObject) {
         let line = inputLine.stringValue + (sendCR ? "\r" : "") + (sendLF ? "\n" : "")
         let data = line.dataUsingEncoding(NSASCIIStringEncoding, allowLossyConversion: true)!
         portHandle?.writeData(data)
@@ -191,7 +191,7 @@ class ASSerialWin: NSWindowController {
         installReader((task.standardOutput as? NSPipe)?.fileHandleForReading)
     }
     
-    @IBAction func connect(AnyObject) {
+    @IBAction func connect(_: AnyObject) {
         shouldReconnect = false
         if task != nil {
             task!.interrupt()
@@ -227,7 +227,7 @@ class ASSerialWin: NSWindowController {
     }
     var hasValidPort : Bool {
         get {
-            return contains(ASSerial.ports() as! [String], port)
+            return ASSerial.ports().contains(port)
         }
     }
 
@@ -262,13 +262,13 @@ class ASSerialWin: NSWindowController {
         return true
     }
     
-    @IBAction func makeTextLarger(AnyObject) {
+    @IBAction func makeTextLarger(_: AnyObject) {
         fontSize += 1
         logView.setFontSize(fontSize)
         portDefaults["FontSize"] = fontSize
         updatePortDefaults()
     }
-    @IBAction func makeTextSmaller(AnyObject) {
+    @IBAction func makeTextSmaller(_: AnyObject) {
         if fontSize > 6 {
             fontSize -= 1
             logView.setFontSize(fontSize)
@@ -285,14 +285,17 @@ class ASSerialWin: NSWindowController {
         userDefaults.setObject(serialDefaults, forKey:"SerialDefaults")
     }
 
-    @IBAction func saveDocument(AnyObject) {
+    @IBAction func saveDocument(_: AnyObject) {
         let savePanel                   = NSSavePanel()
         savePanel.allowedFileTypes      = ["log"]
         savePanel.allowsOtherFileTypes  = true
         savePanel.extensionHidden       = false
         savePanel.beginSheetModalForWindow(window!, completionHandler: { (returnCode) -> Void in
             if returnCode == NSFileHandlingPanelOKButton {
-                self.serialData.writeToURL(savePanel.URL!, atomically:false, encoding:NSUTF8StringEncoding, error:nil)
+                do {
+                    try self.serialData.writeToURL(savePanel.URL!, atomically:false, encoding:NSUTF8StringEncoding)
+                } catch _ {
+                }
             }
         })
     }
