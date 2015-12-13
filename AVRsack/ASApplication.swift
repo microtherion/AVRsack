@@ -52,12 +52,12 @@ class ASApplication: NSObject, NSApplicationDelegate, NSMenuDelegate {
     }
     func applicationDidFinishLaunching(aNotification: NSNotification) {
         themeMenu.removeAllItems()
-        for (index, theme) in (ACEThemeNames.humanThemeNames() as! [String]).enumerate() {
+        for (index, theme) in ACEThemeNames.humanThemeNames().enumerate() {
             let menuItem = themeMenu.addItemWithTitle(theme, action: "changeTheme:", keyEquivalent: "")!
             menuItem.tag = index
         }
         keyboardMenu.removeAllItems()
-        for (index, theme) in (ACEKeyboardHandlerNames.humanKeyboardHandlerNames() as! [String]).enumerate() {
+        for (index, theme) in ACEKeyboardHandlerNames.humanKeyboardHandlerNames().enumerate() {
             let menuItem = keyboardMenu.addItemWithTitle(theme, action: "changeKeyboardHandler:", keyEquivalent: "")!
             menuItem.tag = index
         }
