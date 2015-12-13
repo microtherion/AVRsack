@@ -18,7 +18,6 @@
 		951CD1771A2615000066C1A1 /* BuildProject in Resources */ = {isa = PBXBuildFile; fileRef = 951CD1761A2615000066C1A1 /* BuildProject */; };
 		95388E5D1AB6882600061435 /* FileRevision in Resources */ = {isa = PBXBuildFile; fileRef = 95388E5C1AB6882600061435 /* FileRevision */; };
 		95388E621AB7235000061435 /* ASVestigial.mm in Sources */ = {isa = PBXBuildFile; fileRef = 95388E611AB7235000061435 /* ASVestigial.mm */; };
-		9538E0EC1A8FB215001E02CC /* ACEView.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 95EA325B1A17B8DA00F66EB0 /* ACEView.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		95468DDF1A228BE600668EE2 /* ASHardware.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95468DDE1A228BE600668EE2 /* ASHardware.swift */; };
 		95468DE31A228E1300668EE2 /* Defaults.plist in Resources */ = {isa = PBXBuildFile; fileRef = 95468DE21A228E1300668EE2 /* Defaults.plist */; };
 		9548A7CA1AED51530090FB0B /* ASSerialWin.xib in Resources */ = {isa = PBXBuildFile; fileRef = 9548A7CC1AED51530090FB0B /* ASSerialWin.xib */; };
@@ -27,6 +26,7 @@
 		956005F41A4EF79D00327007 /* ASSerialWin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 956005F21A4EF79D00327007 /* ASSerialWin.swift */; };
 		95A7C6401A38914300EF1963 /* ASPreferences.xib in Resources */ = {isa = PBXBuildFile; fileRef = 95A7C63E1A38914300EF1963 /* ASPreferences.xib */; };
 		95A7C6461A3894C900EF1963 /* ASPreferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95A7C6451A3894C900EF1963 /* ASPreferences.swift */; };
+		95B83FCE1BF9724100B46A87 /* ACEView.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 95B83FC91BF9715D00B46A87 /* ACEView.framework */; };
 		95BF80EB1A185C9E0004A693 /* ASFileTree.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95BF80EA1A185C9E0004A693 /* ASFileTree.swift */; };
 		95CC3F051A6385B8003507AD /* AsmSrcIcon.icns in Resources */ = {isa = PBXBuildFile; fileRef = 95CC3EFF1A6385B8003507AD /* AsmSrcIcon.icns */; };
 		95CC3F061A6385B8003507AD /* CppSrcIcon.icns in Resources */ = {isa = PBXBuildFile; fileRef = 95CC3F001A6385B8003507AD /* CppSrcIcon.icns */; };
@@ -36,7 +36,6 @@
 		95CC3F0A1A6385B8003507AD /* MdSrcIcon.icns in Resources */ = {isa = PBXBuildFile; fileRef = 95CC3F041A6385B8003507AD /* MdSrcIcon.icns */; };
 		95DA9B161A515AF700DE018D /* ACEViewExt.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95DA9B151A515AF700DE018D /* ACEViewExt.swift */; };
 		95DF20671A45A6090013D1B5 /* ASSketchBook.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95DF20661A45A6090013D1B5 /* ASSketchBook.swift */; };
-		95EA32621A17B90600F66EB0 /* ACEView.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 95EA325B1A17B8DA00F66EB0 /* ACEView.framework */; };
 		95EA32651A17BA8C00F66EB0 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 95EA32631A17BA8C00F66EB0 /* Cocoa.framework */; };
 /* End PBXBuildFile section */
 
@@ -48,33 +47,26 @@
 			remoteGlobalIDString = 9501D7FB1A17025C0034C530;
 			remoteInfo = AVRsack;
 		};
-		95EA325A1A17B8DA00F66EB0 /* PBXContainerItemProxy */ = {
+		95B83FC81BF9715D00B46A87 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 95EA32541A17B8DA00F66EB0 /* ACEView.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = 7C8A728C15EA0769007E5EB8;
 			remoteInfo = ACEView;
 		};
-		95EA325C1A17B8DA00F66EB0 /* PBXContainerItemProxy */ = {
+		95B83FCA1BF9715D00B46A87 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 95EA32541A17B8DA00F66EB0 /* ACEView.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = 7C8A72E015EA0F0E007E5EB8;
 			remoteInfo = ACEVIewExample;
 		};
-		95EA325E1A17B8DA00F66EB0 /* PBXContainerItemProxy */ = {
+		95B83FCC1BF9715D00B46A87 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 95EA32541A17B8DA00F66EB0 /* ACEView.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = 36F169E216B9346C00E8965C;
 			remoteInfo = ACEViewTests;
-		};
-		95EA32601A17B8E900F66EB0 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 95EA32541A17B8DA00F66EB0 /* ACEView.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 7C8A728B15EA0769007E5EB8;
-			remoteInfo = ACEView;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -85,7 +77,6 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				9538E0EC1A8FB215001E02CC /* ACEView.framework in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -127,7 +118,7 @@
 		95CC3F041A6385B8003507AD /* MdSrcIcon.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = MdSrcIcon.icns; path = IconResources/MdSrcIcon.icns; sourceTree = "<group>"; };
 		95DA9B151A515AF700DE018D /* ACEViewExt.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ACEViewExt.swift; sourceTree = "<group>"; };
 		95DF20661A45A6090013D1B5 /* ASSketchBook.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ASSketchBook.swift; sourceTree = "<group>"; };
-		95EA32541A17B8DA00F66EB0 /* ACEView.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ACEView.xcodeproj; path = ../ACEView/ACEView.xcodeproj; sourceTree = "<group>"; };
+		95EA32541A17B8DA00F66EB0 /* ACEView.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ACEView.xcodeproj; path = ACEView/ACEView.xcodeproj; sourceTree = SOURCE_ROOT; };
 		95EA32631A17BA8C00F66EB0 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		95EA32641A17BA8C00F66EB0 /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
@@ -137,8 +128,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				95B83FCE1BF9724100B46A87 /* ACEView.framework in Frameworks */,
 				95EA32651A17BA8C00F66EB0 /* Cocoa.framework in Frameworks */,
-				95EA32621A17B90600F66EB0 /* ACEView.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -230,6 +221,16 @@
 			name = Source;
 			sourceTree = "<group>";
 		};
+		95B83FC31BF9715C00B46A87 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				95B83FC91BF9715D00B46A87 /* ACEView.framework */,
+				95B83FCB1BF9715D00B46A87 /* ACEVIewExample.app */,
+				95B83FCD1BF9715D00B46A87 /* ACEViewTests.octest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		95BF80EC1A185CD90004A693 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
@@ -249,16 +250,6 @@
 				95468DE21A228E1300668EE2 /* Defaults.plist */,
 			);
 			name = Resources;
-			sourceTree = "<group>";
-		};
-		95EA32551A17B8DA00F66EB0 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				95EA325B1A17B8DA00F66EB0 /* ACEView.framework */,
-				95EA325D1A17B8DA00F66EB0 /* ACEVIewExample.app */,
-				95EA325F1A17B8DA00F66EB0 /* ACEViewTests.octest */,
-			);
-			name = Products;
 			sourceTree = "<group>";
 		};
 		95EA32671A17BAA600F66EB0 /* Frameworks */ = {
@@ -285,7 +276,6 @@
 			buildRules = (
 			);
 			dependencies = (
-				95EA32611A17B8E900F66EB0 /* PBXTargetDependency */,
 			);
 			name = AVRsack;
 			productName = AVRsack;
@@ -343,7 +333,7 @@
 			projectDirPath = "";
 			projectReferences = (
 				{
-					ProductGroup = 95EA32551A17B8DA00F66EB0 /* Products */;
+					ProductGroup = 95B83FC31BF9715C00B46A87 /* Products */;
 					ProjectRef = 95EA32541A17B8DA00F66EB0 /* ACEView.xcodeproj */;
 				},
 			);
@@ -356,25 +346,25 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
-		95EA325B1A17B8DA00F66EB0 /* ACEView.framework */ = {
+		95B83FC91BF9715D00B46A87 /* ACEView.framework */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.framework;
 			path = ACEView.framework;
-			remoteRef = 95EA325A1A17B8DA00F66EB0 /* PBXContainerItemProxy */;
+			remoteRef = 95B83FC81BF9715D00B46A87 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		95EA325D1A17B8DA00F66EB0 /* ACEVIewExample.app */ = {
+		95B83FCB1BF9715D00B46A87 /* ACEVIewExample.app */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.application;
 			path = ACEVIewExample.app;
-			remoteRef = 95EA325C1A17B8DA00F66EB0 /* PBXContainerItemProxy */;
+			remoteRef = 95B83FCA1BF9715D00B46A87 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		95EA325F1A17B8DA00F66EB0 /* ACEViewTests.octest */ = {
+		95B83FCD1BF9715D00B46A87 /* ACEViewTests.octest */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.cfbundle;
 			path = ACEViewTests.octest;
-			remoteRef = 95EA325E1A17B8DA00F66EB0 /* PBXContainerItemProxy */;
+			remoteRef = 95B83FCC1BF9715D00B46A87 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */
@@ -446,11 +436,6 @@
 			isa = PBXTargetDependency;
 			target = 9501D7FB1A17025C0034C530 /* AVRsack */;
 			targetProxy = 9501D8121A17025C0034C530 /* PBXContainerItemProxy */;
-		};
-		95EA32611A17B8E900F66EB0 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = ACEView;
-			targetProxy = 95EA32601A17B8E900F66EB0 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
