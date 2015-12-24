@@ -56,6 +56,7 @@ end
 
 LIBRARIES = Rake::FileList[]
 CORES     = Rake::FileList[]
+SKETCHES  = Rake::FileList[]
 
 def parseInoFiles
     CORES.add(BUILD['core_path'])
@@ -66,6 +67,10 @@ def parseInoFiles
         inName = ARGV[arg]
         inName = inName.pathmap("../../%p") unless inName =~ %r|^/|
         if inName =~ /\.ino$/
+            inDir       = inName.pathmap("%d")
+            if !SKETCHES.include?(inDir)
+                SKETCHES.add(inDir)
+            end
             outName     = inName.pathmap("sketch/%n.cpp")
             outFile     = File.open(outName, 'w')
             File.open(inName, 'r') do |ino|
@@ -125,13 +130,13 @@ parseInoFiles
 
 File.open("Rakefile", 'w') do |rakeFile|
     SOURCES = Rake::FileList.new(ARGV).select {|f| f =~ /\.(c|cpp|cp|cxx|S)$/}
-    INCLUDES= (CORES+LIBRARIES).map {|l| " +\n   \" -I'#{l}'\""}.join('')
+    INCLUDES= (SKETCHES+CORES+LIBRARIES).map {|l| " +\n   \" -I'#{l}'\""}.join('')
     rakeFile.print <<END_RAKE
 TOOLCHAIN   = "#{BUILD['toolchain']}"
 BIN         = TOOLCHAIN+"/bin/"
 USB         = '-DUSB_VID=#{BUILD['usb_vid']} -DUSB_PID=#{BUILD['usb_pid']}'
-CC          = BIN+'avr-gcc -c -g -Os -Wall -fno-exceptions -ffunction-sections -fdata-sections -mmcu=#{BUILD['mcu']} -DF_CPU=#{BUILD['f_cpu']} -MMD '+USB+' -DARDUINO=105 -I ../..'#{INCLUDES}
-CCP         = BIN+'avr-g++ -c -g -Os -Wall -fno-exceptions -ffunction-sections -fdata-sections -mmcu=#{BUILD['mcu']} -DF_CPU=#{BUILD['f_cpu']} -MMD '+USB+' -DARDUINO=105 -I ../..'#{INCLUDES}
+CC          = BIN+'avr-gcc -c -g -Os -Wall -fno-exceptions -ffunction-sections -fdata-sections -mmcu=#{BUILD['mcu']} -DF_CPU=#{BUILD['f_cpu']} -MMD '+USB+' -DARDUINO=105'#{INCLUDES}
+CCP         = BIN+'avr-g++ -c -g -Os -Wall -fno-exceptions -ffunction-sections -fdata-sections -mmcu=#{BUILD['mcu']} -DF_CPU=#{BUILD['f_cpu']} -MMD '+USB+' -DARDUINO=105'#{INCLUDES}
 LD          = BIN+'avr-g++ -Os -Wl,--gc-sections -mmcu=#{BUILD['mcu']}'
 AR          = BIN+'avr-ar crs'
 EEP         = BIN+'avr-objcopy -O ihex -j .eeprom --set-section-flags=.eeprom=alloc,load --no-change-warnings --change-section-lma .eeprom=0'
