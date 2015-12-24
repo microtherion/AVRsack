@@ -111,7 +111,7 @@ class ASHardware {
         if choices.count <= 10 {
             menu.addSortedChoices([ASPropertyEntry](choices.values), target: target, selector: selector)
         } else {
-            menu.addSortedChoices(recentChoices.map({ (recent: String) in choices[recent]! }), target: target, selector: selector)
+            menu.addSortedChoices(recentChoices.flatMap({ (recent: String) in choices[recent] }), target: target, selector: selector)
             menu.addItem(NSMenuItem.separatorItem())
             var seen = [String: Bool]()
             for prop in choices.values {
