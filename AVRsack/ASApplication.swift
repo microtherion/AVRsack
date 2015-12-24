@@ -108,9 +108,15 @@ class ASApplication: NSObject, NSApplicationDelegate, NSMenuDelegate {
         ASSerialWin.showWindowWithPort(port.title)
     }
 
-    func openTemplate(template: NSURL) {
+    func openTemplate(template: NSURL, fromReadOnly: Bool) {
+        let editable : String
+        if fromReadOnly {
+            editable = "editable "
+        } else {
+            editable = ""
+        }
         ASApplication.newProjectLocation(nil,
-            message: "Save editable copy of project \(template.lastPathComponent)")
+            message: "Save \(editable)copy of project \(template.lastPathComponent!)")
         { (saveTo) -> Void in
             let oldName     = template.lastPathComponent!
             let newName     = saveTo.lastPathComponent!
@@ -151,7 +157,7 @@ class ASApplication: NSObject, NSApplicationDelegate, NSMenuDelegate {
     
     @IBAction func openExample(item: NSMenuItem) {
         let url = NSURL(fileURLWithPath: examples[item.tag])
-        openTemplate(url.URLByDeletingLastPathComponent!)
+        openTemplate(url.URLByDeletingLastPathComponent!, fromReadOnly:true)
     }
 
     @IBAction func createSketch(_: AnyObject) {

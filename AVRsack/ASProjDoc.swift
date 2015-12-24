@@ -236,7 +236,7 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate, NSMenuDelegate, NSOpenSavePa
 
     override func duplicateDocument(sender: AnyObject?) {
         let app = NSApplication.sharedApplication().delegate as! ASApplication
-        app.openTemplate(fileURL!.URLByDeletingLastPathComponent!)
+        app.openTemplate(fileURL!.URLByDeletingLastPathComponent!, fromReadOnly:false)
     }
 
     func updateLog(_: AnyObject?) {
