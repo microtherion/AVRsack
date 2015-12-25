@@ -570,6 +570,7 @@
 				INFOPLIST_FILE = AVRsack/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx10.11;
 				SWIFT_OBJC_BRIDGING_HEADER = "AVRsack/AVRsack-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
@@ -585,6 +586,7 @@
 				INFOPLIST_FILE = AVRsack/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx10.11;
 				SWIFT_OBJC_BRIDGING_HEADER = "AVRsack/AVRsack-Bridging-Header.h";
 			};
 			name = Release;
