@@ -126,6 +126,10 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate, NSMenuDelegate, NSOpenSavePa
 
         editors.setViews([editor], inGravity: .Top)
 
+        outline.registerForDraggedTypes([files.kLocalReorderPasteboardType])
+        outline.setDraggingSourceOperationMask(NSDragOperation.Every, forLocal: true)
+        outline.setDraggingSourceOperationMask(NSDragOperation.None, forLocal: false)
+
         outline.setDataSource(files)
         files.apply() { node in
             if let group = node as? ASFileGroup {
@@ -496,9 +500,11 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate, NSMenuDelegate, NSOpenSavePa
             }
         }
     }
+    func outlineView(outlineView: NSOutlineView, shouldTrackCell cell: NSCell, forTableColumn tableColumn: NSTableColumn?, item: AnyObject) -> Bool {
+        return outlineView.isRowSelected(outlineView.rowForItem(item))
+    }
 
     // MARK: File manipulation
-
     @IBAction func delete(_: AnyObject) {
         let selection  = selectedFiles()
         var name       : String

@@ -54,7 +54,7 @@ private let kNodeTypeGroup      = "Group"
 private let kNodeTypeFile       = "File"
 private let kNameKey            = "Name"
 
-class ASFileNode {
+class ASFileNode : Equatable {
     var name        : String
 
     init(name: String) {
@@ -95,6 +95,10 @@ class ASFileNode {
     func revision() -> String? {
         return nil;
     }
+}
+
+func ==(a: ASFileNode, b: ASFileNode) -> Bool {
+    return a === b
 }
 
 class ASLogNode : ASFileNode {
@@ -268,6 +272,7 @@ class ASFileTree : NSObject, NSOutlineViewDataSource {
     var buildLog    = ASLogNode(name: "Build Log", path: "build/build.log")
     var uploadLog   = ASLogNode(name: "Upload Log", path: "build/upload.log")
     var disassembly = ASLogNode(name: "Disassembly", path: "build/disasm.log")
+    var dragged     = [ASFileNode]()
     
     func addFileURL(url: NSURL, omitUnknown: Bool = true) {
         let type = ASFileType.guessForURL(url)
@@ -325,5 +330,68 @@ class ASFileTree : NSObject, NSOutlineViewDataSource {
     }
     func outlineView(outlineView: NSOutlineView, objectValueForTableColumn tableColumn: NSTableColumn?, byItem item: AnyObject?) -> AnyObject? {
         return (item as! ASFileNode).nodeName()
+    }
+
+    let kLocalReorderPasteboardType = "ASFilePasteboardType"
+    func outlineView(outlineView: NSOutlineView, writeItems items: [AnyObject], toPasteboard pasteboard: NSPasteboard) -> Bool {
+        dragged = items as! [ASFileNode]
+        pasteboard.declareTypes([kLocalReorderPasteboardType], owner: self)
+        pasteboard.setData(NSData(), forType: kLocalReorderPasteboardType)
+
+        return true
+    }
+    func itemIsDescendentOfDrag(outlineView: NSOutlineView, item: ASFileNode) -> Bool {
+        if dragged.contains(item) {
+            return true
+        } else if item is ASProject {
+            return false
+        } else {
+            return itemIsDescendentOfDrag(outlineView, item: outlineView.parentForItem(item) as! ASFileNode)
+        }
+    }
+    func outlineView(outlineView: NSOutlineView, validateDrop info: NSDraggingInfo, proposedItem item: AnyObject?, proposedChildIndex index: Int) -> NSDragOperation {
+        if info.draggingPasteboard().availableTypeFromArray([kLocalReorderPasteboardType]) == nil {
+            return NSDragOperation.None // Only allow reordering drags
+        }
+        for drag in dragged {
+            switch (drag) {
+            case is ASProject, is ASLogNode:
+                return NSDragOperation.None // Don't allow root or log nodes to be dragged
+            default:
+                break
+            }
+        }
+        switch (item) {
+        case is ASProject, is ASFileGroup:
+            if itemIsDescendentOfDrag(outlineView, item: item as! ASFileNode) {
+                return NSDragOperation.None // Don't allow drag on member of dragged items or a descendent thereof
+            }
+        default:
+            return NSDragOperation.None // Don't allow drag onto leaf
+        }
+        return NSDragOperation.Generic
+    }
+    func outlineView(outlineView: NSOutlineView, acceptDrop info: NSDraggingInfo, item: AnyObject?, var childIndex insertAtIndex: Int) -> Bool {
+        let parent : ASFileGroup = (item as? ASFileGroup) ?? root
+        if insertAtIndex == NSOutlineViewDropOnItemIndex {
+            insertAtIndex = parent.children.count
+        }
+        outlineView.beginUpdates()
+        for item in dragged {
+            let origParent  = outlineView.parentForItem(item) as! ASFileGroup
+            let origIndex   = origParent.children.indexOf(item)!
+            origParent.children.removeAtIndex(origIndex)
+            outlineView.removeItemsAtIndexes(NSIndexSet(index:origIndex), inParent:origParent, withAnimation:NSTableViewAnimationOptions.EffectNone)
+            if origParent == parent && insertAtIndex > origIndex {
+                insertAtIndex -= 1
+            }
+            parent.children.insert(item, atIndex:insertAtIndex)
+            outlineView.insertItemsAtIndexes(NSIndexSet(index:insertAtIndex), inParent: parent, withAnimation:NSTableViewAnimationOptions.EffectGap)
+            insertAtIndex += 1
+        }
+        outlineView.endUpdates()
+        (outlineView.delegate() as! ASProjDoc).updateChangeCount(NSDocumentChangeType.ChangeDone)
+
+        return true
     }
 }
