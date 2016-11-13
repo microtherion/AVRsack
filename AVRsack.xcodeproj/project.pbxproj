@@ -35,6 +35,7 @@
 		95CC3F091A6385B8003507AD /* InoIcon.icns in Resources */ = {isa = PBXBuildFile; fileRef = 95CC3F031A6385B8003507AD /* InoIcon.icns */; };
 		95CC3F0A1A6385B8003507AD /* MdSrcIcon.icns in Resources */ = {isa = PBXBuildFile; fileRef = 95CC3F041A6385B8003507AD /* MdSrcIcon.icns */; };
 		95DA9B161A515AF700DE018D /* ACEViewExt.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95DA9B151A515AF700DE018D /* ACEViewExt.swift */; };
+		95DD055C1C88B52B00F41F23 /* ACEView.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 95B83FC91BF9715D00B46A87 /* ACEView.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		95DF20671A45A6090013D1B5 /* ASSketchBook.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95DF20661A45A6090013D1B5 /* ASSketchBook.swift */; };
 		95EA32651A17BA8C00F66EB0 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 95EA32631A17BA8C00F66EB0 /* Cocoa.framework */; };
 /* End PBXBuildFile section */
@@ -77,6 +78,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				95DD055C1C88B52B00F41F23 /* ACEView.framework in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -313,9 +315,11 @@
 				TargetAttributes = {
 					9501D7FB1A17025C0034C530 = {
 						CreatedOnToolsVersion = 6.3;
+						LastSwiftMigration = 0800;
 					};
 					9501D8101A17025C0034C530 = {
 						CreatedOnToolsVersion = 6.3;
+						LastSwiftMigration = 0800;
 						TestTargetID = 9501D7FB1A17025C0034C530;
 					};
 				};
@@ -573,6 +577,7 @@
 				SDKROOT = macosx10.11;
 				SWIFT_OBJC_BRIDGING_HEADER = "AVRsack/AVRsack-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 2.3;
 			};
 			name = Debug;
 		};
@@ -588,6 +593,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx10.11;
 				SWIFT_OBJC_BRIDGING_HEADER = "AVRsack/AVRsack-Bridging-Header.h";
+				SWIFT_VERSION = 2.3;
 			};
 			name = Release;
 		};
@@ -607,6 +613,7 @@
 				INFOPLIST_FILE = AVRsackTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 2.3;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/AVRsack.app/Contents/MacOS/AVRsack";
 			};
 			name = Debug;
@@ -623,6 +630,7 @@
 				INFOPLIST_FILE = AVRsackTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 2.3;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/AVRsack.app/Contents/MacOS/AVRsack";
 			};
 			name = Release;
