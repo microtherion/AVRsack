@@ -229,7 +229,7 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate, NSMenuDelegate, NSOpenSavePa
         if let fontSz = projectData[kFontSizeKey] as? Int {
             fontSize = UInt(fontSz)
         }
-        files.readPropertyList(projectData[kFilesKey] as! NSDictionary)
+        files.readPropertyList(prop: projectData[kFilesKey] as? Dictionary<String, AnyObject> ?? [:])
         board               = (projectData[kBoardKey] as? String) ?? board
         programmer          = (projectData[kProgrammerKey] as? String) ?? programmer
         port                = (projectData[kPortKey] as? String) ?? port
