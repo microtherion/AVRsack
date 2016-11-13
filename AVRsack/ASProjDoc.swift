@@ -94,10 +94,10 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate, NSMenuDelegate, NSOpenSavePa
         recentProgrammers   = userDefaults.object(forKey: kRecentProgrammersKey) as! [String]
         
         let nc          = NotificationCenter.default
-        themeObserver   = nc.addObserverForName(kBindingsKey, object: nil, queue: nil, usingBlock: { (NSNotification) in
+        themeObserver   = nc.addObserver(forName: NSNotification.Name(kBindingsKey), object: nil, queue: nil, using: { (NSNotification) in
             self.editor?.setKeyboardHandler(keyboardHandler)
         })
-        serialObserver  = nc.addObserverForName(kASSerialPortsChanged, object: nil, queue: nil, usingBlock: { (NSNotification) in
+        serialObserver  = nc.addObserver(forName: NSNotification.Name(kASSerialPortsChanged), object: nil, queue: nil, using: { (NSNotification) in
             if self.portTool != nil {
                 self.rebuildPortMenu()
             }
@@ -138,7 +138,7 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate, NSMenuDelegate, NSOpenSavePa
                 }
             }
         }
-        outlineViewSelectionDidChange(NSNotification(name: "", object: nil))
+        outlineViewSelectionDidChange(Notification(name: Notification.Name(""), object: nil))
         menuNeedsUpdate(boardTool.menu!)
         menuNeedsUpdate(progTool.menu!)
         rebuildPortMenu()
@@ -686,7 +686,7 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate, NSMenuDelegate, NSOpenSavePa
         keyboardHandler = ACEKeyboardHandler(rawValue: UInt(item.tag))!
         UserDefaults.standard.set(
             ACEKeyboardHandlerNames.humanName(for: keyboardHandler), forKey: kBindingsKey)
-        NotificationCenter.defaultCenter.postNotificationName(kBindingsKey, object: item)
+        NotificationCenter.default.post(name: NSNotification.Name(kBindingsKey), object: item)
     }
     
     override func validateUserInterfaceItem(_ anItem: NSValidatedUserInterfaceItem) -> Bool {

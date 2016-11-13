@@ -104,9 +104,9 @@ class ASSerialWin: NSWindowController {
         }
 
         let nc          = NotificationCenter.default
-        serialObserver  = nc.addObserverForName(kASSerialPortsChanged, object: nil, queue: nil, usingBlock: { (NSNotification) in
-            self.willChangeValueForKey("hasValidPort")
-            self.didChangeValueForKey("hasValidPort")
+        serialObserver  = nc.addObserver(forName: NSNotification.Name(kASSerialPortsChanged), object: nil, queue: nil, using: { (NSNotification) in
+            self.willChangeValue(forKey: "hasValidPort")
+            self.didChangeValue(forKey: "hasValidPort")
 
             if self.task == nil {
                 if self.hasValidPort {
@@ -116,10 +116,10 @@ class ASSerialWin: NSWindowController {
                 }
             }
         })
-        termination = NotificationCenter.defaultCenter.addObserverForName(NSTaskDidTerminateNotification,
-            object: nil, queue: nil, usingBlock:
-            { (notification: NSNotification) in
-                if notification.object as? NSTask == self.task {
+        termination = NotificationCenter.default.addObserver(forName: Task.didTerminateNotification,
+                                                                   object: nil, queue: nil, using:
+            { (notification: Notification) in
+                if notification.object as? Task == self.task {
                     self.task        = nil
                     self.portHandle  = nil
                 }
@@ -246,9 +246,9 @@ class ASSerialWin: NSWindowController {
         keyboardHandler = ACEKeyboardHandler(rawValue: UInt(item.tag))!
         UserDefaults.standard.set(
             ACEKeyboardHandlerNames.humanName(for: keyboardHandler), forKey: "Bindings")
-        NotificationCenter.defaultCenter.postNotificationName("Bindings", object: item)
+        NotificationCenter.default.post(name: Notification.Name("Bindings"), object: item)
     }
-    
+
     func validateUserInterfaceItem(anItem: NSValidatedUserInterfaceItem) -> Bool {
         if let menuItem = anItem as? NSMenuItem {
             if menuItem.action == Selector(("changeTheme:")) {

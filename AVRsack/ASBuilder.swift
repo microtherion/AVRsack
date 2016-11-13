@@ -15,10 +15,10 @@ class ASBuilder {
     var termination : AnyObject?
     
     init() {
-        termination = NotificationCenter.defaultCenter.addObserverForName(NSTaskDidTerminateNotification,
-            object: nil, queue: nil, usingBlock:
-        { (notification: NSNotification) in
-            if notification.object as? NSTask == self.task {
+        termination = NotificationCenter.default.addObserver(forName: Task.didTerminateNotification,
+                                                                   object: nil, queue: nil, using:
+        { (notification: Notification) in
+            if notification.object as? Task == self.task {
                 if self.task!.terminationStatus == 0 {
                     if let cont = self.continuation {
                         self.continuation = nil
