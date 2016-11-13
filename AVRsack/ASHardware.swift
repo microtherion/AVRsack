@@ -13,21 +13,21 @@ typealias ASProperties      = [String: ASPropertyEntry]
 
 extension NSMenu {
     func addSortedChoices(choices:[ASPropertyEntry], target: AnyObject, selector: Selector) {
-        for choice in choices.sort({ $0["name"] < $1["name"] })  {
-            let item        = self.addItemWithTitle(choice["name"]!, action: selector, keyEquivalent: "")
-            item?.target    = target
+        for choice in choices.sorted(by: { $0["name"] < $1["name"] })  {
+            let item        = self.addItem(withTitle: choice["name"]!, action: selector, keyEquivalent: "")
+            item.target    = target
         }
     }
 }
 
 private func subdirectories(path: String) -> [String] {
-    let fileManager         = NSFileManager.defaultManager()
+    let fileManager         = FileManager.default
     var subDirs             = [String]()
     var isDir : ObjCBool    = false
-    if let items = try? fileManager.contentsOfDirectoryAtPath(path) {
+    if let items = try? fileManager.contentsOfDirectory(atPath: path) {
         for item in items {
             let subPath = path+"/"+item
-            if fileManager.fileExistsAtPath(subPath, isDirectory: &isDir) && isDir {
+            if fileManager.fileExists(atPath: subPath, isDirectory: &isDir) && isDir.boolValue {
                 subDirs.append(subPath)
             }
         }
@@ -45,14 +45,14 @@ class ASHardware {
         //
         // Gather hardware directories
         //
-        let userDefaults    = NSUserDefaults.standardUserDefaults()
-        if let arduinoPath = userDefaults.stringForKey("Arduino") {
+        let userDefaults    = UserDefaults.standard
+        if let arduinoPath = userDefaults.string(forKey: "Arduino") {
             let arduinoHardwarePath = arduinoPath + "/Contents/Resources/Java/hardware"
-            directories += subdirectories(arduinoHardwarePath)
+            directories += subdirectories(path: arduinoHardwarePath)
         }
-        for sketchDir in userDefaults.objectForKey("Sketchbooks") as! [String] {
+        for sketchDir in userDefaults.object(forKey: "Sketchbooks") as! [String] {
             let hardwarePath = sketchDir + "/hardware"
-            directories     += subdirectories(hardwarePath)
+            directories     += subdirectories(path: hardwarePath)
         }
         let property = try! NSRegularExpression(pattern: "\\s*(\\w+)\\.(\\S+?)\\s*=\\s*(\\S.*\\S)\\s*", options: [])
         //
@@ -63,12 +63,12 @@ class ASHardware {
             let provenience = (dir as NSString).lastPathComponent
             if let boardsFile = try? NSString(contentsOfFile: boardsPath, usedEncoding: nil) {
                 var seen = [String: Bool]()
-                for line in boardsFile.componentsSeparatedByString("\n") {
-                    if let match = property.firstMatchInString(line, options: .Anchored, range: NSMakeRange(0, line.utf16.count)) {
+                for line in boardsFile.components(separatedBy: "\n") {
+                    if let match = property.firstMatch(in: line, options: .anchored, range: NSMakeRange(0, line.utf16.count)) {
                         let nsline          = line as NSString
-                        let board           = nsline.substringWithRange(match.rangeAtIndex(1)) as String
-                        let property        = nsline.substringWithRange(match.rangeAtIndex(2)) as String
-                        let value           = nsline.substringWithRange(match.rangeAtIndex(3)) as String
+                        let board           = nsline.substring(with: match.rangeAt(1)) as String
+                        let property        = nsline.substring(with: match.rangeAt(2)) as String
+                        let value           = nsline.substring(with: match.rangeAt(3)) as String
                         if seen.updateValue(true, forKey: board) == nil {
                             boards[board]                   = ASPropertyEntry()
                             boards[board]!["provenience"]   = provenience
@@ -88,12 +88,12 @@ class ASHardware {
             let provenience = (dir as NSString).lastPathComponent
             if let programmersFile = try? NSString(contentsOfFile: programmersPath, usedEncoding: nil) {
                 var seen = [String: Bool]()
-                for line in programmersFile.componentsSeparatedByString("\n") {
-                    if let match = property.firstMatchInString(line, options: .Anchored, range: NSMakeRange(0, line.utf16.count)) {
+                for line in programmersFile.components(separatedBy: "\n") {
+                    if let match = property.firstMatch(in: line, options: .anchored, range: NSMakeRange(0, line.utf16.count)) {
                         let nsline          = line as NSString
-                        let programmer      = nsline.substringWithRange(match.rangeAtIndex(1))
-                        let property        = nsline.substringWithRange(match.rangeAtIndex(2))
-                        let value           = nsline.substringWithRange(match.rangeAtIndex(3))
+                        let programmer      = nsline.substring(with: match.rangeAt(1))
+                        let property        = nsline.substring(with: match.rangeAt(2))
+                        let value           = nsline.substring(with: match.rangeAt(3))
                         if seen.updateValue(true, forKey: programmer) == nil {
                             programmers[programmer] = ASPropertyEntry()
                             programmers[programmer]!["provenience"]   = provenience
@@ -107,18 +107,18 @@ class ASHardware {
     
     func buildMenu(menu:NSMenu, choices:ASProperties, recentChoices:[String], target: AnyObject, selector: Selector) {
         menu.removeAllItems()
-        menu.addItemWithTitle("Title", action: "", keyEquivalent: "")
+        menu.addItem(withTitle: "Title", action: nil, keyEquivalent: "")
         if choices.count <= 10 {
-            menu.addSortedChoices([ASPropertyEntry](choices.values), target: target, selector: selector)
+            menu.addSortedChoices(choices: [ASPropertyEntry](choices.values), target: target, selector: selector)
         } else {
-            menu.addSortedChoices(recentChoices.flatMap({ (recent: String) in choices[recent] }), target: target, selector: selector)
-            menu.addItem(NSMenuItem.separatorItem())
+            menu.addSortedChoices(choices: recentChoices.flatMap({ (recent: String) in choices[recent] }), target: target, selector: selector)
+            menu.addItem(NSMenuItem.separator())
             var seen = [String: Bool]()
             for prop in choices.values {
                 seen[prop["provenience"]!] = true
             }
             var sortedKeys = [String](seen.keys)
-            sortedKeys.sortInPlace { $0 < $1 }
+            sortedKeys.sort { $0 < $1 }
             for provenience in sortedKeys {
                 var subset = [ASPropertyEntry]()
                 for prop in choices.values {
@@ -126,21 +126,21 @@ class ASHardware {
                         subset.append(prop)
                     }
                 }
-                let item                    = menu.addItemWithTitle(provenience, action: nil, keyEquivalent: "")!
+                let item                    = menu.addItem(withTitle: provenience, action: nil, keyEquivalent: "")
                 let submenu                 = NSMenu()
                 submenu.autoenablesItems    = false
-                submenu.addSortedChoices(subset, target: target, selector: selector)
-                menu.setSubmenu(submenu, forItem: item)
+                submenu.addSortedChoices(choices: subset, target: target, selector: selector)
+                menu.setSubmenu(submenu, for: item)
             }
         }
     }
     
     func buildBoardsMenu(menu:NSMenu, recentBoards:[String], target: AnyObject, selector: Selector) {
-        buildMenu(menu, choices:boards, recentChoices:recentBoards, target: target, selector: selector)
+        buildMenu(menu: menu, choices:boards, recentChoices:recentBoards, target: target, selector: selector)
     }
     
     func buildProgrammersMenu(menu:NSMenu, recentProgrammers:[String], target: AnyObject, selector: Selector) {
-        buildMenu(menu, choices:programmers, recentChoices:recentProgrammers, target: target, selector: selector)
+        buildMenu(menu: menu, choices:programmers, recentChoices:recentProgrammers, target: target, selector: selector)
     }
 }
 
@@ -155,19 +155,19 @@ class ASLibraries : NSObject {
         //
         // Gather hardware directories
         //
-        let userDefaults    = NSUserDefaults.standardUserDefaults()
-        for sketchDir in userDefaults.objectForKey("Sketchbooks") as! [String] {
+        let userDefaults    = UserDefaults.standard
+        for sketchDir in userDefaults.object(forKey: "Sketchbooks") as! [String] {
             let librariesPath = sketchDir + "/libraries"
-            let dirs                 = subdirectories(librariesPath)
+            let dirs                 = subdirectories(path: librariesPath)
             if dirs.count > 0 {
                 directories.append(librariesPath)
                 libraries   += dirs
                 contribLib  += dirs
             }
         }
-        if let arduinoPath = userDefaults.stringForKey("Arduino") {
+        if let arduinoPath = userDefaults.string(forKey: "Arduino") {
             let arduinoLibrariesPath = arduinoPath + "/Contents/Resources/Java/libraries"
-            let dirs                 = subdirectories(arduinoLibrariesPath)
+            let dirs                 = subdirectories(path: arduinoLibrariesPath)
             if dirs.count > 0 {
                 directories.append(arduinoLibrariesPath)
                 libraries   += dirs
@@ -176,32 +176,32 @@ class ASLibraries : NSObject {
         }
     }
     func addStandardLibrariesToMenu(menu: NSMenu) {
-        for (index,lib) in standardLib.enumerate() {
-            let menuItem        = menu.addItemWithTitle((lib as NSString).lastPathComponent, action: "importStandardLibrary:", keyEquivalent: "")
-            menuItem?.target    = self
-            menuItem?.tag       = index
+        for (index,lib) in standardLib.enumerated() {
+            let menuItem        = menu.addItem(withTitle: (lib as NSString).lastPathComponent, action: #selector(ASLibraries.importStandardLibrary(_:)), keyEquivalent: "")
+            menuItem.target    = self
+            menuItem.tag       = index
         }
     }
     func addContribLibrariesToMenu(menu: NSMenu) {
-        for (index,lib) in contribLib.enumerate() {
-            let menuItem        = menu.addItemWithTitle((lib as NSString).lastPathComponent, action: "importContribLibrary:", keyEquivalent: "")
-            menuItem?.target    = self
-            menuItem?.tag       = index
+        for (index,lib) in contribLib.enumerated() {
+            let menuItem        = menu.addItem(withTitle: (lib as NSString).lastPathComponent, action: #selector(ASLibraries.importContribLibrary(_:)), keyEquivalent: "")
+            menuItem.target    = self
+            menuItem.tag       = index
         }
     }
-    @IBAction func importStandardLibrary(menuItem: AnyObject) {
+    @IBAction func importStandardLibrary(_ menuItem: AnyObject) {
         if let tag = (menuItem as? NSMenuItem)?.tag {
-            NSApplication.sharedApplication().sendAction("importLibrary:", to: nil, from: standardLib[tag])
+            NSApplication.shared().sendAction(#selector(ASProjDoc.importLibrary(_:)), to: nil, from: standardLib[tag])
         }
     }
-    @IBAction func importContribLibrary(menuItem: AnyObject) {
+    @IBAction func importContribLibrary(_ menuItem: AnyObject) {
         if let tag = (menuItem as? NSMenuItem)?.tag {
-            NSApplication.sharedApplication().sendAction("importLibrary:", to: nil, from: contribLib[tag])
+            NSApplication.shared().sendAction(#selector(ASProjDoc.importLibrary(_:)), to: nil, from: contribLib[tag])
         }
     }
 
     func validateUserInterfaceItem(anItem: NSValidatedUserInterfaceItem) -> Bool {
-        if let validator = NSApplication.sharedApplication().targetForAction("importLibrary:") as? NSUserInterfaceValidations {
+        if let validator = NSApplication.shared().target(forAction: #selector(ASProjDoc.importLibrary(_:))) as? NSUserInterfaceValidations {
             return validator.validateUserInterfaceItem(anItem)
         }
         return false

@@ -15,10 +15,10 @@ private let kASToolchainOther       = 2
 class ASPreferences: NSWindowController, NSOpenSavePanelDelegate {
     var toolchainPref : String {
         get {
-            return NSUserDefaults.standardUserDefaults().objectForKey("Toolchain") as! String
+            return UserDefaults.standard.object(forKey: "Toolchain") as! String
         }
         set(newToolchain) {
-            NSUserDefaults.standardUserDefaults().setObject(newToolchain, forKey: "Toolchain")
+            UserDefaults.standard.set(newToolchain, forKey: "Toolchain")
         }
     }
     var toolchainType : Int {
@@ -53,7 +53,7 @@ class ASPreferences: NSWindowController, NSOpenSavePanelDelegate {
             if toolchainPref != ("" as String) {
                 return toolchainPref
             } else {
-                return NSWorkspace.sharedWorkspace().URLForApplicationWithBundleIdentifier("cc.arduino.Arduino")!.path! +
+                return NSWorkspace.shared().urlForApplication(withBundleIdentifier: "cc.arduino.Arduino")!.path +
                     "/Contents/Resources/Java/hardware/tools/avr"
             }
         }
@@ -68,7 +68,7 @@ class ASPreferences: NSWindowController, NSOpenSavePanelDelegate {
     
     var hasCrossPackAVR : Bool {
         get {
-            return NSFileManager.defaultManager().fileExistsAtPath("/usr/local/CrossPack-AVR/bin")
+            return FileManager.default.fileExists(atPath: "/usr/local/CrossPack-AVR/bin")
         }
     }
     
@@ -79,15 +79,15 @@ class ASPreferences: NSWindowController, NSOpenSavePanelDelegate {
         openPanel.canChooseDirectories      = true
         openPanel.allowsMultipleSelection   = false
         openPanel.resolvesAliases           = true
-        openPanel.beginSheetModalForWindow(window!, completionHandler: { (returnCode: Int) -> Void in
+        openPanel.beginSheetModal(for: window!, completionHandler: { (returnCode: Int) -> Void in
             if returnCode == NSFileHandlingPanelOKButton {
-                self.toolchainPref   = openPanel.URL!.path!
+                self.toolchainPref   = openPanel.url!.path
             }
         })
     }
     
-    func panel(sender: AnyObject, shouldEnableURL url: NSURL) -> Bool {
+    func panel(_ sender: AnyObject, shouldEnable url: URL) -> Bool {
         let gccPath = url.URLByAppendingPathComponent("bin/avr-gcc")
-        return NSFileManager.defaultManager().fileExistsAtPath(gccPath.path!)
+        return FileManager.defaultManager().fileExistsAtPath(gccPath.path!)
     }
 }

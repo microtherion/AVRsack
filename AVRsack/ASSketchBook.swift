@@ -16,16 +16,16 @@ class ASSketchBook {
     }
     
     class func findSketch(path: String) -> SketchBookItem {
-        let fileManager = NSFileManager.defaultManager()
+        let fileManager = FileManager.default
         var inoSketch   = SketchBookItem.Nothing
-        let contents    = (try! fileManager.contentsOfDirectoryAtPath(path))
+        let contents    = (try! fileManager.contentsOfDirectory(atPath: path))
         let nspath      = path as NSString
         for item in contents {
             switch (item as NSString).pathExtension {
             case "avrsackproj":
-                return .Sketch(nspath.lastPathComponent, nspath.stringByAppendingPathComponent(item))
+                return .Sketch(nspath.lastPathComponent, nspath.appendingPathComponent(item))
             case "ino":
-                inoSketch = .Sketch(nspath.lastPathComponent, nspath.stringByAppendingPathComponent(item))
+                inoSketch = .Sketch(nspath.lastPathComponent, nspath.appendingPathComponent(item))
             default:
                 break
             }
@@ -34,10 +34,10 @@ class ASSketchBook {
     }
     
     private class func enumerateSketches(path: String) -> SketchBookItem {
-        let fileManager = NSFileManager.defaultManager()
-        let contents    = (try! fileManager.contentsOfDirectoryAtPath(path)) 
+        let fileManager = FileManager.default
+        let contents    = (try! fileManager.contentsOfDirectory(atPath: path)) 
         let nspath      = path as NSString
-        let sketch = findSketch(path)
+        let sketch      = findSketch(path: path)
         switch sketch {
         case .Sketch:
             return sketch
@@ -46,10 +46,10 @@ class ASSketchBook {
         }
         var sketches = [SketchBookItem]()
         for item in contents {
-            let subpath = nspath.stringByAppendingPathComponent(item)
+            let subpath = nspath.appendingPathComponent(item)
             var isDir   : ObjCBool = false
-            if fileManager.fileExistsAtPath(subpath, isDirectory: &isDir) && isDir {
-                let subEnum = enumerateSketches(subpath)
+            if fileManager.fileExists(atPath: subpath, isDirectory: &isDir) && isDir.boolValue {
+                let subEnum = enumerateSketches(path: subpath)
                 switch subEnum {
                 case .Nothing:
                     break
@@ -58,7 +58,7 @@ class ASSketchBook {
                 }
             }
         }
-        sketches.sortInPlace({ (a: SketchBookItem, b: SketchBookItem) -> Bool in
+        sketches.sort(by: { (a: SketchBookItem, b: SketchBookItem) -> Bool in
             var itemA : String = ""
             switch a {
             case .Sketch(let item, _):
@@ -80,30 +80,30 @@ class ASSketchBook {
         return sketches.count > 0 ? .SketchDir(nspath.lastPathComponent, sketches) : .Nothing
     }
     
-    class func appendSketchesToMenu(menu: NSMenu, target: AnyObject, action: Selector, sketchList: [SketchBookItem], inout sketches: [String]) {
+    class func appendSketchesToMenu(menu: NSMenu, target: AnyObject, action: Selector, sketchList: [SketchBookItem], sketches: inout [String]) {
         for sketch in sketchList {
             switch (sketch) {
             case .Sketch(let item, let path):
-                let menuItem                = menu.addItemWithTitle(item, action: action, keyEquivalent: "")
-                menuItem?.target            = target
-                menuItem?.tag               = sketches.count
+                let menuItem                = menu.addItem(withTitle: item, action: action, keyEquivalent: "")
+                menuItem.target            = target
+                menuItem.tag               = sketches.count
                 sketches.append(path)
             case .SketchDir(let item, let subSketches):
-                let menuItem                = menu.addItemWithTitle(item, action: nil, keyEquivalent: "")
+                let menuItem                = menu.addItem(withTitle: item, action: nil, keyEquivalent: "")
                 let submenu                 = NSMenu()
                 submenu.autoenablesItems    = false
-                appendSketchesToMenu(submenu, target: target, action: action, sketchList: subSketches, sketches: &sketches)
-                menu.setSubmenu(submenu, forItem: menuItem!)
+                appendSketchesToMenu(menu: submenu, target: target, action: action, sketchList: subSketches, sketches: &sketches)
+                menu.setSubmenu(submenu, for: menuItem)
             default:
                 break
             }
         }
     }
     
-    class func addSketches(menu: NSMenu, target: AnyObject, action: Selector, path: String, inout sketches: [String]) {
-        switch enumerateSketches(path) {
+    class func addSketches(menu: NSMenu, target: AnyObject, action: Selector, path: String, sketches: inout [String]) {
+        switch enumerateSketches(path: path) {
         case .SketchDir(_, let sketchList):
-            appendSketchesToMenu(menu, target: target, action: action, sketchList: sketchList, sketches: &sketches)
+            appendSketchesToMenu(menu: menu, target: target, action: action, sketchList: sketchList, sketches: &sketches)
         default:
             break
         }

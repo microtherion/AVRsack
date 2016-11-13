@@ -10,12 +10,12 @@ import Foundation
 
 class ASBuilder {
     var dir         = NSURL()
-    var task        : NSTask?
+    var task        : Task?
     var continuation: (()->())?
     var termination : AnyObject?
     
     init() {
-        termination = NSNotificationCenter.defaultCenter().addObserverForName(NSTaskDidTerminateNotification,
+        termination = NotificationCenter.defaultCenter.addObserverForName(NSTaskDidTerminateNotification,
             object: nil, queue: nil, usingBlock:
         { (notification: NSNotification) in
             if notification.object as? NSTask == self.task {
@@ -31,7 +31,7 @@ class ASBuilder {
         })
     }
     func finalize() {
-        NSNotificationCenter.defaultCenter().removeObserver(termination!)
+        NotificationCenter.default.removeObserver(termination!)
     }
     
     func setProjectURL(url: NSURL) {
@@ -45,19 +45,19 @@ class ASBuilder {
     
     func cleanProject() {
         do {
-            try NSFileManager.defaultManager().removeItemAtURL(dir.URLByAppendingPathComponent("build"))
+            try FileManager.default.removeItem(at: dir.appendingPathComponent("build")!)
         } catch _ {
         }
     }
     
     func buildProject(board: String, files: ASFileTree) {
-        let toolChain               = (NSApplication.sharedApplication().delegate as! ASApplication).preferences.toolchainPath
-        task = NSTask()
+        let toolChain               = (NSApplication.shared().delegate as! ASApplication).preferences.toolchainPath
+        task = Task()
         task!.currentDirectoryPath  = dir.path!
-        task!.launchPath            = NSBundle.mainBundle().pathForResource("BuildProject", ofType: "")!
+        task!.launchPath            = Bundle.main.path(forResource: "BuildProject", ofType: "")!
         
-        let fileManager = NSFileManager.defaultManager()
-        let libPath     = (ASLibraries.instance().directories as NSArray).componentsJoinedByString(":")
+        let fileManager = FileManager.default
+        let libPath     = (ASLibraries.instance().directories as NSArray).componentsJoined(by: ":")
         var args        = [String]()
         if ASHardware.instance().boards[board] == nil {
             NSLog("Unable to find board %s\n", board);
@@ -67,10 +67,10 @@ class ASBuilder {
         let library     = boardProp["library"]!
         let corePath    = library+"/cores/"+boardProp["build.core"]!
         var variantPath : String?
-        if fileManager.fileExistsAtPath(corePath) {
+        if fileManager.fileExists(atPath: corePath) {
             if let variantName = boardProp["build.variant"] {
                 variantPath = library+"/variants/"+variantName
-                if fileManager.fileExistsAtPath(variantPath!) {
+                if fileManager.fileExists(atPath: variantPath!) {
                     args.append("variant="+variantName)
                } else {
                     variantPath = nil
@@ -109,26 +109,26 @@ class ASBuilder {
     func uploadProject(board: String, programmer: String, port: String, mode: Mode = .Upload) {
         let useProgrammer           = mode != .Upload
         let interactive             = mode == .Interactive
-        let portPath                = ASSerial.fileNameForPort(port)
-        let toolChain               = (NSApplication.sharedApplication().delegate as! ASApplication).preferences.toolchainPath
-        task = NSTask()
+        let portPath                = ASSerial.fileName(forPort: port)
+        let toolChain               = (NSApplication.shared().delegate as! ASApplication).preferences.toolchainPath
+        task = Task()
         task!.currentDirectoryPath  = dir.path!
         task!.launchPath            = toolChain+"/bin/avrdude"
         
-        let fileManager = NSFileManager.defaultManager()
-        var logOut      : NSFileHandle
+        let fileManager = FileManager.default
+        var logOut      : FileHandle
         if interactive {
-            let inputPipe           = NSPipe()
-            let outputPipe          = NSPipe()
+            let inputPipe           = Pipe()
+            let outputPipe          = Pipe()
             logOut                  = outputPipe.fileHandleForWriting
             task!.standardInput     = inputPipe
             task!.standardOutput    = outputPipe
             task!.standardError     = outputPipe
         } else {
-            ASSerialWin.portNeededForUpload(port)
-            let logURL              = dir.URLByAppendingPathComponent("build/upload.log")
-            fileManager.createFileAtPath(logURL.path!, contents: NSData(), attributes: nil)
-            logOut                  = NSFileHandle(forWritingAtPath: logURL.path!)!
+            ASSerialWin.portNeededForUpload(port: port)
+            let logURL              = dir.appendingPathComponent("build/upload.log")
+            fileManager.createFileAtPath(logURL.path, contents: NSData(), attributes: nil)
+            logOut                  = FileHandle(forWritingAtPath: logURL.path!)!
             task!.standardOutput    = logOut
             task!.standardError     = logOut
         }
@@ -143,8 +143,8 @@ class ASBuilder {
         let leonardish      = hasBootloader && (boardProp["bootloader.path"] ?? "").hasPrefix("caterina")
         let proto           = hasBootloader ? boardProp["upload.protocol"] : progProp?["protocol"]
         let speed           = hasBootloader ? boardProp["upload.speed"]    : progProp?["speed"]
-        let verbosity       = NSUserDefaults.standardUserDefaults().integerForKey("UploadVerbosity")
-        var args            = Array<String>(count: verbosity, repeatedValue: "-v")
+        let verbosity       = UserDefaults.standard.integer(forKey: "UploadVerbosity")
+        var args            = Array<String>(repeating: "-v", count: verbosity)
         args               += [
             "-C", toolChain+"/etc/avrdude.conf",
             "-p", boardProp["build.mcu"]!, "-c", proto!, "-P", portPath]
@@ -182,15 +182,15 @@ class ASBuilder {
                 needPhase2  = true
             }
             if needPhase2 {
-                let task2 = NSTask()
+                let task2 = Task()
                 task2.currentDirectoryPath = dir.path!
                 task2.launchPath           = toolChain+"/bin/avrdude"
                 task2.arguments            = loaderArgs
                 task2.standardOutput       = logOut
                 task2.standardError        = logOut
                 continuation                = {
-                    let cmdLine = task2.launchPath!+" "+(loaderArgs as NSArray).componentsJoinedByString(" ")+"\n"
-                    logOut.writeData(cmdLine.dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: true)!)
+                    let cmdLine = task2.launchPath!+" "+(loaderArgs as NSArray).componentsJoined(by: " ")+"\n"
+                    logOut.write(cmdLine.data(using: String.Encoding.utf8, allowLossyConversion: true)!)
                     task2.launch()
                     self.continuation = {
                         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, Int64(2*NSEC_PER_SEC)), dispatch_get_main_queue(), {
@@ -212,52 +212,52 @@ class ASBuilder {
         //
         if leonardish {
             if verbosity > 0 {
-                logOut.writeData("Opening port \(port) at 1200 baud\n".dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: true)!)
+                logOut.write("Opening port \(port) at 1200 baud\n".data(using: String.Encoding.utf8, allowLossyConversion: true)!)
             }
             if let dummyConnection = ASSerial.openPort(portPath, withSpeed: 1200) {
                 usleep(50000)
                 ASSerial.closePort(dummyConnection.fileDescriptor)
                 sleep(1)
-                for (var retry=0; retry < 40; ++retry) {
+                for retry in 0 ..< 40 {
                     usleep(250000)
                     if (fileManager.fileExistsAtPath(portPath)) {
                         if verbosity > 0 {
-                            logOut.writeData("Found port \(port) after \(retry) attempts.\n".dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: true)!)
+                            logOut.write("Found port \(port) after \(retry) attempts.\n".data(using: String.Encoding.utf8, allowLossyConversion: true)!)
                         }
                         break;
                     }
                 }
             }
         }
-        let cmdLine = task!.launchPath!+" "+(args as NSArray).componentsJoinedByString(" ")+"\n"
-        logOut.writeData(cmdLine.dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: true)!)
+        let cmdLine = task!.launchPath!+" "+(args as NSArray).componentsJoined(by: " ")+"\n"
+        logOut.write(cmdLine.data(using: String.Encoding.utf8, allowLossyConversion: true)!)
         task!.arguments         =   args;
         task!.launch()
         if interactive {
             let intSpeed = (speed != nil) ? Int(speed!) ?? 19200 : 19200
-            ASSerialWin.showWindowWithPort(port, task:task!, speed:intSpeed)
+            ASSerialWin.showWindowWithPort(port: port, task:task!, speed:intSpeed)
             task = nil
         }
     }
     
     func disassembleProject(board: String) {
-        let toolChain               = (NSApplication.sharedApplication().delegate as! ASApplication).preferences.toolchainPath
-        task = NSTask()
+        let toolChain               = (NSApplication.shared().delegate as! ASApplication).preferences.toolchainPath
+        task = Task()
         task!.currentDirectoryPath  = dir.path!
         task!.launchPath            = toolChain+"/bin/avr-objdump"
         
-        let fileManager = NSFileManager.defaultManager()
-        let logURL              = dir.URLByAppendingPathComponent("build/disasm.log")
+        let fileManager         = FileManager.default
+        let logURL              = dir.appendingPathComponent("build/disasm.log")
         fileManager.createFileAtPath(logURL.path!, contents: NSData(), attributes: nil)
-        let logOut              = NSFileHandle(forWritingAtPath: logURL.path!)!
+        let logOut              = FileHandle(forWritingAtPath: logURL.path!)!
         task!.standardOutput    = logOut
         task!.standardError     = logOut
         
-        let showSource  = NSUserDefaults.standardUserDefaults().boolForKey("ShowSourceInDisassembly")
+        let showSource  = UserDefaults.standard.bool(forKey: "ShowSourceInDisassembly")
         var args        = showSource ? ["-S"] : []
         args           += ["-d", "build/"+board+"/"+dir.lastPathComponent!+".elf"]
-        let cmdLine     = task!.launchPath!+" "+(args as NSArray).componentsJoinedByString(" ")+"\n"
-        logOut.writeData(cmdLine.dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: true)!)
+        let cmdLine     = task!.launchPath!+" "+(args as NSArray).componentsJoined(by: " ")+"\n"
+        logOut.writeData(cmdLine.dataUsingEncoding(String.Encoding.utf8, allowLossyConversion: true)!)
         task!.arguments         =   args;
         task!.launch()
     }

@@ -24,6 +24,7 @@
 		95539B681A3E7EAF00D8595C /* ASSerial.mm in Sources */ = {isa = PBXBuildFile; fileRef = 95539B671A3E7EAF00D8595C /* ASSerial.mm */; };
 		955EFECB1AFF1A8400D34967 /* Help in Resources */ = {isa = PBXBuildFile; fileRef = 955EFEC91AFF1A8400D34967 /* Help */; };
 		956005F41A4EF79D00327007 /* ASSerialWin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 956005F21A4EF79D00327007 /* ASSerialWin.swift */; };
+		95A1814B1DD86D6A00E9127B /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 95A1814A1DD86D6A00E9127B /* WebKit.framework */; };
 		95A7C6401A38914300EF1963 /* ASPreferences.xib in Resources */ = {isa = PBXBuildFile; fileRef = 95A7C63E1A38914300EF1963 /* ASPreferences.xib */; };
 		95A7C6461A3894C900EF1963 /* ASPreferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = 95A7C6451A3894C900EF1963 /* ASPreferences.swift */; };
 		95B83FCE1BF9724100B46A87 /* ACEView.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 95B83FC91BF9715D00B46A87 /* ACEView.framework */; };
@@ -109,6 +110,7 @@
 		955EFECA1AFF1A8400D34967 /* Base */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Base; path = Base.lproj/Help; sourceTree = "<group>"; };
 		956005F21A4EF79D00327007 /* ASSerialWin.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ASSerialWin.swift; sourceTree = "<group>"; };
 		958D76811A17DA1C00917D96 /* AVRsack-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "AVRsack-Bridging-Header.h"; sourceTree = "<group>"; };
+		95A1814A1DD86D6A00E9127B /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = ../../../../System/Library/Frameworks/WebKit.framework; sourceTree = "<group>"; };
 		95A7C63F1A38914300EF1963 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/ASPreferences.xib; sourceTree = "<group>"; };
 		95A7C6451A3894C900EF1963 /* ASPreferences.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ASPreferences.swift; sourceTree = "<group>"; };
 		95BF80EA1A185C9E0004A693 /* ASFileTree.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ASFileTree.swift; sourceTree = "<group>"; };
@@ -130,6 +132,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				95A1814B1DD86D6A00E9127B /* WebKit.framework in Frameworks */,
 				95B83FCE1BF9724100B46A87 /* ACEView.framework in Frameworks */,
 				95EA32651A17BA8C00F66EB0 /* Cocoa.framework in Frameworks */,
 			);
@@ -152,6 +155,7 @@
 				9501D7FE1A17025C0034C530 /* AVRsack */,
 				9501D8141A17025C0034C530 /* AVRsackTests */,
 				9501D7FD1A17025C0034C530 /* Products */,
+				95A181491DD86D6A00E9127B /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -221,6 +225,14 @@
 				95388E611AB7235000061435 /* ASVestigial.mm */,
 			);
 			name = Source;
+			sourceTree = "<group>";
+		};
+		95A181491DD86D6A00E9127B /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				95A1814A1DD86D6A00E9127B /* WebKit.framework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 		95B83FC31BF9715C00B46A87 /* Products */ = {
@@ -310,7 +322,7 @@
 			attributes = {
 				LastSwiftMigration = 0710;
 				LastSwiftUpdateCheck = 0700;
-				LastUpgradeCheck = 0630;
+				LastUpgradeCheck = 0800;
 				ORGANIZATIONNAME = "Aere Perennius";
 				TargetAttributes = {
 					9501D7FB1A17025C0034C530 = {
@@ -500,15 +512,19 @@
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_IDENTITY = "-";
 				COPY_PHASE_STRIP = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
@@ -521,7 +537,6 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.10;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = macosx;
@@ -542,8 +557,10 @@
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_IDENTITY = "-";
@@ -552,13 +569,13 @@
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 10.10;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = macosx;
 			};
@@ -573,11 +590,11 @@
 				DEFINES_MODULE = YES;
 				INFOPLIST_FILE = AVRsack/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "org.aereperennius.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = macosx10.11;
 				SWIFT_OBJC_BRIDGING_HEADER = "AVRsack/AVRsack-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SWIFT_VERSION = 2.3;
+				SWIFT_VERSION = 3.0;
 			};
 			name = Debug;
 		};
@@ -590,10 +607,11 @@
 				DEFINES_MODULE = YES;
 				INFOPLIST_FILE = AVRsack/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "org.aereperennius.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = macosx10.11;
 				SWIFT_OBJC_BRIDGING_HEADER = "AVRsack/AVRsack-Bridging-Header.h";
-				SWIFT_VERSION = 2.3;
+				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
+				SWIFT_VERSION = 3.0;
 			};
 			name = Release;
 		};
@@ -612,8 +630,9 @@
 				);
 				INFOPLIST_FILE = AVRsackTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "org.aereperennius.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 2.3;
+				SWIFT_VERSION = 3.0;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/AVRsack.app/Contents/MacOS/AVRsack";
 			};
 			name = Debug;
@@ -629,8 +648,10 @@
 				);
 				INFOPLIST_FILE = AVRsackTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "org.aereperennius.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 2.3;
+				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
+				SWIFT_VERSION = 3.0;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/AVRsack.app/Contents/MacOS/AVRsack";
 			};
 			name = Release;

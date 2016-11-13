@@ -18,7 +18,7 @@ enum ASFileType : String {
     case Markdown   = "doc.md"
     
     static func guessForURL(url: NSURL) -> ASFileType {
-        switch url.pathExtension!.lowercaseString {
+        switch url.pathExtension!.lowercased {
         case "hpp", "hh", "h":
             return .Header
         case "c":
@@ -41,9 +41,9 @@ enum ASFileType : String {
         case .Header,.CFile,.CppFile,.Arduino:
             return .CPP
         case .Markdown:
-            return .Markdown
+            return .markdown
         default:
-            return .Text
+            return .text
         }
     }
 }
@@ -130,7 +130,7 @@ class ASFileGroup : ASFileNode {
         expanded    = prop[kExpandedKey] as! Bool
         children    = []
         for child in (prop[kChildrenKey] as! [NSDictionary]) {
-            children.append(ASFileNode.readPropertyList(child, rootURL: rootURL))
+            children.append(ASFileNode.readPropertyList(prop: child, rootURL: rootURL))
         }
         super.init(name: prop[kNameKey] as! String)
     }
@@ -138,13 +138,13 @@ class ASFileGroup : ASFileNode {
         return (expanded ? "📂" : "📁")+" "+name
     }
     override func apply(closure: (ASFileNode) -> ()) {
-        super.apply(closure)
+        super.apply(closure: closure)
         for child in children {
-            child.apply(closure)
+            child.apply(closure: closure)
         }
     }
     func childrenPropertyList(rootPath: String) -> [AnyObject] {
-        return children.map() { (node) in node.propertyList(rootPath) }
+        return children.map() { (node) in node.propertyList(rootPath: rootPath) }
     }
     override func propertyList(rootPath: String) -> AnyObject {
         return [kTypeKey: kNodeType, kNameKey: name, kExpandedKey: expanded,
@@ -153,7 +153,7 @@ class ASFileGroup : ASFileNode {
     override func paths(rootPath: String) -> [String] {
         var allPaths = [String]()
         for child in children {
-            allPaths += child.paths(rootPath)
+            allPaths += child.paths(rootPath: rootPath)
         }
         return allPaths
     }
@@ -191,14 +191,14 @@ class ASFileItem : ASFileNode {
         if let relativeURL = NSURL(string: prop[kPathKey] as! String, relativeToURL: rootURL) {
             url  = relativeURL.URLByStandardizingPath!
         } else {
-            url = NSURL(fileURLWithPath:(prop[kPathKey] as! String)).URLByStandardizingPath!
+            url = NSURL(fileURLWithPath:(prop[kPathKey] as! String)).standardizingPath!
         }
         if !url.checkResourceIsReachableAndReturnError(nil) {
             //
             // When projects get moved, .ino files get renamed but that fact is not 
             // yet reflected in the project file.
             //
-            let urlDir  = url.URLByDeletingLastPathComponent
+            let urlDir  = url.deletingLastPathComponent
             let newName = rootURL.URLByAppendingPathExtension(url.pathExtension!).lastPathComponent!
             if let altURL = urlDir?.URLByAppendingPathComponent(newName) {
                 if altURL.checkResourceIsReachableAndReturnError(nil) {
@@ -213,7 +213,7 @@ class ASFileItem : ASFileNode {
     }
     
     func relativePath(relativeTo: String) -> String {
-        let path        = (url.path! as NSString).stringByResolvingSymlinksInPath
+        let path        = (url.path! as NSString).resolvingSymlinksInPath
         let relComp     = relativeTo.componentsSeparatedByString("/") as [String]
         let pathComp    = path.componentsSeparatedByString("/") as [String]
         let relCount    = relComp.count
@@ -222,7 +222,7 @@ class ASFileItem : ASFileNode {
         var matchComp = 0
         while (matchComp < relCount && matchComp < pathCount) {
             if pathComp[matchComp] == relComp[matchComp] {
-                ++matchComp
+                matchComp += 1
             } else {
                 break
             }
@@ -238,7 +238,7 @@ class ASFileItem : ASFileNode {
         return [kTypeKey: kNodeTypeFile, kKindKey: type.rawValue, kPathKey: relativePath(rootPath)]
     }
     override func paths(rootPath: String) -> [String] {
-        return [relativePath(rootPath)]
+        return [relativePath(relativeTo: rootPath)]
     }
     override func exists() -> Bool {
         return url.checkResourceIsReachableAndReturnError(nil)
@@ -246,23 +246,23 @@ class ASFileItem : ASFileNode {
     override func modDate() -> NSDate? {
         var date: AnyObject?
         do {
-            try url.getResourceValue(&date, forKey: NSURLContentModificationDateKey)
+            try url.getResourceValue(&date, forKey: URLResourceKey.contentModificationDateKey)
             return date as? NSDate
         } catch _ {
             return nil
         }
     }
     override func revision() -> String? {
-        let task            = NSTask()
-        task.launchPath     = NSBundle.mainBundle().pathForResource("FileRevision", ofType: "")!
-        let outputPipe      = NSPipe()
+        let task            = Task()
+        task.launchPath     = Bundle.main.path(forResource: "FileRevision", ofType: "")!
+        let outputPipe      = Pipe()
         task.standardOutput = outputPipe
-        task.standardError  = NSFileHandle.fileHandleWithNullDevice()
+        task.standardError  = FileHandle.nullDevice
         task.arguments      = [url.path!]
         task.launch()
 
         return NSString(data: outputPipe.fileHandleForReading.readDataToEndOfFile(),
-            encoding: NSUTF8StringEncoding) as? String
+            encoding: String.Encoding.utf8) as? String
     }
 }
 
@@ -275,40 +275,40 @@ class ASFileTree : NSObject, NSOutlineViewDataSource {
     var dragged     = [ASFileNode]()
     
     func addFileURL(url: NSURL, omitUnknown: Bool = true) {
-        let type = ASFileType.guessForURL(url)
+        let type = ASFileType.guessForURL(url: url)
         if !omitUnknown || type != .Unknown {
-            root.children.append(ASFileItem(url: url.URLByStandardizingPath!, type: type))
+            root.children.append(ASFileItem(url: url.standardizingPath!, type: type))
         }
     }
     func setProjectURL(url: NSURL) {
-        root.name = url.URLByDeletingPathExtension!.lastPathComponent!
+        root.name = url.deletingPathExtension!.lastPathComponent
         dir       = url.URLByDeletingLastPathComponent!.URLByStandardizingPath!
     }
     func projectPath() -> String {
-        return (dir.path! as NSString).stringByResolvingSymlinksInPath
+        return (dir.path! as NSString).resolvingSymlinksInPath
     }
     func apply(closure: (ASFileNode) -> ()) {
-        root.apply(closure)
+        root.apply(closure: closure)
     }
     func propertyList() -> AnyObject {
-        return root.propertyList(projectPath())
+        return root.propertyList(rootPath: projectPath())
     }
     func readPropertyList(prop: NSDictionary) {
-        root = ASFileNode.readPropertyList(prop, rootURL:dir) as! ASProject
+        root = ASFileNode.readPropertyList(prop: prop, rootURL:dir) as! ASProject
     }
     var paths : [String] {
-        return root.paths(projectPath())
+        return root.paths(rootPath: projectPath())
     }
     
     // MARK: Outline Data Source
-    func outlineView(outlineView: NSOutlineView, numberOfChildrenOfItem item: AnyObject?) -> Int {
+    func outlineView(_ outlineView: NSOutlineView, numberOfChildrenOfItem item: AnyObject?) -> Int {
         if item == nil {
             return 4
         } else {
             return (item as! ASFileGroup).children.count
         }
     }
-    func outlineView(outlineView: NSOutlineView, child index: Int, ofItem item: AnyObject?) -> AnyObject {
+    func outlineView(_ outlineView: NSOutlineView, child index: Int, ofItem item: AnyObject?) -> AnyObject {
         if item == nil {
             switch index {
             case 1:
@@ -325,15 +325,15 @@ class ASFileTree : NSObject, NSOutlineViewDataSource {
             return group.children[index]
         }
     }
-    func outlineView(outlineView: NSOutlineView, isItemExpandable item: AnyObject) -> Bool {
+    func outlineView(_ outlineView: NSOutlineView, isItemExpandable item: AnyObject) -> Bool {
         return item is ASFileGroup
     }
-    func outlineView(outlineView: NSOutlineView, objectValueForTableColumn tableColumn: NSTableColumn?, byItem item: AnyObject?) -> AnyObject? {
+    func outlineView(_ outlineView: NSOutlineView, objectValueFor tableColumn: NSTableColumn?, byItem item: AnyObject?) -> AnyObject? {
         return (item as! ASFileNode).nodeName()
     }
 
     let kLocalReorderPasteboardType = "ASFilePasteboardType"
-    func outlineView(outlineView: NSOutlineView, writeItems items: [AnyObject], toPasteboard pasteboard: NSPasteboard) -> Bool {
+    func outlineView(_ outlineView: NSOutlineView, writeItems items: [AnyObject], to pasteboard: NSPasteboard) -> Bool {
         dragged = items as! [ASFileNode]
         pasteboard.declareTypes([kLocalReorderPasteboardType], owner: self)
         pasteboard.setData(NSData(), forType: kLocalReorderPasteboardType)
@@ -346,51 +346,52 @@ class ASFileTree : NSObject, NSOutlineViewDataSource {
         } else if item is ASProject {
             return false
         } else {
-            return itemIsDescendentOfDrag(outlineView, item: outlineView.parentForItem(item) as! ASFileNode)
+            return itemIsDescendentOfDrag(outlineView: outlineView, item: outlineView.parent(forItem: item) as! ASFileNode)
         }
     }
-    func outlineView(outlineView: NSOutlineView, validateDrop info: NSDraggingInfo, proposedItem item: AnyObject?, proposedChildIndex index: Int) -> NSDragOperation {
-        if info.draggingPasteboard().availableTypeFromArray([kLocalReorderPasteboardType]) == nil {
-            return NSDragOperation.None // Only allow reordering drags
+    func outlineView(_ outlineView: NSOutlineView, validateDrop info: NSDraggingInfo, proposedItem item: AnyObject?, proposedChildIndex index: Int) -> NSDragOperation {
+        if info.draggingPasteboard().availableType(from: [kLocalReorderPasteboardType]) == nil {
+            return [] // Only allow reordering drags
         }
         for drag in dragged {
             switch (drag) {
             case is ASProject, is ASLogNode:
-                return NSDragOperation.None // Don't allow root or log nodes to be dragged
+                return [] // Don't allow root or log nodes to be dragged
             default:
                 break
             }
         }
         switch (item) {
         case is ASProject, is ASFileGroup:
-            if itemIsDescendentOfDrag(outlineView, item: item as! ASFileNode) {
-                return NSDragOperation.None // Don't allow drag on member of dragged items or a descendent thereof
+            if itemIsDescendentOfDrag(outlineView: outlineView, item: item as! ASFileNode) {
+                return [] // Don't allow drag on member of dragged items or a descendent thereof
             }
         default:
-            return NSDragOperation.None // Don't allow drag onto leaf
+            return [] // Don't allow drag onto leaf
         }
-        return NSDragOperation.Generic
+        return NSDragOperation.generic
     }
-    func outlineView(outlineView: NSOutlineView, acceptDrop info: NSDraggingInfo, item: AnyObject?, var childIndex insertAtIndex: Int) -> Bool {
+    func outlineView(_ outlineView: NSOutlineView, acceptDrop info: NSDraggingInfo, item: AnyObject?, childIndex insertAtIndex: Int) -> Bool {
+        var insertAtIndex = insertAtIndex
         let parent : ASFileGroup = (item as? ASFileGroup) ?? root
         if insertAtIndex == NSOutlineViewDropOnItemIndex {
             insertAtIndex = parent.children.count
         }
         outlineView.beginUpdates()
         for item in dragged {
-            let origParent  = outlineView.parentForItem(item) as! ASFileGroup
-            let origIndex   = origParent.children.indexOf(item)!
-            origParent.children.removeAtIndex(origIndex)
+            let origParent  = outlineView.parent(forItem: item) as! ASFileGroup
+            let origIndex   = origParent.children.index(of: item)!
+            origParent.children.remove(at: origIndex)
             outlineView.removeItemsAtIndexes(NSIndexSet(index:origIndex), inParent:origParent, withAnimation:NSTableViewAnimationOptions.EffectNone)
             if origParent == parent && insertAtIndex > origIndex {
                 insertAtIndex -= 1
             }
-            parent.children.insert(item, atIndex:insertAtIndex)
+            parent.children.insert(item, at:insertAtIndex)
             outlineView.insertItemsAtIndexes(NSIndexSet(index:insertAtIndex), inParent: parent, withAnimation:NSTableViewAnimationOptions.EffectGap)
             insertAtIndex += 1
         }
         outlineView.endUpdates()
-        (outlineView.delegate() as! ASProjDoc).updateChangeCount(NSDocumentChangeType.ChangeDone)
+        (outlineView.delegate as! ASProjDoc).updateChangeCount(NSDocumentChangeType.changeDone)
 
         return true
     }

@@ -9,7 +9,7 @@
 import Cocoa
 
 private var serialInstances     = [String : ASSerialWin]()
-private var keyboardHandler     : ACEKeyboardHandler = .Ace
+private var keyboardHandler     : ACEKeyboardHandler = .ace
 
 class ASSerialWin: NSWindowController {
     @IBOutlet weak var inputLine : NSTextField!
@@ -38,12 +38,12 @@ class ASSerialWin: NSWindowController {
     var serialData          = ""
     var serialObserver      : AnyObject!
     var termination         : AnyObject!
-    dynamic var portHandle  : NSFileHandle?
-    var currentTheme        : ACETheme = .Xcode
+    dynamic var portHandle  : FileHandle?
+    var currentTheme        : ACETheme = .xcode
     var fontSize            : UInt = 12
     var portDefaults        = [String: AnyObject]()
     var shouldReconnect     = false
-    dynamic var task        : NSTask?
+    dynamic var task        : Task?
 
     class func showWindowWithPort(port: String) {
         if let existing = serialInstances[port] {
@@ -54,13 +54,13 @@ class ASSerialWin: NSWindowController {
             newInstance.showWindow(self)
         }
     }
-    class func showWindowWithPort(port: String, task: NSTask, speed: Int) {
+    class func showWindowWithPort(port: String, task: Task, speed: Int) {
         if let existing = serialInstances[port] {
-            existing.showWindowWithTask(task, speed:speed)
+            existing.showWindowWithTask(task: task, speed:speed)
         } else {
             let newInstance = ASSerialWin(port:port)
             serialInstances[port] = newInstance
-            newInstance.showWindowWithTask(task, speed:speed)
+            newInstance.showWindowWithTask(task: task, speed:speed)
         }
     }
     class func portNeededForUpload(port: String) {
@@ -78,18 +78,18 @@ class ASSerialWin: NSWindowController {
         self.init(windowNibName:"ASSerialWin")
         self.port       = port
 
-        let userDefaults = NSUserDefaults.standardUserDefaults()
+        let userDefaults = UserDefaults.standard
        
-        if let portDef = (userDefaults.objectForKey("SerialDefaults") as! NSDictionary).objectForKey(port) as? [String: AnyObject] {
+        if let portDef = (userDefaults.object(forKey:"SerialDefaults") as! NSDictionary).object(forKey:port) as? [String: AnyObject] {
             portDefaults = portDef
         } else {
-            portDefaults["Theme"]       = userDefaults.stringForKey("SerialTheme")
-            portDefaults["FontSize"]    = userDefaults.objectForKey("FontSize")
+            portDefaults["Theme"]       = userDefaults.string(forKey:"SerialTheme")
+            portDefaults["FontSize"]    = userDefaults.object(forKey:"FontSize")
             portDefaults["SendCR"]      = sendCR
             portDefaults["SendLF"]      = sendLF
             portDefaults["BaudRate"]    = 19200
         }
-        if let themeId = ACEView.themeIdByName(portDefaults["Theme"] as! String) {
+        if let themeId = ACEView.themeIdByName(themeName: portDefaults["Theme"] as! String) {
             currentTheme = themeId
         }
         fontSize = portDefaults["FontSize"] as! UInt
@@ -97,13 +97,13 @@ class ASSerialWin: NSWindowController {
         sendLF   = portDefaults["SendLF"] as! Bool
         baudRate = portDefaults["BaudRate"] as! Int
 
-        if let handlerName = userDefaults.stringForKey("Bindings") {
-            if let handlerId = ACEView.handlerIdByName(handlerName) {
+        if let handlerName = userDefaults.string(forKey:"Bindings") {
+            if let handlerId = ACEView.handlerIdByName(handlerName: handlerName) {
                 keyboardHandler = handlerId
             }
         }
 
-        let nc          = NSNotificationCenter.defaultCenter()
+        let nc          = NotificationCenter.default
         serialObserver  = nc.addObserverForName(kASSerialPortsChanged, object: nil, queue: nil, usingBlock: { (NSNotification) in
             self.willChangeValueForKey("hasValidPort")
             self.didChangeValueForKey("hasValidPort")
@@ -116,7 +116,7 @@ class ASSerialWin: NSWindowController {
                 }
             }
         })
-        termination = NSNotificationCenter.defaultCenter().addObserverForName(NSTaskDidTerminateNotification,
+        termination = NotificationCenter.defaultCenter.addObserverForName(NSTaskDidTerminateNotification,
             object: nil, queue: nil, usingBlock:
             { (notification: NSNotification) in
                 if notification.object as? NSTask == self.task {
@@ -130,9 +130,9 @@ class ASSerialWin: NSWindowController {
         if portHandle != nil {
             connect(self)
         }
-        NSNotificationCenter.defaultCenter().removeObserver(serialObserver)
-        NSNotificationCenter.defaultCenter().removeObserver(termination)
-        serialInstances.removeValueForKey(port)
+        NotificationCenter.default.removeObserver(serialObserver)
+        NotificationCenter.default.removeObserver(termination)
+        serialInstances.removeValue(forKey: port)
     }
 
     func windowWillClose(notification: NSNotification) {
@@ -147,7 +147,7 @@ class ASSerialWin: NSWindowController {
         logView.setTheme(currentTheme)
         logView.setKeyboardHandler(keyboardHandler)
         logView.setFontSize(fontSize)
-        logView.setMode(.Text)
+        logView.setMode(.text)
         logView.alphaValue = 0.8
         window?.title   = port
         if task == nil {
@@ -156,15 +156,15 @@ class ASSerialWin: NSWindowController {
         super.windowDidLoad()
     }
 
-    func installReader(handle: NSFileHandle?) {
+    func installReader(handle: FileHandle?) {
         if let readHandle = handle {
             serialData  = ""
             logView.setString(serialData)
             readHandle.readabilityHandler = {(handle) in
                 let newData         = handle.availableDataIgnoringExceptions()
-                let newString       = NSString(data: newData, encoding: NSASCIIStringEncoding) as! String
+                let newString       = NSString(data: newData, encoding: String.Encoding.ascii) as! String
                 self.serialData    += newString
-                dispatch_async(dispatch_get_main_queue(), { () -> Void in
+                DispatchQueue.main.async(execute: { () -> Void in
                     self.logView.setString(self.serialData)
                     if self.scrollToBottom {
                         self.logView.gotoLine(1000000000, column: 0, animated: true)
@@ -176,19 +176,19 @@ class ASSerialWin: NSWindowController {
 
     @IBAction func sendInput(_: AnyObject) {
         let line = inputLine.stringValue + (sendCR ? "\r" : "") + (sendLF ? "\n" : "")
-        let data = line.dataUsingEncoding(NSASCIIStringEncoding, allowLossyConversion: true)!
-        portHandle?.writeData(data)
+        let data = line.data(using: String.Encoding.ascii, allowLossyConversion: true)!
+        portHandle?.write(data)
     }
     
-    func showWindowWithTask(task: NSTask, speed:Int) {
+    func showWindowWithTask(task: Task, speed:Int) {
         if portHandle != nil {
             connect(self)
         }
         baudRate        = speed
         self.task       = task
-        portHandle      = (task.standardInput as! NSPipe).fileHandleForWriting
+        portHandle      = (task.standardInput as! Pipe).fileHandleForWriting
         showWindow(self)
-        installReader((task.standardOutput as? NSPipe)?.fileHandleForReading)
+        installReader(handle: (task.standardOutput as? Pipe)?.fileHandleForReading)
     }
     
     @IBAction func connect(_: AnyObject) {
@@ -202,7 +202,7 @@ class ASSerialWin: NSWindowController {
             portHandle = nil
         } else {
             portHandle = ASSerial.openPort(port, withSpeed: Int32(baudRate))
-            installReader(portHandle)
+            installReader(handle: portHandle)
         }
     }
     func disconnectTemporarily() {
@@ -234,27 +234,27 @@ class ASSerialWin: NSWindowController {
     // MARK: Editor configuration
     
     @IBAction func changeTheme(item: NSMenuItem) {
-        let userDefaults = NSUserDefaults.standardUserDefaults()
-        currentTheme = ACETheme(rawValue: UInt(item.tag)) ?? .Xcode
+        let userDefaults = UserDefaults.standard
+        currentTheme = ACETheme(rawValue: UInt(item.tag)) ?? .xcode
         logView.setTheme(currentTheme)
-        let themeName = ACEThemeNames.humanNameForTheme(currentTheme)
-        userDefaults.setObject(themeName, forKey: "SerialTheme")
+        let themeName = ACEThemeNames.humanName(for: currentTheme)
+        userDefaults.set(themeName, forKey: "SerialTheme")
         portDefaults["Theme"] = themeName
         updatePortDefaults()
     }
     @IBAction func changeKeyboardHandler(item: NSMenuItem) {
         keyboardHandler = ACEKeyboardHandler(rawValue: UInt(item.tag))!
-        NSUserDefaults.standardUserDefaults().setObject(
-            ACEKeyboardHandlerNames.humanNameForKeyboardHandler(keyboardHandler), forKey: "Bindings")
-        NSNotificationCenter.defaultCenter().postNotificationName("Bindings", object: item)
+        UserDefaults.standard.set(
+            ACEKeyboardHandlerNames.humanName(for: keyboardHandler), forKey: "Bindings")
+        NotificationCenter.defaultCenter.postNotificationName("Bindings", object: item)
     }
     
     func validateUserInterfaceItem(anItem: NSValidatedUserInterfaceItem) -> Bool {
         if let menuItem = anItem as? NSMenuItem {
-            if menuItem.action == "changeTheme:" {
+            if menuItem.action == Selector(("changeTheme:")) {
                 menuItem.state = (UInt(menuItem.tag) == currentTheme.rawValue ? NSOnState : NSOffState)
                 return true
-            } else if menuItem.action == "changeKeyboardHandler:" {
+            } else if menuItem.action == Selector(("changeKeyboardHandler:")) {
                 menuItem.state = (menuItem.tag == Int(keyboardHandler.rawValue) ? NSOnState : NSOffState)
                 return true
             }
@@ -278,22 +278,22 @@ class ASSerialWin: NSWindowController {
     }
     
     func updatePortDefaults() {
-        let userDefaults    = NSUserDefaults.standardUserDefaults()
-        let sd              = userDefaults.objectForKey("SerialDefaults") as! [String: AnyObject]
+        let userDefaults    = UserDefaults.standard
+        let sd              = userDefaults.object(forKey:"SerialDefaults") as! [String: AnyObject]
         let serialDefaults  = NSMutableDictionary(dictionary: sd)
         serialDefaults.setValue(NSDictionary(dictionary:portDefaults), forKey:port)
-        userDefaults.setObject(serialDefaults, forKey:"SerialDefaults")
+        userDefaults.set(serialDefaults, forKey:"SerialDefaults")
     }
 
     @IBAction func saveDocument(_: AnyObject) {
         let savePanel                   = NSSavePanel()
         savePanel.allowedFileTypes      = ["log"]
         savePanel.allowsOtherFileTypes  = true
-        savePanel.extensionHidden       = false
-        savePanel.beginSheetModalForWindow(window!, completionHandler: { (returnCode) -> Void in
+        savePanel.isExtensionHidden       = false
+        savePanel.beginSheetModal(for: window!, completionHandler: { (returnCode) -> Void in
             if returnCode == NSFileHandlingPanelOKButton {
                 do {
-                    try self.serialData.writeToURL(savePanel.URL!, atomically:false, encoding:NSUTF8StringEncoding)
+                    try self.serialData.write(to: savePanel.url!, atomically:false, encoding:String.Encoding.utf8)
                 } catch _ {
                 }
             }
