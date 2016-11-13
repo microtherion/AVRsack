@@ -155,8 +155,8 @@ class ASBuilder {
             }
             args          += ["-U", "flash:w:build/"+board+"/"+dir.lastPathComponent!+".hex:i"]
             continuation   = {
-                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, Int64(2*NSEC_PER_SEC)), dispatch_get_main_queue(), {
-                    ASSerialWin.portAvailableAfterUpload(port)
+                DispatchQueue.main.asyncAfter(deadline: .now() + 2.0, execute: {
+                    ASSerialWin.portAvailableAfterUpload(port: port)
                 })
             }
         case .BurnBootloader:
@@ -193,8 +193,8 @@ class ASBuilder {
                     logOut.write(cmdLine.data(using: String.Encoding.utf8, allowLossyConversion: true)!)
                     task2.launch()
                     self.continuation = {
-                        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, Int64(2*NSEC_PER_SEC)), dispatch_get_main_queue(), {
-                            ASSerialWin.portAvailableAfterUpload(port)
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0, execute: {
+                            ASSerialWin.portAvailableAfterUpload(port: port)
                         })
                     }
                 }

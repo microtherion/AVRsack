@@ -161,15 +161,17 @@ class ASSerialWin: NSWindowController {
             serialData  = ""
             logView.setString(serialData)
             readHandle.readabilityHandler = {(handle) in
-                let newData         = handle.availableDataIgnoringExceptions()
-                let newString       = NSString(data: newData, encoding: String.Encoding.ascii) as! String
-                self.serialData    += newString
-                DispatchQueue.main.async(execute: { () -> Void in
-                    self.logView.setString(self.serialData)
-                    if self.scrollToBottom {
-                        self.logView.gotoLine(1000000000, column: 0, animated: true)
-                    }
-                })
+                if let newData = handle.availableDataIgnoringExceptions(),
+                   let newString = String(data: newData, encoding: String.Encoding.ascii)
+                {
+                    self.serialData    += newString
+                    DispatchQueue.main.async(execute: {
+                        self.logView.setString(self.serialData)
+                        if self.scrollToBottom {
+                            self.logView.gotoLine(1000000000, column: 0, animated: true)
+                        }
+                    })
+                }
             }
         }
     }

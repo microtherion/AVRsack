@@ -920,7 +920,7 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate, NSMenuDelegate, NSOpenSavePa
     @IBAction func uploadProject(sender: AnyObject) {
         builder.continuation = {
             self.selectNodeInOutline(selection: self.files.uploadLog)
-            dispatch_async(dispatch_get_main_queue(), {
+            DispatchQueue.main.async(execute: {
                 self.builder.uploadProject(board: self.board, programmer:self.programmer, port:self.port)
             })
         }

@@ -37,14 +37,14 @@ NSString * kASSerialPortsChanged = @"PortsChanged";
     watchSlashDev =
         dispatch_source_create(DISPATCH_SOURCE_TYPE_VNODE, fd, DISPATCH_VNODE_WRITE, dispatch_get_main_queue());
     dispatch_source_set_event_handler(watchSlashDev, ^{
-        [[NotificationCenter defaultCenter] postNotificationName:kASSerialPortsChanged object: nil];
+        [[NSNotificationCenter defaultCenter] postNotificationName:kASSerialPortsChanged object: nil];
     });
     dispatch_resume(watchSlashDev);
 }
 
 + (NSArray<NSString *> *)ports {
     NSMutableArray * cuPorts = [NSMutableArray array];
-    for (NSString * port in [[FileManager defaultManager] contentsOfDirectoryAtPath:@"/dev" error: nil]) {
+    for (NSString * port in [[NSFileManager defaultManager] contentsOfDirectoryAtPath:@"/dev" error: nil]) {
         if ([[port substringToIndex:2] isEqualToString:@"cu"])
             [cuPorts addObject:[port substringFromIndex:3]];
     }
