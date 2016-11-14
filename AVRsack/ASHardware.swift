@@ -177,24 +177,24 @@ class ASLibraries : NSObject {
     }
     func addStandardLibrariesToMenu(menu: NSMenu) {
         for (index,lib) in standardLib.enumerated() {
-            let menuItem        = menu.addItem(withTitle: (lib as NSString).lastPathComponent, action: #selector(ASLibraries.importStandardLibrary(_:)), keyEquivalent: "")
+            let menuItem        = menu.addItem(withTitle: (lib as NSString).lastPathComponent, action: #selector(ASLibraries.importStandardLibrary(menuItem:)), keyEquivalent: "")
             menuItem.target    = self
             menuItem.tag       = index
         }
     }
     func addContribLibrariesToMenu(menu: NSMenu) {
         for (index,lib) in contribLib.enumerated() {
-            let menuItem        = menu.addItem(withTitle: (lib as NSString).lastPathComponent, action: #selector(ASLibraries.importContribLibrary(_:)), keyEquivalent: "")
+            let menuItem        = menu.addItem(withTitle: (lib as NSString).lastPathComponent, action: #selector(ASLibraries.importContribLibrary(menuItem:)), keyEquivalent: "")
             menuItem.target    = self
             menuItem.tag       = index
         }
     }
-    @IBAction func importStandardLibrary(_ menuItem: AnyObject) {
+    @IBAction func importStandardLibrary(menuItem: AnyObject) {
         if let tag = (menuItem as? NSMenuItem)?.tag {
             NSApplication.shared().sendAction(#selector(ASProjDoc.importLibrary(_:)), to: nil, from: standardLib[tag])
         }
     }
-    @IBAction func importContribLibrary(_ menuItem: AnyObject) {
+    @IBAction func importContribLibrary(menuItem: AnyObject) {
         if let tag = (menuItem as? NSMenuItem)?.tag {
             NSApplication.shared().sendAction(#selector(ASProjDoc.importLibrary(_:)), to: nil, from: contribLib[tag])
         }

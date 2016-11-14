@@ -211,7 +211,13 @@ class ASFileItem : ASFileNode {
         } else {
             url = URL(fileURLWithPath: path as String, relativeTo: rootURL).standardizedFileURL
         }
-        if try! !url.checkResourceIsReachable() {
+        var fileExists = false
+        do {
+            fileExists = try url.checkResourceIsReachable()
+        } catch {
+            fileExists = false
+        }
+        if !fileExists {
             //
             // When projects get moved, .ino files get renamed but that fact is not 
             // yet reflected in the project file.
@@ -219,7 +225,7 @@ class ASFileItem : ASFileNode {
             let urlDir  = url.deletingLastPathComponent()
             let newName = rootURL.appendingPathExtension(url.pathExtension).lastPathComponent
             let altURL  = urlDir.appendingPathComponent(newName)
-            if try! altURL.checkResourceIsReachable() {
+            if let altExists = try? altURL.checkResourceIsReachable(), altExists {
                 url = altURL
             }
         }
@@ -263,11 +269,15 @@ class ASFileItem : ASFileNode {
     }
 
     override func exists() -> Bool {
-        return try! url.checkResourceIsReachable()
+        do {
+            return try url.checkResourceIsReachable()
+        } catch {
+            return false
+        }
     }
 
     override func modDate() -> Date? {
-        let values = try? url.resourceValues(forKeys: [URLResourceKey.contentModificationDateKey])
+        let values = try? url.resourceValues(forKeys: [.contentModificationDateKey])
 
         return values?.contentModificationDate
     }
