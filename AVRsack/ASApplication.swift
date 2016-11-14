@@ -75,7 +75,7 @@ class ASApplication: NSObject, NSApplicationDelegate, NSMenuDelegate {
             sketches = [String]()
             for sketchBook in UserDefaults.standard.object(forKey:"Sketchbooks") as! [String] {
                 if FileManager.default.fileExists(atPath: sketchBook) {
-                    ASSketchBook.addSketches(menu: menu, target: self, action: Selector(("openSketch:")), path: sketchBook, sketches: &sketches)
+                    ASSketchBook.addSketches(menu: menu, target: self, action: #selector(ASApplication.openSketch(_:)), path: sketchBook, sketches: &sketches)
                 }
             }
         case "Examples":
@@ -83,7 +83,7 @@ class ASApplication: NSObject, NSApplicationDelegate, NSMenuDelegate {
             examples = [String]()
             if let arduinoURL = NSWorkspace.shared().urlForApplication(withBundleIdentifier: "cc.arduino.Arduino") {
                 let examplePath = arduinoURL.appendingPathComponent("Contents/Resources/Java/examples", isDirectory:true).path
-                ASSketchBook.addSketches(menu: menu, target: self, action: #selector(ASApplication.openExample(item:)), path: examplePath, sketches: &examples)
+                ASSketchBook.addSketches(menu: menu, target: self, action: #selector(ASApplication.openExample(_:)), path: examplePath, sketches: &examples)
             }
         case "Import Standard Library":
             menu.removeAllItems()
@@ -97,14 +97,14 @@ class ASApplication: NSObject, NSApplicationDelegate, NSMenuDelegate {
                 menu.removeItem(at: 2)
             }
             for port in ASSerial.ports() {
-                menu.addItem(withTitle: port, action:Selector(("serialConnectMenu:")), keyEquivalent:"")
+                menu.addItem(withTitle: port, action:#selector(ASApplication.serialConnectMenu(_:)), keyEquivalent:"")
             }
         default:
             break
         }
     }
 
-    @IBAction func serialConnectMenu(port: NSMenuItem) {
+    @IBAction func serialConnectMenu(_ port: NSMenuItem) {
         ASSerialWin.showWindowWithPort(port: port.title)
     }
 
@@ -148,14 +148,14 @@ class ASApplication: NSObject, NSApplicationDelegate, NSMenuDelegate {
         }
     }
     
-    @IBAction func openSketch(item: NSMenuItem) {
+    @IBAction func openSketch(_ item: NSMenuItem) {
         let url = URL(fileURLWithPath: sketches[item.tag])
         let doc = NSDocumentController.shared()
         doc.openDocument(withContentsOf: url, display: true) { (doc, alreadyOpen, error) -> Void in
         }
     }
     
-    @IBAction func openExample(item: NSMenuItem) {
+    @IBAction func openExample(_ item: NSMenuItem) {
         let url = NSURL(fileURLWithPath: examples[item.tag])
         openTemplate(template: url.deletingLastPathComponent!, fromReadOnly:true)
     }
@@ -199,7 +199,7 @@ class ASApplication: NSObject, NSApplicationDelegate, NSMenuDelegate {
         }
     }
 
-    @IBAction func goToHelpPage(sender: AnyObject) {
+    @IBAction func goToHelpPage(_ sender: AnyObject) {
         let helpString: String
         switch sender.tag {
         case 0:
@@ -211,7 +211,7 @@ class ASApplication: NSObject, NSApplicationDelegate, NSMenuDelegate {
         AHGotoPage(locBookName, helpString, nil)
     }
 
-    @IBAction func goToHelpURL(sender: AnyObject) {
+    @IBAction func goToHelpURL(_ sender: AnyObject) {
         let helpString: String
         switch sender.tag {
         case 0:

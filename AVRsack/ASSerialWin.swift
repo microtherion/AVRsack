@@ -235,7 +235,7 @@ class ASSerialWin: NSWindowController {
 
     // MARK: Editor configuration
     
-    @IBAction func changeTheme(item: NSMenuItem) {
+    @IBAction func changeTheme(_ item: NSMenuItem) {
         let userDefaults = UserDefaults.standard
         currentTheme = ACETheme(rawValue: UInt(item.tag)) ?? .xcode
         logView.setTheme(currentTheme)
@@ -244,7 +244,7 @@ class ASSerialWin: NSWindowController {
         portDefaults["Theme"] = themeName
         updatePortDefaults()
     }
-    @IBAction func changeKeyboardHandler(item: NSMenuItem) {
+    @IBAction func changeKeyboardHandler(_ item: NSMenuItem) {
         keyboardHandler = ACEKeyboardHandler(rawValue: UInt(item.tag))!
         UserDefaults.standard.set(
             ACEKeyboardHandlerNames.humanName(for: keyboardHandler), forKey: "Bindings")
@@ -253,10 +253,10 @@ class ASSerialWin: NSWindowController {
 
     func validateUserInterfaceItem(anItem: NSValidatedUserInterfaceItem) -> Bool {
         if let menuItem = anItem as? NSMenuItem {
-            if menuItem.action == Selector(("changeTheme:")) {
+            if menuItem.action == #selector(ASSerialWin.changeTheme(_:)) {
                 menuItem.state = (UInt(menuItem.tag) == currentTheme.rawValue ? NSOnState : NSOffState)
                 return true
-            } else if menuItem.action == Selector(("changeKeyboardHandler:")) {
+            } else if menuItem.action == #selector(ASSerialWin.changeKeyboardHandler(_:)) {
                 menuItem.state = (menuItem.tag == Int(keyboardHandler.rawValue) ? NSOnState : NSOffState)
                 return true
             }

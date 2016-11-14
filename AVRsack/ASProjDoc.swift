@@ -667,14 +667,14 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate, NSMenuDelegate, NSOpenSavePa
 
     // MARK: Editor configuration
     
-    @IBAction func changeTheme(item: NSMenuItem) {
+    @IBAction func changeTheme(_ item: NSMenuItem) {
         currentTheme = ACETheme(rawValue: UInt(item.tag)) ?? .xcode
         editor.setTheme(currentTheme)
         UserDefaults.standard.set(
             ACEThemeNames.humanName(for: currentTheme), forKey: kThemeKey)
         updateChangeCount(.changeDone)
     }
-    @IBAction func changeKeyboardHandler(item: NSMenuItem) {
+    @IBAction func changeKeyboardHandler(_ item: NSMenuItem) {
         keyboardHandler = ACEKeyboardHandler(rawValue: UInt(item.tag))!
         UserDefaults.standard.set(
             ACEKeyboardHandlerNames.humanName(for: keyboardHandler), forKey: kBindingsKey)
@@ -683,18 +683,18 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate, NSMenuDelegate, NSOpenSavePa
     
     override func validateUserInterfaceItem(_ anItem: NSValidatedUserInterfaceItem) -> Bool {
         if let menuItem = anItem as? NSMenuItem {
-            if menuItem.action == #selector(ASProjDoc.changeTheme(item:)) {
+            if menuItem.action == #selector(ASProjDoc.changeTheme(_:)) {
                 menuItem.state = (UInt(menuItem.tag) == currentTheme.rawValue ? NSOnState : NSOffState)
                 return true
-            } else if menuItem.action == #selector(ASProjDoc.changeKeyboardHandler(item:)) {
+            } else if menuItem.action == #selector(ASProjDoc.changeKeyboardHandler(_:)) {
                 menuItem.state = (menuItem.tag == Int(keyboardHandler.rawValue) ? NSOnState : NSOffState)
                 return true
-            } else if menuItem.action == #selector(ASProjDoc.serialConnect(sender:)) {
+            } else if menuItem.action == #selector(ASProjDoc.serialConnect(_:)) {
                 menuItem.title = port
 
                 return true
-            } else if menuItem.action == #selector(ASLibraries.importStandardLibrary(menuItem:)) ||
-                menuItem.action == #selector(ASLibraries.importContribLibrary(menuItem:))
+            } else if menuItem.action == #selector(ASLibraries.importStandardLibrary(_:)) ||
+                menuItem.action == #selector(ASLibraries.importContribLibrary(_:))
             {
                 return mainEditor is ASFileItem
             }
@@ -716,7 +716,7 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate, NSMenuDelegate, NSOpenSavePa
     }
 
     // MARK: Issues
-    @IBAction func jumpToIssue(sender: AnyObject) {
+    @IBAction func jumpToIssue(_ sender: AnyObject) {
         let direction : Int = (sender as! NSMenuItem).tag
         if editors.views(in: .bottom).count == 0 {
             editors.addView(auxEdit, in: .bottom)
@@ -801,11 +801,11 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate, NSMenuDelegate, NSOpenSavePa
         switch menu.title {
         case "Boards":
             ASHardware.instance().buildBoardsMenu(menu: menu, recentBoards: recentBoards,
-                                                  target: self, selector: #selector(ASProjDoc.selectBoard(item:)))
+                                                  target: self, selector: #selector(ASProjDoc.selectBoard(_:)))
             boardTool.setTitle(selectedBoard)
         case "Programmers":
             ASHardware.instance().buildProgrammersMenu(menu: menu, recentProgrammers: recentProgrammers,
-                target: self, selector: #selector(ASProjDoc.selectProgrammer(item:)))
+                target: self, selector: #selector(ASProjDoc.selectProgrammer(_:)))
             progTool.setTitle(selectedProgrammer)
         default:
             break
@@ -838,7 +838,7 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate, NSMenuDelegate, NSOpenSavePa
         }
     }
     
-    @IBAction func selectBoard(item: AnyObject) {
+    @IBAction func selectBoard(_ item: AnyObject) {
         selectedBoard = (item as! NSMenuItem).title
     }
 
@@ -869,11 +869,11 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate, NSMenuDelegate, NSOpenSavePa
         }
     }
     
-    @IBAction func selectProgrammer(item: AnyObject) {
+    @IBAction func selectProgrammer(_ item: AnyObject) {
         selectedProgrammer = (item as! NSMenuItem).title
     }
     
-    @IBAction func selectPort(item: AnyObject) {
+    @IBAction func selectPort(_ item: AnyObject) {
         port    = (item as! NSPopUpButton).titleOfSelectedItem!
         portTool.setTitle(port)
     }
@@ -909,7 +909,7 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate, NSMenuDelegate, NSOpenSavePa
         return NSSet(objects: "hasValidPort", "hasUploadProtocol", "programmer")
     }
     
-    @IBAction func uploadProject(sender: AnyObject) {
+    @IBAction func uploadProject(_ sender: AnyObject) {
         builder.continuation = {
             self.selectNodeInOutline(selection: self.files.uploadLog)
             DispatchQueue.main.async(execute: {
@@ -919,16 +919,16 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate, NSMenuDelegate, NSOpenSavePa
         buildProject(sender)
     }
 
-    @IBAction func uploadTerminal(sender: AnyObject) {
+    @IBAction func uploadTerminal(_: AnyObject) {
         builder.uploadProject(board: board, programmer:programmer, port:port, mode:.Interactive)
     }
 
-    @IBAction func burnBootloader(sender: AnyObject) {
+    @IBAction func burnBootloader(_: AnyObject) {
         self.selectNodeInOutline(selection: self.files.uploadLog)
         builder.uploadProject(board: board, programmer:programmer, port:port, mode:.BurnBootloader)
     }
 
-    @IBAction func disassembleProject(sender: AnyObject) {
+    @IBAction func disassembleProject(_ sender: AnyObject) {
         builder.continuation = {
             self.selectNodeInOutline(selection: self.files.disassembly)
             self.builder.disassembleProject(board: self.board)
@@ -936,7 +936,7 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate, NSMenuDelegate, NSOpenSavePa
         buildProject(sender)
     }
     
-    @IBAction func serialConnect(sender: AnyObject) {
+    @IBAction func serialConnect(_: AnyObject) {
         ASSerialWin.showWindowWithPort(port: port)
     }
 }
