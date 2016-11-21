@@ -29,14 +29,14 @@ class ASApplication: NSObject, NSApplicationDelegate, NSMenuDelegate {
         let workSpace       = NSWorkspace.shared()
         let userDefaults    = UserDefaults.standard
         let appDefaultsURL  = Bundle.main.url(forResource: "Defaults", withExtension: "plist")!
-        var appDefaults     = NSDictionary(contentsOf: appDefaultsURL) as! [String: AnyObject]
+        var appDefaults     = NSDictionary(contentsOf: appDefaultsURL) as! [String: Any]
         //
         // Add dynamic app defaults
         //
         if let arduinoPath = workSpace.urlForApplication(withBundleIdentifier: "cc.arduino.Arduino")?.path {
             appDefaults["Arduino"]      = arduinoPath
         }
-        var sketchbooks             = [NSString]()
+        var sketchbooks             = [String]()
         for doc in fileManager.urls(for: .documentDirectory, in: .userDomainMask) {
             sketchbooks.append(doc.appendingPathComponent("Arduino").path)
             sketchbooks.append(doc.appendingPathComponent("AVRSack").path)
@@ -180,7 +180,7 @@ class ASApplication: NSObject, NSApplicationDelegate, NSMenuDelegate {
         }
     }
     
-    class func newProjectLocation(documentWindow: NSWindow?, message: String, completion: (URL) -> ()) {
+    class func newProjectLocation(documentWindow: NSWindow?, message: String, completion: @escaping (URL) -> ()) {
         let savePanel                       = NSSavePanel()
         savePanel.allowedFileTypes          = [kUTTypeFolder as String]
         savePanel.message                   = message
@@ -200,14 +200,14 @@ class ASApplication: NSObject, NSApplicationDelegate, NSMenuDelegate {
     }
 
     @IBAction func goToHelpPage(_ sender: AnyObject) {
-        let helpString: String
+        let helpString: CFString
         switch sender.tag {
         case 0:
-            helpString = "license.html"
+            helpString = "license.html" as CFString
         default:
             abort()
         }
-        let locBookName = Bundle.main.object(forInfoDictionaryKey: "CFBundleHelpBookName") as! String
+        let locBookName = Bundle.main.object(forInfoDictionaryKey: "CFBundleHelpBookName") as! CFString
         AHGotoPage(locBookName, helpString, nil)
     }
 

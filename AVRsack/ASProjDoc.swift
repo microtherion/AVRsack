@@ -176,7 +176,7 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate, NSMenuDelegate, NSOpenSavePa
             kPortKey: port,
             kRecentBoardsKey: recentBoards,
             kRecentProgrammersKey: recentProgrammers
-        ]
+        ] as [String : Any]
         return try PropertyListSerialization.data(fromPropertyList: data, format:.xml, options:0)
     }
 
@@ -238,7 +238,7 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate, NSMenuDelegate, NSOpenSavePa
         updateChangeCount(.changeCleared)
     }
 
-    override func duplicate(_ sender: AnyObject?) {
+    override func duplicate(_ sender: Any?) {
         let app = NSApplication.shared().delegate as! ASApplication
         app.openTemplate(template: fileURL!.deletingLastPathComponent(), fromReadOnly:false)
     }
@@ -301,7 +301,7 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate, NSMenuDelegate, NSOpenSavePa
 
     // MARK: Printing
 
-    override func print(withSettings printSettings: [String : AnyObject], showPrintPanel: Bool, delegate: AnyObject?, didPrint didPrintSelector: Selector?, contextInfo: UnsafeMutablePointer<Void>?) {
+    override func print(withSettings printSettings: [String : Any], showPrintPanel: Bool, delegate: Any?, didPrint didPrintSelector: Selector?, contextInfo: UnsafeMutableRawPointer?) {
         printingDone =
             { () -> () in
                 InvokeCallback(delegate, didPrintSelector, contextInfo);
@@ -395,7 +395,7 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate, NSMenuDelegate, NSOpenSavePa
         let pageNoAttr = [
             NSFontAttributeName: pageNoFont,
             NSForegroundColorAttributeName: NSColor.white,
-            NSStrokeWidthAttributeName: -5.0]
+            NSStrokeWidthAttributeName: -5.0] as [String : Any]
         let pageNoStr  = "\(pageNo)"
         let pageNoSize = pageNoStr.size(withAttributes: pageNoAttr)
         let pageNoAt   = NSPoint(
@@ -478,20 +478,20 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate, NSMenuDelegate, NSOpenSavePa
         group.expanded  = false
         updateChangeCount(.changeDone)
     }
-    func outlineView(_ outlineView: NSOutlineView, willDisplayCell cell: AnyObject, for tableColumn: NSTableColumn?, item: AnyObject) {
-        if let textCell = cell as? NSTextFieldCell {
+    func outlineView(_ outlineView: NSOutlineView, willDisplayCell cell: Any, for tableColumn: NSTableColumn?, item: Any) {
+        if let textCell = cell as? NSTextFieldCell, let item = item as? ASFileNode {
             textCell.textColor = NSColor.black
             if item === files.root || item === files.buildLog || item === files.uploadLog || item === files.disassembly {
                 textCell.font = NSFont.boldSystemFont(ofSize: 13.0)
             } else {
                 textCell.font = NSFont.systemFont(ofSize: 13.0)
-                if !(item as! ASFileNode).exists() {
+                if !item.exists() {
                     textCell.textColor = NSColor.red
                 }
             }
         }
     }
-    func outlineView(_ outlineView: NSOutlineView, shouldTrackCell cell: NSCell, for tableColumn: NSTableColumn?, item: AnyObject) -> Bool {
+    func outlineView(_ outlineView: NSOutlineView, shouldTrackCell cell: NSCell, for tableColumn: NSTableColumn?, item: Any) -> Bool {
         return outlineView.isRowSelected(outlineView.row(forItem: item))
     }
 
@@ -559,7 +559,7 @@ class ASProjDoc: NSDocument, NSOutlineViewDelegate, NSMenuDelegate, NSOpenSavePa
 
     }
 
-    func panel(_ panel:AnyObject, shouldEnable url:URL) -> Bool {
+    func panel(_ panel:Any, shouldEnable url:URL) -> Bool {
         guard let values = try? url.resourceValues(forKeys: [.fileResourceIdentifierKey]),
               let resourceID = values.fileResourceIdentifier
         else {

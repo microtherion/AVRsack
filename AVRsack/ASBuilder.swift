@@ -10,15 +10,15 @@ import Foundation
 
 class ASBuilder {
     var dir         = URL(fileURLWithPath: "/")
-    var task        : Task?
+    var task        : Process?
     var continuation: (()->())?
     var termination : AnyObject?
     
     init() {
-        termination = NotificationCenter.default.addObserver(forName: Task.didTerminateNotification,
+        termination = NotificationCenter.default.addObserver(forName: Process.didTerminateNotification,
                                                                    object: nil, queue: nil, using:
         { (notification: Notification) in
-            if notification.object as? Task == self.task {
+            if notification.object as? Process == self.task {
                 if self.task!.terminationStatus == 0 {
                     if let cont = self.continuation {
                         self.continuation = nil
@@ -52,7 +52,7 @@ class ASBuilder {
     
     func buildProject(board: String, files: ASFileTree) {
         let toolChain               = (NSApplication.shared().delegate as! ASApplication).preferences.toolchainPath
-        task = Task()
+        task = Process()
         task!.currentDirectoryPath  = dir.path
         task!.launchPath            = Bundle.main.path(forResource: "BuildProject", ofType: "")!
         
@@ -111,7 +111,7 @@ class ASBuilder {
         let interactive             = mode == .Interactive
         let portPath                = ASSerial.fileName(forPort: port)
         let toolChain               = (NSApplication.shared().delegate as! ASApplication).preferences.toolchainPath
-        task = Task()
+        task = Process()
         task!.currentDirectoryPath  = dir.path
         task!.launchPath            = toolChain+"/bin/avrdude"
         
@@ -182,7 +182,7 @@ class ASBuilder {
                 needPhase2  = true
             }
             if needPhase2 {
-                let task2 = Task()
+                let task2 = Process()
                 task2.currentDirectoryPath = dir.path
                 task2.launchPath           = toolChain+"/bin/avrdude"
                 task2.arguments            = loaderArgs
@@ -242,7 +242,7 @@ class ASBuilder {
     
     func disassembleProject(board: String) {
         let toolChain               = (NSApplication.shared().delegate as! ASApplication).preferences.toolchainPath
-        task = Task()
+        task = Process()
         task!.currentDirectoryPath  = dir.path
         task!.launchPath            = toolChain+"/bin/avr-objdump"
         

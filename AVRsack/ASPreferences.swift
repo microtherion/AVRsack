@@ -86,7 +86,7 @@ class ASPreferences: NSWindowController, NSOpenSavePanelDelegate {
         })
     }
     
-    func panel(_ sender: AnyObject, shouldEnable url: URL) -> Bool {
+    func panel(_ sender: Any, shouldEnable url: URL) -> Bool {
         let gccPath = url.appendingPathComponent("bin/avr-gcc")
         return FileManager.default.fileExists(atPath: gccPath.path)
     }

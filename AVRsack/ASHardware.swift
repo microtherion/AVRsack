@@ -13,7 +13,7 @@ typealias ASProperties      = [String: ASPropertyEntry]
 
 extension NSMenu {
     func addSortedChoices(choices:[ASPropertyEntry], target: AnyObject, selector: Selector) {
-        for choice in choices.sorted(by: { $0["name"] < $1["name"] })  {
+        for choice in choices.sorted(by: { $0["name"]! < $1["name"]! })  {
             let item        = self.addItem(withTitle: choice["name"]!, action: selector, keyEquivalent: "")
             item.target    = target
         }

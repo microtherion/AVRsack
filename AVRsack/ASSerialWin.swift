@@ -15,6 +15,7 @@ class ASSerialWin: NSWindowController {
     @IBOutlet weak var inputLine : NSTextField!
     @IBOutlet weak var logView   : ACEView!
     
+    var portDefaults        = [String: Any]()
     var baudRate        : Int = 9600 {
         didSet(oldRate) {
             if portHandle != nil {
@@ -41,9 +42,8 @@ class ASSerialWin: NSWindowController {
     dynamic var portHandle  : FileHandle?
     var currentTheme        : ACETheme = .xcode
     var fontSize            : UInt = 12
-    var portDefaults        = [String: AnyObject]()
     var shouldReconnect     = false
-    dynamic var task        : Task?
+    dynamic var task        : Process?
 
     class func showWindowWithPort(port: String) {
         if let existing = serialInstances[port] {
@@ -54,7 +54,7 @@ class ASSerialWin: NSWindowController {
             newInstance.showWindow(self)
         }
     }
-    class func showWindowWithPort(port: String, task: Task, speed: Int) {
+    class func showWindowWithPort(port: String, task: Process, speed: Int) {
         if let existing = serialInstances[port] {
             existing.showWindowWithTask(task: task, speed:speed)
         } else {
@@ -116,10 +116,10 @@ class ASSerialWin: NSWindowController {
                 }
             }
         })
-        termination = NotificationCenter.default.addObserver(forName: Task.didTerminateNotification,
+        termination = NotificationCenter.default.addObserver(forName: Process.didTerminateNotification,
                                                                    object: nil, queue: nil, using:
             { (notification: Notification) in
-                if notification.object as? Task == self.task {
+                if notification.object as? Process == self.task {
                     self.task        = nil
                     self.portHandle  = nil
                 }
@@ -182,7 +182,7 @@ class ASSerialWin: NSWindowController {
         portHandle?.write(data)
     }
     
-    func showWindowWithTask(task: Task, speed:Int) {
+    func showWindowWithTask(task: Process, speed:Int) {
         if portHandle != nil {
             connect(self)
         }

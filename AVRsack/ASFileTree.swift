@@ -69,7 +69,7 @@ class ASFileNode : Equatable {
         closure(self)
     }
 
-    func propertyList(rootPath: String) -> Dictionary<String, AnyObject> {
+    func propertyList(rootPath: String) -> Dictionary<String, Any> {
         return [:]
     }
 
@@ -127,7 +127,7 @@ class ASFileGroup : ASFileNode {
 
     private let kChildrenKey = "Children"
     private let kExpandedKey = "Expanded"
-    private var kNodeType : String { return kNodeTypeGroup }
+    fileprivate var kNodeType : String { return kNodeTypeGroup }
 
     override init(name: String = "") {
         self.children   = []
@@ -155,11 +155,11 @@ class ASFileGroup : ASFileNode {
         }
     }
 
-    func childrenPropertyList(rootPath: String) -> [AnyObject] {
+    func childrenPropertyList(rootPath: String) -> [Any] {
         return children.map() { (node) in node.propertyList(rootPath: rootPath) }
     }
 
-    override func propertyList(rootPath: String) -> Dictionary<String, AnyObject> {
+    override func propertyList(rootPath: String) -> Dictionary<String, Any> {
         return [kTypeKey: kNodeType, kNameKey: name, kExpandedKey: expanded,
                 kChildrenKey: childrenPropertyList(rootPath: rootPath)]
     }
@@ -174,7 +174,7 @@ class ASFileGroup : ASFileNode {
 }
 
 class ASProject : ASFileGroup {
-    override private var kNodeType : String { return kNodeTypeProject }
+    override fileprivate var kNodeType : String { return kNodeTypeProject }
     
     override init(name: String = "") {
         super.init(name: name)
@@ -259,7 +259,7 @@ class ASFileItem : ASFileNode {
         return resComp.joined(separator: "/")
     }
 
-    override func propertyList(rootPath: String) -> Dictionary<String, AnyObject> {
+    override func propertyList(rootPath: String) -> Dictionary<String, Any> {
         return [kTypeKey: kNodeTypeFile, kKindKey: type.rawValue,
                 kPathKey: relativePath(relativeTo: rootPath)]
     }
@@ -283,7 +283,7 @@ class ASFileItem : ASFileNode {
     }
 
     override func revision() -> String? {
-        let task            = Task()
+        let task            = Process()
         task.launchPath     = Bundle.main.path(forResource: "FileRevision", ofType: "")!
         let outputPipe      = Pipe()
         task.standardOutput = outputPipe
@@ -319,7 +319,7 @@ class ASFileTree : NSObject, NSOutlineViewDataSource {
     func apply(closure: (ASFileNode) -> ()) {
         root.apply(closure: closure)
     }
-    func propertyList() -> AnyObject {
+    func propertyList() -> Any {
         return root.propertyList(rootPath: projectPath())
     }
     func readPropertyList(prop: Dictionary<String, AnyObject>) {
@@ -330,14 +330,14 @@ class ASFileTree : NSObject, NSOutlineViewDataSource {
     }
     
     // MARK: Outline Data Source
-    func outlineView(_ outlineView: NSOutlineView, numberOfChildrenOfItem item: AnyObject?) -> Int {
+    func outlineView(_ outlineView: NSOutlineView, numberOfChildrenOfItem item: Any?) -> Int {
         if item == nil {
             return 4
         } else {
             return (item as! ASFileGroup).children.count
         }
     }
-    func outlineView(_ outlineView: NSOutlineView, child index: Int, ofItem item: AnyObject?) -> AnyObject {
+    func outlineView(_ outlineView: NSOutlineView, child index: Int, ofItem item: Any?) -> Any {
         if item == nil {
             switch index {
             case 1:
@@ -354,15 +354,15 @@ class ASFileTree : NSObject, NSOutlineViewDataSource {
             return group.children[index]
         }
     }
-    func outlineView(_ outlineView: NSOutlineView, isItemExpandable item: AnyObject) -> Bool {
+    func outlineView(_ outlineView: NSOutlineView, isItemExpandable item: Any) -> Bool {
         return item is ASFileGroup
     }
-    func outlineView(_ outlineView: NSOutlineView, objectValueFor tableColumn: NSTableColumn?, byItem item: AnyObject?) -> AnyObject? {
+    func outlineView(_ outlineView: NSOutlineView, objectValueFor tableColumn: NSTableColumn?, byItem item: Any?) -> Any? {
         return (item as! ASFileNode).nodeName()
     }
 
     let kLocalReorderPasteboardType = "ASFilePasteboardType"
-    func outlineView(_ outlineView: NSOutlineView, writeItems items: [AnyObject], to pasteboard: NSPasteboard) -> Bool {
+    private func outlineView(_ outlineView: NSOutlineView, writeItems items: [AnyObject], to pasteboard: NSPasteboard) -> Bool {
         dragged = items as! [ASFileNode]
         pasteboard.declareTypes([kLocalReorderPasteboardType], owner: self)
         pasteboard.setData(Data(), forType: kLocalReorderPasteboardType)
@@ -378,7 +378,7 @@ class ASFileTree : NSObject, NSOutlineViewDataSource {
             return itemIsDescendentOfDrag(outlineView: outlineView, item: outlineView.parent(forItem: item) as! ASFileNode)
         }
     }
-    func outlineView(_ outlineView: NSOutlineView, validateDrop info: NSDraggingInfo, proposedItem item: AnyObject?, proposedChildIndex index: Int) -> NSDragOperation {
+    func outlineView(_ outlineView: NSOutlineView, validateDrop info: NSDraggingInfo, proposedItem item: Any?, proposedChildIndex index: Int) -> NSDragOperation {
         if info.draggingPasteboard().availableType(from: [kLocalReorderPasteboardType]) == nil {
             return [] // Only allow reordering drags
         }
@@ -400,7 +400,7 @@ class ASFileTree : NSObject, NSOutlineViewDataSource {
         }
         return NSDragOperation.generic
     }
-    func outlineView(_ outlineView: NSOutlineView, acceptDrop info: NSDraggingInfo, item: AnyObject?, childIndex insertAtIndex: Int) -> Bool {
+    func outlineView(_ outlineView: NSOutlineView, acceptDrop info: NSDraggingInfo, item: Any?, childIndex insertAtIndex: Int) -> Bool {
         var insertAtIndex = insertAtIndex
         let parent : ASFileGroup = (item as? ASFileGroup) ?? root
         if insertAtIndex == NSOutlineViewDropOnItemIndex {
