@@ -78,9 +78,9 @@ def parseInoFiles
                 # Find protypes:
                 prototypes = contents.dup
                 # - Strip comments, quoted strings, and preprocessor directives
-                prototypes.gsub!(%r{'(?:[^']|\\')+'|"(?:[^"]|\\")*"|//.*?$|/\*.*?\*/|^\s*?#.*?$}m, ' ')
+                prototypes.gsub!(%r{'(?:\\'|[^'])+'|"(?:\\"|[^"])*"|//.*?$|/\*.*?\*/|^\s*?#.*?$}m, ' ')
                 # Collapse braces
-                while prototypes.sub!(/(\{)(?:[^{}]+|\{[^{}]*\})/m, '\1') do
+                while prototypes.sub!(/(\{)([^{}]+|\{[^{}]*\})/m, '\1') do
                 end
                 existingProto = {}
                 prototypes.scan(/[\w\[\]\*]+\s+[&\[\]\*\w\s]+\([&,\[\]\*\w\s]*\)(?=\s*;)/) {|p|
@@ -92,7 +92,7 @@ def parseInoFiles
                     proto << p+";\n" unless existingProto[p]
                 }
                 contents.each_line do |line|
-                    if line =~ /^\s*#include\s+[<"](.*)[">]\s*(#.*)?$/
+                    if line =~ %r{^\s*#include\s+[<"](.*)[">]\s*(#.*|/\*.*?\*/\s*|//.*)?$}
                         addLibrary($1)
                     end
                 end

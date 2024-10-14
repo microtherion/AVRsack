@@ -85,6 +85,8 @@ class ASApplication: NSObject, NSApplicationDelegate, NSMenuDelegate {
                 let examplePath = arduinoURL.appendingPathComponent("Contents/Resources/Java/examples", isDirectory:true).path
                 ASSketchBook.addSketches(menu: menu, target: self, action: #selector(ASApplication.openExample(_:)), path: examplePath, sketches: &examples)
             }
+            ASLibraries.instance().addContribLibraryExamplesToMenu(menu: menu, sketches: &examples)
+            ASLibraries.instance().addStandardLibraryExamplesToMenu(menu: menu, sketches: &examples)
         case "Import Standard Library":
             menu.removeAllItems()
             ASLibraries.instance().addStandardLibrariesToMenu(menu: menu)

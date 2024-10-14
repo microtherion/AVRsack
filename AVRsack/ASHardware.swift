@@ -189,6 +189,31 @@ class ASLibraries : NSObject {
             menuItem.tag       = index
         }
     }
+    func addStandardLibraryExamplesToMenu(menu: NSMenu, sketches: inout [String]) {
+        addLibraryExamplesToMenu(library: standardLib, menu: menu, sketches: &sketches)
+    }
+    func addContribLibraryExamplesToMenu(menu: NSMenu, sketches: inout [String]) {
+        addLibraryExamplesToMenu(library: contribLib, menu: menu, sketches: &sketches)
+    }
+    func addLibraryExamplesToMenu(library: [String], menu: NSMenu, sketches: inout [String]) {
+        let fileManager = FileManager.default
+        let application = NSApplication.shared().delegate as! ASApplication
+        var hasSeparator = false
+        for (_,lib) in library.enumerated() {
+            let examplePath = (lib as NSString).appendingPathComponent("examples")
+            if fileManager.fileExists(atPath: examplePath) {
+                if !hasSeparator {
+                    menu.addItem(NSMenuItem.separator())
+                    hasSeparator = true
+                }
+                let menuItem                = menu.addItem(withTitle: (lib as NSString).lastPathComponent, action: nil, keyEquivalent: "")
+                let submenu                 = NSMenu()
+                submenu.autoenablesItems    = false
+                ASSketchBook.addSketches(menu: submenu, target: application, action: #selector(ASApplication.openExample(_:)), path: examplePath, sketches: &sketches)
+                menu.setSubmenu(submenu, for: menuItem)
+            }
+        }
+    }
     @IBAction func importStandardLibrary(_ menuItem: AnyObject) {
         if let tag = (menuItem as? NSMenuItem)?.tag {
             NSApplication.shared().sendAction(#selector(ASProjDoc.importLibrary(_:)), to: nil, from: standardLib[tag])
